@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Contrôle Timer Examen</title>
+    <style>
+        body { font-family: sans-serif; margin: 20px; }
+        label { display: block; margin: 10px 0 5px; }
+        input[type="number"], input[type="text"] { width: 200px; margin-bottom: 10px; padding: 5px; }
+        button { margin: 5px; padding: 10px 15px; }
+        .config-section { 
+            background: #f5f5f5; 
+            padding: 20px; 
+            border-radius: 8px; 
+            margin-bottom: 20px; 
+        }
+        .audio-section { 
+            background: #e8f4f8; 
+            padding: 20px; 
+            border-radius: 8px; 
+        }
+    </style>
+</head>
+<body>
+    <h1>Tableau de Bord - Timer Examen Universitaire</h1>
+    
+    <div class="config-section">
+        <h2>Configuration de l'Examen</h2>
+        <form id="configForm">
+            <label>Titre de l'Examen:</label>
+            <input type="text" id="title" placeholder="Ex: Examen de Mathématiques Avancées">
+            
+            <label>Temps Total de l'Examen (en minutes):</label>
+            <input type="number" id="totalTime" placeholder="Ex: 90" min="1">
+            
+            <label>Nombre Total de Questions:</label>
+            <input type="number" id="totalQuestions" placeholder="Ex: 20" min="1">
+            
+            <button type="submit">Enregistrer la configuration</button>
+            <button type="button" onclick="start()">Démarrer l'Examen</button>
+            <button type="button" onclick="reset()">Réinitialiser</button>
+        </form>
+    </div>
+
+    <div class="audio-section">
+        <h2>Test Audio</h2>
+        <button onclick="playSound('prepare')">Son de Préparation</button>
+        <button onclick="playSound('work')">Son de Travail</button>
+        <button onclick="playSound('rest')">Son de Repos</button>
+        <button onclick="playSound('done')">Son de Fin</button>
+    </div>
+
+    <audio id="audio-prepare" src="./audio/prepare.mp3"></audio>
+    <audio id="audio-work" src="./audio/work.mp3"></audio>
+    <audio id="audio-rest" src="./audio/rest.mp3"></audio>
+    <audio id="audio-done" src="./audio/done.mp3"></audio>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        // Charger la configuration existante
+        fetch('/config')
+            .then(res => res.json())
+            .then(data => {
+                document.getElementById('title').value = data.title || 'Examen Universitaire';
+                document.getElementById('totalTime').value = data.totalTime || 90;
+                document.getElementById('totalQuestions').value = data.totalQuestions || 20;
+            })
+            .catch(err => {
+                console.log('Aucune configuration trouvée, utilisation des valeurs par défaut');
+            });
+
+        // Sauvegarder la configuration
+        document.getElementById('configForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const config = {
+                title: document.getElementById('title').value,
+                totalTime: parseInt(document.getElementById('totalTime').value),
+                totalQuestions: parseInt(document.getElementById('totalQuestions').value),
+                // Conversion en secondes pour compatibilité
+                totalTimeSeconds: parseInt(document.getElementById('totalTime').value) * 60
+            };
+            
+            fetch('/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(config)
+            })
+            .then(res => res.json())
+            .then(data => {
+                alert('Configuration sauvegardée avec succès !');
+            })
+            .catch(err => {
+                alert('Erreur lors de la sauvegarde de la configuration');
+            });
+        });
+
+        function start() {
+            fetch('/config')
+                .then(res => res.json())
+                .then(cfg => {
+                    if (!cfg.title || !cfg.totalTime || !cfg.totalQuestions) {
+                        alert('Veuillez d\'abord enregistrer une configuration complète');
+                        return;
+                    }
+                    socket.emit('start', cfg);
+                    alert('Examen démarré !');
+                })
+                .catch(err => {
+                    alert('Erreur: Veuillez d\'abord enregistrer une configuration');
+                });
+        }
+
+        function reset() {
+            socket.emit('reset');
+            alert('Examen réinitialisé !');
+        }
+
+        function playSound(id) {
+            const audio = document.getElementById(`audio-${id}`);
+            if (audio) {
+                audio.play().catch(err => {
+                    console.log('Erreur de lecture audio:', err);
+                });
+            }
+        }
+    </script>
+</body>
+</html>

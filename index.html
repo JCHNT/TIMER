@@ -48,12 +48,6 @@
         .question-number {
             font-size: 1.8em;
             color: #2C3E50;
-            margin-bottom: 10px;
-            font-weight: bold;
-        }
-        .timer-question {
-            font-size: 1.5em;
-            color: #E67E22;
             margin-bottom: 20px;
             font-weight: bold;
         }
@@ -94,19 +88,25 @@
         }
         .phase-display {
             font-size: 1.2em;
-            color: #444;
+            color: #7F8C8D;
             margin-bottom: 10px;
         }
-        .hidden {
-            display: none;
+        .exam-ended {
+            color: #E74C3C;
+            font-size: 2em;
+            font-weight: bold;
+        }
+        .waiting-state {
+            color: #95A5A6;
+            font-style: italic;
         }
     </style>
 </head>
 <body>
     <div class="dashboard-container">
-        <div class="timer-global" id="timer">--:--</div>
-        <div class="exam-info" id="title">Timer ECOS</div>
-        <div class="phase-display" id="phase">En attente</div>
+        <div class="timer-global" id="timer">--:--:--</div>
+        <div class="exam-info" id="title">En attente de configuration...</div>
+        <div class="phase-display" id="phase">Prêt à commencer</div>
         <div class="student-info">Étudiant: Jean Dupont, ID: 12345</div>
 
         <div class="progress-bar-container">
@@ -114,12 +114,11 @@
         </div>
 
         <div class="question-section">
-            <div class="question-number" id="question-number">Question 1 / 20</div>
-            <div class="timer-question" id="timer-question">Temps restant pour cette question: 00:30</div>
+            <div class="question-number" id="question-number">Question 1 / --</div>
             <button class="button-next" id="button-next" onclick="nextQuestion()">Question Suivante</button>
         </div>
 
-        <div class="notification" id="notification">5 minutes restantes</div>
+        <div class="notification" id="notification"></div>
     </div>
 
     <!-- Audio elements -->
@@ -133,102 +132,62 @@
         // Variables globales pour l'examen
         let currentQuestion = 1;
         let totalQuestions = 20;
-        let questionTimeRemaining = 30;
-        let questionInterval = null;
-        let answers = {};
+        let totalTimeRemaining = 0;
         let examStarted = false;
+        let examEnded = false;
+        let globalInterval = null;
+        let answers = {};
 
-        // Éléments existants du timer ECOS
+        // Éléments DOM
         const socket = io();
         const titleEl = document.getElementById('title');
         const timerEl = document.getElementById('timer');
         const phaseEl = document.getElementById('phase');
-        let interval = null;
-
-        // Nouveaux éléments pour l'examen
         const questionNumberEl = document.getElementById('question-number');
-        const timerQuestionEl = document.getElementById('timer-question');
         const buttonNextEl = document.getElementById('button-next');
         const notificationEl = document.getElementById('notification');
         const progressBarEl = document.getElementById('progress-bar');
 
         function playSound(name) {
             const audio = document.getElementById(`audio-${name}`);
-            if (audio) audio.play();
+            if (audio) {
+                audio.play().catch(err => console.log('Erreur audio:', err));
+            }
         }
 
         function formatTime(seconds) {
-            const m = Math.floor(seconds / 60);
-            const s = seconds % 60;
-            return `${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-        }
-
-        function formatTimeHMS(seconds) {
             const h = Math.floor(seconds / 3600);
             const m = Math.floor((seconds % 3600) / 60);
             const s = seconds % 60;
             return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         }
 
-        // Fonctions du timer ECOS original
-        function startSequence(config) {
-            titleEl.textContent = config.title;
-            let cycle = 1;
-            runPhase('prepare', config.prepare, () => {
-                runWorkCycle(cycle, config);
-            });
-        }
-
-        function runWorkCycle(cycle, config) {
-            if (cycle > config.cycles) {
-                phaseEl.textContent = 'Terminé';
-                timerEl.textContent = '--:--';
-                playSound('done');
-                return;
-            }
-            runPhase('work', config.work, () => {
-                runPhase('rest', config.rest, () => {
-                    runWorkCycle(cycle + 1, config);
-                });
-            });
-        }
-
-        function runPhase(type, duration, next) {
-            phaseEl.textContent = phaseLabel(type);
-            playSound(type);
-            let sec = duration;
-            clearInterval(interval);
-            interval = setInterval(() => {
-                let m = Math.floor(sec / 60).toString().padStart(2, '0');
-                let s = (sec % 60).toString().padStart(2, '0');
-                timerEl.textContent = `${m}:${s}`;
-                if (--sec < 0) {
-                    clearInterval(interval);
-                    next();
-                }
-            }, 1000);
-        }
-
-        function phaseLabel(type) {
-            switch(type) {
-                case 'prepare': return 'Préparation';
-                case 'work': return 'Travail';
-                case 'rest': return 'Repos';
-                default: return '';
-            }
-        }
-
-        // Nouvelles fonctions pour l'examen
-        function updateQuestionDisplay() {
+        function updateDisplay() {
+            // Mise à jour du minuteur global
+            timerEl.textContent = formatTime(totalTimeRemaining);
+            
+            // Mise à jour du numéro de question
             questionNumberEl.textContent = `Question ${currentQuestion} / ${totalQuestions}`;
-            timerQuestionEl.textContent = `Temps restant pour cette question: ${formatTime(questionTimeRemaining)}`;
             
             // Mise à jour de la barre de progression
             const progress = ((currentQuestion - 1) / totalQuestions) * 100;
             progressBarEl.style.width = `${progress}%`;
+            
+            // Notifications basées sur le temps restant
+            if (totalTimeRemaining <= 300 && totalTimeRemaining > 0) { // 5 minutes
+                notificationEl.textContent = "⚠️ 5 minutes restantes !";
+                notificationEl.style.display = 'block';
+            } else if (totalTimeRemaining <= 600 && totalTimeRemaining > 300) { // 10 minutes
+                notificationEl.textContent = "⏰ 10 minutes restantes";
+                notificationEl.style.display = 'block';
+            } else {
+                notificationEl.style.display = 'none';
+            }
         }
 
         function nextQuestion() {
+            if (examEnded) return;
+            
             // Sauvegarder la réponse actuelle si elle existe
             const currentAnswer = getCurrentAnswer();
             if (currentAnswer) {
@@ -239,8 +198,7 @@
             // Passer à la question suivante
             if (currentQuestion < totalQuestions) {
                 currentQuestion++;
-                questionTimeRemaining = 30; // Reset à 30 secondes
-                updateQuestionDisplay();
+                updateDisplay();
                 resetQuestionInterface();
                 playSound('work'); // Son pour nouvelle question
             } else {
@@ -262,64 +220,99 @@
         }
 
         function endExam() {
-            clearInterval(questionInterval);
-            timerQuestionEl.textContent = "Examen terminé";
+            examEnded = true;
+            clearInterval(globalInterval);
+            
+            timerEl.textContent = "TERMINÉ";
+            timerEl.className = "timer-global exam-ended";
+            phaseEl.textContent = "Fin de la composition";
             buttonNextEl.style.display = 'none';
-            notificationEl.textContent = "Examen terminé - Réponses enregistrées";
+            notificationEl.textContent = "🎯 Examen terminé - Réponses enregistrées";
             notificationEl.style.display = 'block';
+            
             playSound('done');
             console.log("Réponses finales:", answers);
         }
 
-        function startQuestionTimer() {
-            clearInterval(questionInterval);
-            questionInterval = setInterval(() => {
-                questionTimeRemaining--;
-                updateQuestionDisplay();
+        function startExam(config) {
+            examStarted = true;
+            examEnded = false;
+            
+            // Configuration de l'examen
+            titleEl.textContent = config.title || "Examen Universitaire";
+            totalQuestions = config.totalQuestions || 20;
+            totalTimeRemaining = config.totalTimeSeconds || (config.totalTime * 60) || 5400; // Par défaut 90 minutes
+            
+            // Réinitialisation
+            currentQuestion = 1;
+            answers = {};
+            
+            // Affichage initial
+            phaseEl.textContent = "Examen en cours";
+            buttonNextEl.style.display = 'inline-block';
+            timerEl.className = "timer-global";
+            updateDisplay();
+            
+            // Son de début
+            playSound('prepare');
+            
+            // Démarrage du minuteur global
+            clearInterval(globalInterval);
+            globalInterval = setInterval(() => {
+                totalTimeRemaining--;
+                updateDisplay();
                 
-                if (questionTimeRemaining <= 0) {
-                    // Temps écoulé pour cette question, passer à la suivante
-                    nextQuestion();
+                if (totalTimeRemaining <= 0) {
+                    endExam();
                 }
             }, 1000);
         }
 
-        // Gestionnaires d'événements Socket.IO
-        socket.on('start', data => {
-            clearInterval(interval);
-            clearInterval(questionInterval);
-            examStarted = true;
-            
-            // Démarrer le timer ECOS
-            startSequence(data);
-            
-            // Démarrer le timer des questions
-            currentQuestion = 1;
-            questionTimeRemaining = 30;
-            updateQuestionDisplay();
-            startQuestionTimer();
-        });
-
-        socket.on('reset', () => {
-            clearInterval(interval);
-            clearInterval(questionInterval);
+        function resetExam() {
             examStarted = false;
+            examEnded = false;
+            clearInterval(globalInterval);
             
-            phaseEl.textContent = 'Réinitialisé';
-            timerEl.textContent = '--:--';
+            // Réinitialisation de l'affichage
+            titleEl.textContent = "En attente de configuration...";
+            phaseEl.textContent = "Prêt à commencer";
+            timerEl.textContent = "--:--:--";
+            timerEl.className = "timer-global";
             
             // Reset de l'examen
             currentQuestion = 1;
-            questionTimeRemaining = 30;
+            totalQuestions = 20;
+            totalTimeRemaining = 0;
             answers = {};
-            updateQuestionDisplay();
+            
+            updateDisplay();
             buttonNextEl.style.display = 'inline-block';
             notificationEl.style.display = 'none';
             progressBarEl.style.width = '0%';
+        }
+
+        // Gestionnaires d'événements Socket.IO
+        socket.on('start', data => {
+            console.log('Démarrage de l\'examen avec la configuration:', data);
+            startExam(data);
+        });
+
+        socket.on('reset', () => {
+            console.log('Réinitialisation de l\'examen');
+            resetExam();
+        });
+
+        // Gestion de la fermeture de la page (prévention de la perte de données)
+        window.addEventListener('beforeunload', (e) => {
+            if (examStarted && !examEnded) {
+                e.preventDefault();
+                e.returnValue = 'Êtes-vous sûr de vouloir quitter l\'examen en cours ?';
+            }
         });
 
         // Initialisation
-        updateQuestionDisplay();
+        updateDisplay();
     </script>
 </body>
 </html>
+
