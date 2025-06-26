@@ -146,7 +146,7 @@ def index():
 @app.route('/admin')
 def admin():
     try:
-        with open('/opt/tabata-sync-server/public/admin.html', 'r', encoding='utf-8') as f:
+        with open('/home/ubuntu/admin_with_questions.html', 'r', encoding='utf-8') as f:
             return f.read()
     except FileNotFoundError:
         return 'Fichier admin non trouvé', 404
@@ -154,15 +154,15 @@ def admin():
 @app.route('/exam')
 def exam():
     try:
-        with open('/opt/tabata-sync-server/public/index.html', 'r', encoding='utf-8') as f:
+        with open('/home/ubuntu/index_with_questions.html', 'r', encoding='utf-8') as f:
             return f.read()
     except FileNotFoundError:
         return 'Fichier index non trouvé', 404
 
 if __name__ == '__main__':
     print("=== Système de Timer d'Examen ===")
-    print("Serveur démarré sur http://localhost:5000")
-    print("Admin: http://localhost:5000/admin")
-    print("Examen: http://localhost:5000/exam")
-    print("API Questions: http://localhost:5000/questions")
-    socketio.run(app, host='0.0.0.0', port=5000, debug=True)
+    print("Serveur démarré sur http://localhost:3000")
+    print("Admin: http://localhost:3000/admin")
+    print("Examen: http://localhost:3000/exam")
+    print("API Questions: http://localhost:3000/questions")
+    socketio.run(app, host='0.0.0.0', port=3000, debug=True)
