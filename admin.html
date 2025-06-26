@@ -3,52 +3,203 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contrôle Timer Examen</title>
+    <title>Administration - Timer Examen</title>
     <style>
-        body { font-family: sans-serif; margin: 20px; }
-        label { display: block; margin: 10px 0 5px; }
-        input[type="number"], input[type="text"] { width: 200px; margin-bottom: 10px; padding: 5px; }
-        button { margin: 5px; padding: 10px 15px; }
-        .config-section { 
-            background: #f5f5f5; 
-            padding: 20px; 
-            border-radius: 8px; 
-            margin-bottom: 20px; 
+        body { 
+            font-family: sans-serif; 
+            margin: 20px; 
+            background-color: #f5f5f5;
         }
-        .audio-section { 
-            background: #e8f4f8; 
-            padding: 20px; 
-            border-radius: 8px; 
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .section {
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+            background: #fafafa;
+        }
+        .section h2 {
+            color: #34495e;
+            margin-top: 0;
+        }
+        label { 
+            display: block; 
+            margin: 10px 0 5px; 
+            font-weight: bold;
+        }
+        input[type="number"], input[type="text"], textarea { 
+            width: 100%; 
+            max-width: 400px;
+            margin-bottom: 10px; 
+            padding: 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+        }
+        textarea {
+            height: 80px;
+            resize: vertical;
+        }
+        button { 
+            margin: 5px; 
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+        .btn-primary {
+            background-color: #3498db;
+            color: white;
+        }
+        .btn-success {
+            background-color: #27ae60;
+            color: white;
+        }
+        .btn-warning {
+            background-color: #f39c12;
+            color: white;
+        }
+        .btn-danger {
+            background-color: #e74c3c;
+            color: white;
+        }
+        .btn-info {
+            background-color: #17a2b8;
+            color: white;
+        }
+        button:hover {
+            opacity: 0.8;
+        }
+        .question-item {
+            background: white;
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+        .question-options {
+            margin: 10px 0;
+        }
+        .option-input {
+            display: flex;
+            align-items: center;
+            margin: 5px 0;
+        }
+        .option-input input[type="text"] {
+            flex: 1;
+            margin-right: 10px;
+        }
+        .option-input input[type="radio"] {
+            margin-right: 5px;
+        }
+        #questions-list {
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        .status-message {
+            padding: 10px;
+            margin: 10px 0;
+            border-radius: 5px;
+            display: none;
+        }
+        .status-success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .status-error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
         }
     </style>
 </head>
 <body>
-    <h1>Tableau de Bord - Timer Examen Universitaire</h1>
-    
-    <div class="config-section">
-        <h2>Configuration de l'Examen</h2>
-        <form id="configForm">
-            <label>Titre de l'Examen:</label>
-            <input type="text" id="title" placeholder="Ex: Examen de Mathématiques Avancées">
-            
-            <label>Temps Total de l'Examen (en minutes):</label>
-            <input type="number" id="totalTime" placeholder="Ex: 90" min="1">
-            
-            <label>Nombre Total de Questions:</label>
-            <input type="number" id="totalQuestions" placeholder="Ex: 20" min="1">
-            
-            <button type="submit">Enregistrer la configuration</button>
-            <button type="button" onclick="start()">Démarrer l'Examen</button>
-            <button type="button" onclick="reset()">Réinitialiser</button>
-        </form>
-    </div>
+    <div class="container">
+        <h1>Administration - Timer Examen Universitaire</h1>
+        
+        <!-- Configuration de l'examen -->
+        <div class="section">
+            <h2>📋 Configuration de l'Examen</h2>
+            <form id="configForm">
+                <label>Titre de l'Examen:</label>
+                <input type="text" id="title" placeholder="Ex: Examen de Mathématiques Avancées">
+                
+                <label>Temps Total (en minutes):</label>
+                <input type="number" id="totalTime" placeholder="Ex: 90" min="1">
+                
+                <label>Nombre Total de Questions:</label>
+                <input type="number" id="totalQuestions" placeholder="Ex: 20" min="1">
+                
+                <button type="submit" class="btn-primary">💾 Enregistrer la configuration</button>
+                <button type="button" onclick="startExam()" class="btn-success">▶️ Démarrer l'Examen</button>
+                <button type="button" onclick="resetExam()" class="btn-warning">🔄 Réinitialiser</button>
+            </form>
+            <div id="config-status" class="status-message"></div>
+        </div>
 
-    <div class="audio-section">
-        <h2>Test Audio</h2>
-        <button onclick="playSound('prepare')">Son de Préparation</button>
-        <button onclick="playSound('work')">Son de Travail</button>
-        <button onclick="playSound('rest')">Son de Repos</button>
-        <button onclick="playSound('done')">Son de Fin</button>
+        <!-- Gestion des questions -->
+        <div class="section">
+            <h2>❓ Gestion des Questions</h2>
+            
+            <button onclick="createSampleQuestions()" class="btn-info">📝 Créer des questions d'exemple</button>
+            <button onclick="loadQuestions()" class="btn-primary">🔄 Recharger les questions</button>
+            <button onclick="clearAllQuestions()" class="btn-danger">🗑️ Effacer toutes les questions</button>
+            
+            <div id="questions-status" class="status-message"></div>
+            
+            <h3>Ajouter une nouvelle question:</h3>
+            <div id="new-question-form">
+                <label>Question:</label>
+                <textarea id="new-question-text" placeholder="Tapez votre question ici..."></textarea>
+                
+                <label>Options de réponse:</label>
+                <div id="new-question-options">
+                    <div class="option-input">
+                        <input type="text" placeholder="Option A" data-option="0">
+                        <input type="radio" name="new-correct" value="0"> Correcte
+                    </div>
+                    <div class="option-input">
+                        <input type="text" placeholder="Option B" data-option="1">
+                        <input type="radio" name="new-correct" value="1"> Correcte
+                    </div>
+                    <div class="option-input">
+                        <input type="text" placeholder="Option C" data-option="2">
+                        <input type="radio" name="new-correct" value="2"> Correcte
+                    </div>
+                    <div class="option-input">
+                        <input type="text" placeholder="Option D" data-option="3">
+                        <input type="radio" name="new-correct" value="3"> Correcte
+                    </div>
+                </div>
+                
+                <button onclick="addQuestion()" class="btn-success">➕ Ajouter la question</button>
+            </div>
+            
+            <h3>Questions existantes:</h3>
+            <div id="questions-list"></div>
+        </div>
+
+        <!-- Test Audio -->
+        <div class="section">
+            <h2>🔊 Test Audio</h2>
+            <button onclick="playSound('prepare')" class="btn-info">🎵 Son de Préparation</button>
+            <button onclick="playSound('work')" class="btn-info">🎵 Son de Travail</button>
+            <button onclick="playSound('rest')" class="btn-info">🎵 Son de Repos</button>
+            <button onclick="playSound('done')" class="btn-info">🎵 Son de Fin</button>
+        </div>
     </div>
 
     <audio id="audio-prepare" src="./audio/prepare.mp3"></audio>
@@ -58,28 +209,40 @@
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        const socket = io();
+        const socket = io("http://localhost:3000");
 
-        // Charger la configuration existante
-        fetch('/config')
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('title').value = data.title || 'Examen Universitaire';
-                document.getElementById('totalTime').value = data.totalTime || 90;
-                document.getElementById('totalQuestions').value = data.totalQuestions || 20;
-            })
-            .catch(err => {
-                console.log('Aucune configuration trouvée, utilisation des valeurs par défaut');
-            });
+        // Charger la configuration au démarrage
+        loadConfig();
+        loadQuestions();
 
-        // Sauvegarder la configuration
+        function showStatus(elementId, message, isError = false) {
+            const element = document.getElementById(elementId);
+            element.textContent = message;
+            element.className = `status-message ${isError ? 'status-error' : 'status-success'}`;
+            element.style.display = 'block';
+            setTimeout(() => {
+                element.style.display = 'none';
+            }, 3000);
+        }
+
+        // Configuration
+        function loadConfig() {
+            fetch('/config')
+                .then(res => res.json())
+                .then(data => {
+                    document.getElementById('title').value = data.title || '';
+                    document.getElementById('totalTime').value = data.totalTime || 90;
+                    document.getElementById('totalQuestions').value = data.totalQuestions || 20;
+                })
+                .catch(err => console.log('Erreur lors du chargement de la configuration'));
+        }
+
         document.getElementById('configForm').addEventListener('submit', function(e) {
             e.preventDefault();
             const config = {
                 title: document.getElementById('title').value,
                 totalTime: parseInt(document.getElementById('totalTime').value),
                 totalQuestions: parseInt(document.getElementById('totalQuestions').value),
-                // Conversion en secondes pour compatibilité
                 totalTimeSeconds: parseInt(document.getElementById('totalTime').value) * 60
             };
             
@@ -90,32 +253,189 @@
             })
             .then(res => res.json())
             .then(data => {
-                alert('Configuration sauvegardée avec succès !');
+                showStatus('config-status', 'Configuration sauvegardée avec succès !');
             })
             .catch(err => {
-                alert('Erreur lors de la sauvegarde de la configuration');
+                showStatus('config-status', 'Erreur lors de la sauvegarde', true);
             });
         });
 
-        function start() {
+        function startExam() {
             fetch('/config')
                 .then(res => res.json())
                 .then(cfg => {
-                    if (!cfg.title || !cfg.totalTime || !cfg.totalQuestions) {
-                        alert('Veuillez d\'abord enregistrer une configuration complète');
-                        return;
-                    }
                     socket.emit('start', cfg);
-                    alert('Examen démarré !');
+                    showStatus('config-status', 'Examen démarré !');
                 })
                 .catch(err => {
-                    alert('Erreur: Veuillez d\'abord enregistrer une configuration');
+                    showStatus('config-status', 'Erreur: Veuillez d\'abord enregistrer une configuration', true);
                 });
         }
 
-        function reset() {
+        function resetExam() {
             socket.emit('reset');
-            alert('Examen réinitialisé !');
+            fetch('/answers/clear', { method: 'POST' });
+            showStatus('config-status', 'Examen réinitialisé !');
+        }
+
+        // Questions
+        function loadQuestions() {
+            fetch('/questions')
+                .then(res => res.json())
+                .then(questions => {
+                    displayQuestions(questions);
+                })
+                .catch(err => {
+                    showStatus('questions-status', 'Erreur lors du chargement des questions', true);
+                });
+        }
+
+        function displayQuestions(questions) {
+            const container = document.getElementById('questions-list');
+            container.innerHTML = '';
+            
+            if (questions.length === 0) {
+                container.innerHTML = '<p>Aucune question disponible. Créez des questions d\'exemple pour commencer.</p>';
+                return;
+            }
+            
+            questions.forEach((q, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = 'question-item';
+                questionDiv.innerHTML = `
+                    <strong>Question ${q.id || index + 1}:</strong> ${q.question}
+                    <div class="question-options">
+                        ${q.options.map((opt, i) => `
+                            <div>${String.fromCharCode(65 + i)}) ${opt} ${i === q.correct ? '✅' : ''}</div>
+                        `).join('')}
+                    </div>
+                    <button onclick="deleteQuestion(${index})" class="btn-danger">🗑️ Supprimer</button>
+                `;
+                container.appendChild(questionDiv);
+            });
+        }
+
+        function createSampleQuestions() {
+            fetch('/questions/sample', { method: 'POST' })
+                .then(res => res.json())
+                .then(data => {
+                    showStatus('questions-status', data.message);
+                    loadQuestions();
+                })
+                .catch(err => {
+                    showStatus('questions-status', 'Erreur lors de la création des questions d\'exemple', true);
+                });
+        }
+
+        function addQuestion() {
+            const questionText = document.getElementById('new-question-text').value.trim();
+            const options = [];
+            const optionInputs = document.querySelectorAll('#new-question-options input[type="text"]');
+            const correctRadio = document.querySelector('input[name="new-correct"]:checked');
+            
+            if (!questionText) {
+                showStatus('questions-status', 'Veuillez saisir une question', true);
+                return;
+            }
+            
+            optionInputs.forEach(input => {
+                if (input.value.trim()) {
+                    options.push(input.value.trim());
+                }
+            });
+            
+            if (options.length < 2) {
+                showStatus('questions-status', 'Veuillez saisir au moins 2 options', true);
+                return;
+            }
+            
+            if (!correctRadio) {
+                showStatus('questions-status', 'Veuillez sélectionner la réponse correcte', true);
+                return;
+            }
+            
+            const newQuestion = {
+                id: Date.now(),
+                question: questionText,
+                options: options,
+                correct: parseInt(correctRadio.value)
+            };
+            
+            // Charger les questions existantes et ajouter la nouvelle
+            fetch('/questions')
+                .then(res => res.json())
+                .then(existingQuestions => {
+                    const updatedQuestions = [...existingQuestions, newQuestion];
+                    return fetch('/questions', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ questions: updatedQuestions })
+                    });
+                })
+                .then(res => res.json())
+                .then(data => {
+                    showStatus('questions-status', 'Question ajoutée avec succès !');
+                    clearNewQuestionForm();
+                    loadQuestions();
+                })
+                .catch(err => {
+                    showStatus('questions-status', 'Erreur lors de l\'ajout de la question', true);
+                });
+        }
+
+        function clearNewQuestionForm() {
+            document.getElementById('new-question-text').value = '';
+            document.querySelectorAll('#new-question-options input[type="text"]').forEach(input => {
+                input.value = '';
+            });
+            document.querySelectorAll('input[name="new-correct"]').forEach(radio => {
+                radio.checked = false;
+            });
+        }
+
+        function deleteQuestion(index) {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer cette question ?')) {
+                return;
+            }
+            
+            fetch('/questions')
+                .then(res => res.json())
+                .then(questions => {
+                    questions.splice(index, 1);
+                    return fetch('/questions', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ questions: questions })
+                    });
+                })
+                .then(res => res.json())
+                .then(data => {
+                    showStatus('questions-status', 'Question supprimée');
+                    loadQuestions();
+                })
+                .catch(err => {
+                    showStatus('questions-status', 'Erreur lors de la suppression', true);
+                });
+        }
+
+        function clearAllQuestions() {
+            if (!confirm('Êtes-vous sûr de vouloir supprimer TOUTES les questions ?')) {
+                return;
+            }
+            
+            fetch('/questions', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ questions: [] })
+            })
+            .then(res => res.json())
+            .then(data => {
+                showStatus('questions-status', 'Toutes les questions ont été supprimées');
+                loadQuestions();
+            })
+            .catch(err => {
+                showStatus('questions-status', 'Erreur lors de la suppression', true);
+            });
         }
 
         function playSound(id) {
