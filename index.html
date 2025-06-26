@@ -20,8 +20,8 @@
             border-radius: 20px;
             padding: 40px;
             box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
-            width: 800px;
-            max-width: 90%;
+            width: 900px;
+            max-width: 95%;
         }
         .timer-global {
             font-size: 4em;
@@ -44,12 +44,53 @@
         .question-section {
             margin-top: 30px;
             margin-bottom: 30px;
+            text-align: left;
         }
         .question-number {
             font-size: 1.8em;
             color: #2C3E50;
             margin-bottom: 20px;
             font-weight: bold;
+            text-align: center;
+        }
+        .question-text {
+            font-size: 1.3em;
+            color: #2C3E50;
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #F8F9FA;
+            border-radius: 8px;
+            border-left: 4px solid #3498DB;
+        }
+        .options-container {
+            margin: 20px 0;
+        }
+        .option-item {
+            display: flex;
+            align-items: center;
+            margin: 15px 0;
+            padding: 15px;
+            background-color: #FFFFFF;
+            border: 2px solid #ECF0F1;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .option-item:hover {
+            border-color: #3498DB;
+            background-color: #F8F9FA;
+        }
+        .option-item.selected {
+            border-color: #3498DB;
+            background-color: #E3F2FD;
+        }
+        .option-item input[type="radio"] {
+            margin-right: 15px;
+            transform: scale(1.2);
+        }
+        .option-text {
+            font-size: 1.1em;
+            color: #2C3E50;
         }
         .progress-bar-container {
             width: 100%;
@@ -66,6 +107,10 @@
             border-radius: 5px;
             transition: width 0.3s ease;
         }
+        .navigation-buttons {
+            text-align: center;
+            margin-top: 30px;
+        }
         .button-next {
             background-color: #3498DB;
             color: white;
@@ -75,9 +120,14 @@
             font-size: 1.2em;
             cursor: pointer;
             transition: background-color 0.3s ease;
+            margin: 0 10px;
         }
         .button-next:hover {
             background-color: #2980B9;
+        }
+        .button-next:disabled {
+            background-color: #BDC3C7;
+            cursor: not-allowed;
         }
         .notification {
             margin-top: 20px;
@@ -85,6 +135,9 @@
             color: #E74C3C;
             font-weight: bold;
             display: none;
+            padding: 10px;
+            background-color: #FADBD8;
+            border-radius: 5px;
         }
         .phase-display {
             font-size: 1.2em;
@@ -99,6 +152,18 @@
         .waiting-state {
             color: #95A5A6;
             font-style: italic;
+        }
+        .loading {
+            color: #3498DB;
+            font-style: italic;
+        }
+        .no-questions {
+            color: #E67E22;
+            font-size: 1.2em;
+            padding: 20px;
+            background-color: #FEF9E7;
+            border-radius: 8px;
+            border: 1px solid #F4D03F;
         }
     </style>
 </head>
@@ -115,7 +180,14 @@
 
         <div class="question-section">
             <div class="question-number" id="question-number">Question 1 / --</div>
-            <button class="button-next" id="button-next" onclick="nextQuestion()">Question Suivante</button>
+            
+            <div id="question-content">
+                <div class="loading">Chargement des questions...</div>
+            </div>
+            
+            <div class="navigation-buttons">
+                <button class="button-next" id="button-next" onclick="nextQuestion()">Question Suivante</button>
+            </div>
         </div>
 
         <div class="notification" id="notification"></div>
@@ -137,16 +209,22 @@
         let examEnded = false;
         let globalInterval = null;
         let answers = {};
+        let questions = [];
+        let currentQuestionData = null;
 
         // Éléments DOM
-        const socket = io();
+        const socket = io("http://localhost:3000");
         const titleEl = document.getElementById('title');
         const timerEl = document.getElementById('timer');
         const phaseEl = document.getElementById('phase');
         const questionNumberEl = document.getElementById('question-number');
+        const questionContentEl = document.getElementById('question-content');
         const buttonNextEl = document.getElementById('button-next');
         const notificationEl = document.getElementById('notification');
         const progressBarEl = document.getElementById('progress-bar');
+
+        // Charger les questions au démarrage
+        loadQuestions();
 
         function playSound(name) {
             const audio = document.getElementById(`audio-${name}`);
@@ -162,15 +240,106 @@
             return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
         }
 
+        function loadQuestions() {
+            fetch('/questions')
+                .then(res => res.json())
+                .then(data => {
+                    questions = data;
+                    if (questions.length === 0) {
+                        questionContentEl.innerHTML = `
+                            <div class="no-questions">
+                                ⚠️ Aucune question disponible.<br>
+                                Veuillez demander à l'administrateur de créer des questions.
+                            </div>
+                        `;
+                    } else {
+                        displayCurrentQuestion();
+                    }
+                })
+                .catch(err => {
+                    console.error('Erreur lors du chargement des questions:', err);
+                    questionContentEl.innerHTML = `
+                        <div class="no-questions">
+                            ❌ Erreur lors du chargement des questions.<br>
+                            Veuillez vérifier la connexion au serveur.
+                        </div>
+                    `;
+                });
+        }
+
+        function displayCurrentQuestion() {
+            if (questions.length === 0) {
+                return;
+            }
+
+            const questionIndex = (currentQuestion - 1) % questions.length;
+            currentQuestionData = questions[questionIndex];
+
+            if (!currentQuestionData) {
+                questionContentEl.innerHTML = '<div class="loading">Question non trouvée...</div>';
+                return;
+            }
+
+            const optionsHtml = currentQuestionData.options.map((option, index) => `
+                <div class="option-item" onclick="selectOption(${index})">
+                    <input type="radio" name="answer" value="${index}" id="option-${index}">
+                    <label class="option-text" for="option-${index}">
+                        ${String.fromCharCode(65 + index)}) ${option}
+                    </label>
+                </div>
+            `).join('');
+
+            questionContentEl.innerHTML = `
+                <div class="question-text">
+                    ${currentQuestionData.question}
+                </div>
+                <div class="options-container">
+                    ${optionsHtml}
+                </div>
+            `;
+
+            // Restaurer la réponse précédente si elle existe
+            const savedAnswer = answers[currentQuestion];
+            if (savedAnswer !== undefined) {
+                selectOption(savedAnswer, false);
+            }
+        }
+
+        function selectOption(optionIndex, playSound = true) {
+            // Décocher toutes les options
+            document.querySelectorAll('.option-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            document.querySelectorAll('input[name="answer"]').forEach(radio => {
+                radio.checked = false;
+            });
+
+            // Sélectionner l'option choisie
+            const selectedOption = document.getElementById(`option-${optionIndex}`);
+            const selectedItem = selectedOption.closest('.option-item');
+            
+            selectedOption.checked = true;
+            selectedItem.classList.add('selected');
+
+            // Sauvegarder la réponse
+            answers[currentQuestion] = optionIndex;
+            
+            if (playSound) {
+                // Son de sélection (utiliser le son work)
+                playSound('work');
+            }
+        }
+
         function updateDisplay() {
             // Mise à jour du minuteur global
             timerEl.textContent = formatTime(totalTimeRemaining);
             
             // Mise à jour du numéro de question
-            questionNumberEl.textContent = `Question ${currentQuestion} / ${totalQuestions}`;
+            const displayTotal = Math.min(totalQuestions, questions.length);
+            questionNumberEl.textContent = `Question ${currentQuestion} / ${displayTotal}`;
             
             // Mise à jour de la barre de progression
-            const progress = ((currentQuestion - 1) / totalQuestions) * 100;
+            const progress = ((currentQuestion - 1) / displayTotal) * 100;
             progressBarEl.style.width = `${progress}%`;
             
             // Notifications basées sur le temps restant
@@ -188,40 +357,50 @@
         function nextQuestion() {
             if (examEnded) return;
             
-            // Sauvegarder la réponse actuelle si elle existe
-            const currentAnswer = getCurrentAnswer();
-            if (currentAnswer) {
-                answers[currentQuestion] = currentAnswer;
-                console.log(`Réponse sauvegardée pour la question ${currentQuestion}:`, currentAnswer);
-            }
+            // Sauvegarder la réponse actuelle
+            saveCurrentAnswer();
 
             // Passer à la question suivante
-            if (currentQuestion < totalQuestions) {
+            const maxQuestions = Math.min(totalQuestions, questions.length);
+            if (currentQuestion < maxQuestions) {
                 currentQuestion++;
+                displayCurrentQuestion();
                 updateDisplay();
-                resetQuestionInterface();
                 playSound('work'); // Son pour nouvelle question
             } else {
                 endExam();
             }
         }
 
-        function getCurrentAnswer() {
-            // Simulation d'une réponse - dans une vraie implémentation,
-            // cela récupérerait la réponse cochée
-            const radios = document.querySelectorAll('input[name="answer"]:checked');
-            return radios.length > 0 ? radios[0].value : null;
-        }
-
-        function resetQuestionInterface() {
-            // Réinitialiser l'interface de la question
-            const radios = document.querySelectorAll('input[name="answer"]');
-            radios.forEach(radio => radio.checked = false);
+        function saveCurrentAnswer() {
+            const selectedOption = document.querySelector('input[name="answer"]:checked');
+            if (selectedOption) {
+                const answerData = {
+                    question_id: currentQuestion,
+                    answer: parseInt(selectedOption.value),
+                    question_text: currentQuestionData ? currentQuestionData.question : '',
+                    selected_option: currentQuestionData ? currentQuestionData.options[parseInt(selectedOption.value)] : '',
+                    is_correct: currentQuestionData ? (parseInt(selectedOption.value) === currentQuestionData.correct) : false
+                };
+                
+                // Sauvegarder localement
+                answers[currentQuestion] = answerData;
+                
+                // Sauvegarder sur le serveur
+                fetch('/answers', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(answerData)
+                }).catch(err => console.log('Erreur sauvegarde:', err));
+            }
         }
 
         function endExam() {
             examEnded = true;
             clearInterval(globalInterval);
+            
+            // Sauvegarder la dernière réponse
+            saveCurrentAnswer();
             
             timerEl.textContent = "TERMINÉ";
             timerEl.className = "timer-global exam-ended";
@@ -229,6 +408,16 @@
             buttonNextEl.style.display = 'none';
             notificationEl.textContent = "🎯 Examen terminé - Réponses enregistrées";
             notificationEl.style.display = 'block';
+            
+            // Afficher un résumé
+            const totalAnswered = Object.keys(answers).length;
+            questionContentEl.innerHTML = `
+                <div style="text-align: center; padding: 30px;">
+                    <h2>🎯 Examen Terminé</h2>
+                    <p>Vous avez répondu à <strong>${totalAnswered}</strong> questions sur <strong>${Math.min(totalQuestions, questions.length)}</strong>.</p>
+                    <p>Vos réponses ont été enregistrées automatiquement.</p>
+                </div>
+            `;
             
             playSound('done');
             console.log("Réponses finales:", answers);
@@ -241,11 +430,14 @@
             // Configuration de l'examen
             titleEl.textContent = config.title || "Examen Universitaire";
             totalQuestions = config.totalQuestions || 20;
-            totalTimeRemaining = config.totalTimeSeconds || (config.totalTime * 60) || 5400; // Par défaut 90 minutes
+            totalTimeRemaining = config.totalTimeSeconds || (config.totalTime * 60) || 5400;
             
             // Réinitialisation
             currentQuestion = 1;
             answers = {};
+            
+            // Recharger les questions
+            loadQuestions();
             
             // Affichage initial
             phaseEl.textContent = "Examen en cours";
@@ -285,6 +477,9 @@
             totalTimeRemaining = 0;
             answers = {};
             
+            // Recharger les questions
+            loadQuestions();
+            
             updateDisplay();
             buttonNextEl.style.display = 'inline-block';
             notificationEl.style.display = 'none';
@@ -302,9 +497,11 @@
             resetExam();
         });
 
-        // Gestion de la fermeture de la page (prévention de la perte de données)
+        // Gestion de la fermeture de la page
         window.addEventListener('beforeunload', (e) => {
             if (examStarted && !examEnded) {
+                // Sauvegarder la réponse actuelle avant de quitter
+                saveCurrentAnswer();
                 e.preventDefault();
                 e.returnValue = 'Êtes-vous sûr de vouloir quitter l\'examen en cours ?';
             }
@@ -315,4 +512,3 @@
     </script>
 </body>
 </html>
-
