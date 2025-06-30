@@ -310,12 +310,18 @@
         </div>
     </div>
 
+    <audio id="audio_prepare" src="/audio/prepare.mp3"></audio>
+    <audio id="audio_work" src="/audio/work.mp3"></audio>
+    <audio id="audio_rest" src="/audio/rest.mp3"></audio>
+    <audio id="audio_done" src="/audio/done.mp3"></audio>
+
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
         
         // Configuration par défaut
         let config = {
+            title: 'TIMER ECOS',
             prepare: 10,
             work: 20,
             rest: 10,
@@ -418,9 +424,9 @@
         // Démarrer le timer
         function startTimer() {
             saveConfig();
+            // Émettre l'événement start via Socket.IO pour synchroniser avec index.html
             socket.emit('start', config);
-            // Rediriger vers la page d'affichage
-            window.location.href = '/display.html';
+            alert('Timer démarré ! Consultez la page principale pour voir le chrono.');
         }
         
         // Ouvrir les paramètres
@@ -431,7 +437,7 @@
         
         // Ouvrir l'affichage
         function openDisplay() {
-            window.location.href = '/display.html';
+            window.open('/', '_blank');
         }
         
         // Gérer les changements de description
@@ -443,6 +449,10 @@
         
         socket.on('connect', () => {
             console.log('Connecté au serveur');
+        });
+        
+        socket.on('disconnect', () => {
+            console.log('Déconnecté du serveur');
         });
     </script>
 </body>

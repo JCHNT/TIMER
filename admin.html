@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contrôle TIMER ECOS</title>
+    <title>TIMER SYNCHRONISE</title>
     <style>
         * {
             margin: 0;
@@ -12,285 +12,279 @@
         }
         
         body { 
-            font-family: 'Arial', sans-serif; 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            text-align: center; 
+            font-size: 2em; 
             background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0; 
+            padding: 40px; 
             min-height: 100vh;
-            padding: 20px;
-            color: #333;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            color: white;
         }
         
         .container {
-            max-width: 800px;
-            margin: 0 auto;
-            background: white;
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
             border-radius: 20px;
-            padding: 30px;
+            padding: 40px;
             box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-width: 400px;
         }
         
-        h1 {
-            text-align: center;
-            color: #667eea;
-            margin-bottom: 30px;
-            font-size: 2.5em;
+        .title { 
+            font-size: 1.5em; 
+            margin-bottom: 30px; 
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
         
-        .form-section {
-            background: #f8f9fa;
-            padding: 25px;
-            border-radius: 15px;
-            margin-bottom: 25px;
+        #phase { 
+            font-size: 2.5em; 
+            color: #fff; 
+            margin-bottom: 30px; 
+            font-weight: 300;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
         }
         
-        .form-group {
+        .timer { 
+            font-size: 4em; 
+            font-weight: bold; 
+            margin-bottom: 20px; 
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            font-family: 'Courier New', monospace;
+        }
+        
+        .progress-info {
+            font-size: 0.8em;
+            opacity: 0.8;
             margin-bottom: 20px;
         }
         
-        label { 
-            display: block; 
-            margin-bottom: 8px; 
-            font-weight: bold;
-            color: #555;
+        .description {
+            font-size: 0.6em;
+            opacity: 0.7;
+            margin-bottom: 20px;
+            font-style: italic;
         }
         
-        input[type="number"], input[type="text"] { 
-            width: 100%; 
-            padding: 12px;
-            border: 2px solid #e1e5e9;
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.3s ease;
-        }
-        
-        input[type="number"]:focus, input[type="text"]:focus {
-            outline: none;
-            border-color: #667eea;
-        }
-        
-        .button-group {
+        .controls {
             display: flex;
-            gap: 15px;
-            flex-wrap: wrap;
+            gap: 20px;
             justify-content: center;
+            margin-top: 30px;
         }
         
-        button { 
-            padding: 12px 25px;
+        .control-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
             border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: bold;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 0.5em;
             cursor: pointer;
             transition: all 0.3s ease;
-            min-width: 150px;
-        }
-        
-        .btn-primary {
-            background: #667eea;
-            color: white;
-        }
-        
-        .btn-success {
-            background: #28a745;
-            color: white;
-        }
-        
-        .btn-warning {
-            background: #ffc107;
-            color: #212529;
-        }
-        
-        .btn-danger {
-            background: #dc3545;
-            color: white;
-        }
-        
-        button:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        }
-        
-        .audio-section {
-            background: #e8f4fd;
-            padding: 25px;
-            border-radius: 15px;
-            margin-top: 25px;
-        }
-        
-        .audio-section h2 {
-            color: #667eea;
-            margin-bottom: 20px;
-            text-align: center;
-        }
-        
-        .audio-buttons {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
-            gap: 15px;
-        }
-        
-        .back-link {
-            display: inline-block;
-            margin-bottom: 20px;
-            color: #667eea;
             text-decoration: none;
-            font-weight: bold;
+            display: inline-block;
         }
         
-        .back-link:hover {
-            text-decoration: underline;
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
         }
         
         @media (max-width: 768px) {
-            .container {
-                margin: 10px;
-                padding: 20px;
-            }
-            
-            h1 {
-                font-size: 2em;
-            }
-            
-            .button-group {
-                flex-direction: column;
-            }
-            
-            button {
-                min-width: auto;
-            }
+            body { font-size: 1.5em; padding: 20px; }
+            .timer { font-size: 3em; }
+            #phase { font-size: 2em; }
+            .container { min-width: auto; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <a href="/" class="back-link">← Retour au Timer</a>
+        <div id="title" class="title">TIMER ECOS</div>
+        <div id="phase">En attente...</div>
+        <div id="description" class="description"></div>
+        <div id="timer" class="timer">---</div>
+        <div id="progress" class="progress-info"></div>
         
-        <h1>Tableau de Bord - TIMER ECOS</h1>
-        
-        <div class="form-section">
-            <form id="configForm">
-                <div class="form-group">
-                    <label>Titre:</label>
-                    <input type="text" id="title" placeholder="Nom de la session">
-                </div>
-                
-                <div class="form-group">
-                    <label>Préparation (secondes):</label>
-                    <input type="number" id="prepare" min="1" placeholder="10">
-                </div>
-                
-                <div class="form-group">
-                    <label>Travail (secondes):</label>
-                    <input type="number" id="work" min="1" placeholder="1500">
-                </div>
-                
-                <div class="form-group">
-                    <label>Repos (secondes):</label>
-                    <input type="number" id="rest" min="1" placeholder="300">
-                </div>
-                
-                <div class="form-group">
-                    <label>Cycles:</label>
-                    <input type="number" id="cycles" min="1" placeholder="4">
-                </div>
-                
-                <div class="button-group">
-                    <button type="submit" class="btn-primary">Enregistrer la configuration</button>
-                    <button type="button" onclick="start()" class="btn-success">Démarrer</button>
-                    <button type="button" onclick="reset()" class="btn-danger">Réinitialiser</button>
-                </div>
-            </form>
-        </div>
-
-        <div class="audio-section">
-            <h2>Test Audio</h2>
-            <div class="audio-buttons">
-                <button onclick="playSound('prepare')" class="btn-warning">Préparation</button>
-                <button onclick="playSound('work')" class="btn-warning">Travail</button>
-                <button onclick="playSound('rest')" class="btn-warning">Repos</button>
-                <button onclick="playSound('done')" class="btn-warning">Terminé</button>
-            </div>
+        <div class="controls">
+            <a href="/admin.html" class="control-btn">Administration</a>
+            <button class="control-btn" onclick="resetTimer()">Réinitialiser</button>
         </div>
     </div>
-
-    <audio id="audio-prepare" src="./audio/prepare.mp3"></audio>
-    <audio id="audio-work" src="./audio/work.mp3"></audio>
-    <audio id="audio-rest" src="./audio/rest.mp3"></audio>
-    <audio id="audio-done" src="./audio/done.mp3"></audio>
+    
+    <audio id="audio_prepare" src="/audio/prepare.mp3"></audio>
+    <audio id="audio_work" src="/audio/work.mp3"></audio>
+    <audio id="audio_rest" src="/audio/rest.mp3"></audio>
+    <audio id="audio_done" src="/audio/done.mp3"></audio>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
 
-        // Charger la configuration au démarrage
-        fetch('/config')
-            .then(res => res.json())
-            .then(data => {
-                document.getElementById('title').value = data.title || 'TIMER ECOS';
-                document.getElementById('prepare').value = data.prepare || 10;
-                document.getElementById('work').value = data.work || 1500;
-                document.getElementById('rest').value = data.rest || 300;
-                document.getElementById('cycles').value = data.cycles || 4;
-            })
-            .catch(err => {
-                console.log('Erreur lors du chargement de la configuration:', err);
-                // Valeurs par défaut
-                document.getElementById('title').value = 'TIMER ECOS';
-                document.getElementById('prepare').value = 10;
-                document.getElementById('work').value = 1500;
-                document.getElementById('rest').value = 300;
-                document.getElementById('cycles').value = 4;
-            });
+        const titleEl = document.getElementById('title');
+        const timerEl = document.getElementById('timer');
+        const phaseEl = document.getElementById('phase');
+        const descriptionEl = document.getElementById('description');
+        const progressEl = document.getElementById('progress');
 
-        document.getElementById('configForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            const config = {
-                title: document.getElementById('title').value,
-                prepare: parseInt(document.getElementById('prepare').value),
-                work: parseInt(document.getElementById('work').value),
-                rest: parseInt(document.getElementById('rest').value),
-                cycles: parseInt(document.getElementById('cycles').value),
-            };
-            
-            fetch('/config', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(config)
-            })
-            .then(res => res.json())
-            .then(data => {
-                alert('Configuration enregistrée avec succès !');
-            })
-            .catch(err => {
-                alert('Erreur lors de l\'enregistrement de la configuration');
-                console.error(err);
-            });
-        });
+        const audio = {
+            prepare: document.getElementById('audio_prepare'),
+            work: document.getElementById('audio_work'),
+            rest: document.getElementById('audio_rest'),
+            done: document.getElementById('audio_done')
+        };
 
-        function start() {
-            fetch('/config')
-                .then(res => res.json())
-                .then(cfg => {
-                    socket.emit('start', cfg);
-                    alert('Timer démarré !');
-                })
-                .catch(err => {
-                    alert('Erreur lors du démarrage du timer');
-                    console.error(err);
-                });
-        }
+        let interval;
+        let currentConfig = {};
+        let currentSet = 1;
+        let currentCycle = 1;
 
-        function reset() {
-            socket.emit('reset');
-            alert('Timer réinitialisé !');
-        }
-
-        function playSound(id) {
-            const audio = document.getElementById(`audio-${id}`);
-            if (audio) {
-                audio.play().catch(e => console.log('Audio play failed:', e));
+        function playSound(name) {
+            if (audio[name]) {
+                audio[name].play().catch(e => console.log('Audio play failed:', e));
             }
         }
+
+        function startSequence(config) {
+            currentConfig = config;
+            titleEl.textContent = config.title || 'TIMER ECOS';
+            currentSet = 1;
+            currentCycle = 1;
+            
+            // Commencer par la préparation
+            runPhase('prepare', config.prepare, () => {
+                runSet(currentSet, config);
+            });
+        }
+
+        function runSet(setNumber, config) {
+            if (setNumber > config.sets) {
+                // Tous les sets sont terminés, cool down
+                if (config.coolDown > 0) {
+                    runPhase('coolDown', config.coolDown, () => {
+                        phaseEl.textContent = 'Terminé';
+                        timerEl.textContent = '---';
+                        descriptionEl.textContent = '';
+                        progressEl.textContent = '';
+                        playSound('done');
+                    });
+                } else {
+                    phaseEl.textContent = 'Terminé';
+                    timerEl.textContent = '---';
+                    descriptionEl.textContent = '';
+                    progressEl.textContent = '';
+                    playSound('done');
+                }
+                return;
+            }
+            
+            currentCycle = 1;
+            runWorkCycle(currentCycle, setNumber, config);
+        }
+
+        function runWorkCycle(cycle, setNumber, config) {
+            if (cycle > config.cycles) {
+                // Cycles terminés pour ce set
+                if (setNumber < config.sets && config.restBetweenSets > 0) {
+                    // Repos entre les sets
+                    runPhase('restBetweenSets', config.restBetweenSets, () => {
+                        currentSet++;
+                        runSet(currentSet, config);
+                    });
+                } else {
+                    currentSet++;
+                    runSet(currentSet, config);
+                }
+                return;
+            }
+            
+            // Phase de travail
+            runPhase('work', config.work, () => {
+                // Phase de repos
+                runPhase('rest', config.rest, () => {
+                    currentCycle++;
+                    runWorkCycle(currentCycle, setNumber, config);
+                });
+            });
+        }
+
+        function runPhase(type, duration, next) {
+            const phaseInfo = getPhaseInfo(type);
+            phaseEl.textContent = phaseInfo.label;
+            descriptionEl.textContent = phaseInfo.description;
+            
+            // Afficher les informations de progression
+            updateProgress();
+            
+            playSound(type);
+            clearInterval(interval);
+            
+            interval = setInterval(() => {
+                let m = Math.floor(duration / 60).toString().padStart(2, '0');
+                let s = (duration % 60).toString().padStart(2, '0');
+                timerEl.textContent = `${m}:${s}`;
+                
+                if (--duration < 0) {
+                    clearInterval(interval);
+                    next();
+                }
+            }, 1000);
+        }
+
+        function getPhaseInfo(type) {
+            switch (type) {
+                case 'prepare':
+                    return { label: 'Préparation', description: 'Préparez-vous...' };
+                case 'work':
+                    return { 
+                        label: 'Travail', 
+                        description: currentConfig.workDescription || 'Phase de travail'
+                    };
+                case 'rest':
+                    return { 
+                        label: 'Repos', 
+                        description: currentConfig.restDescription || 'Phase de repos'
+                    };
+                case 'restBetweenSets':
+                    return { label: 'Repos entre sets', description: 'Repos entre les séries' };
+                case 'coolDown':
+                    return { label: 'Récupération', description: 'Phase de récupération' };
+                default:
+                    return { label: '', description: '' };
+            }
+        }
+
+        function updateProgress() {
+            if (currentConfig.sets && currentConfig.cycles) {
+                progressEl.textContent = `Set ${currentSet}/${currentConfig.sets} - Cycle ${currentCycle}/${currentConfig.cycles}`;
+            }
+        }
+
+        function resetTimer() {
+            clearInterval(interval);
+            phaseEl.textContent = 'Réinitialisé';
+            timerEl.textContent = '---';
+            descriptionEl.textContent = '';
+            progressEl.textContent = '';
+            socket.emit('reset');
+        }
+
+        socket.on('start', data => {
+            clearInterval(interval);
+            startSequence(data);
+        });
+
+        socket.on('reset', () => {
+            resetTimer();
+        });
 
         socket.on('connect', () => {
             console.log('Connecté au serveur');
@@ -302,3 +296,4 @@
     </script>
 </body>
 </html>
+
