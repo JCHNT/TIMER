@@ -1,514 +1,449 @@
 <!DOCTYPE html>
-<html>
+<html lang="fr">
 <head>
     <meta charset="UTF-8">
-    <title>Timer Examen Universitaire</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Timer Configuration - ECOS</title>
     <style>
-        body {
-            font-family: sans-serif;
-            text-align: center;
-            background-color: #F2F2F2;
+        * {
             margin: 0;
-            padding: 40px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
             min-height: 100vh;
-        }
-        .dashboard-container {
-            background-color: #FFFFFF;
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0px 10px 30px rgba(0, 0, 0, 0.1);
-            width: 900px;
-            max-width: 95%;
-        }
-        .timer-global {
-            font-size: 4em;
-            color: #2C3E50;
-            margin-bottom: 20px;
-            font-weight: bold;
-        }
-        .exam-info {
-            font-size: 1.5em;
-            color: #34495E;
-            margin-bottom: 10px;
-        }
-        .student-info {
-            font-size: 1.2em;
-            color: #7F8C8D;
-            margin-bottom: 30px;
-            border-bottom: 1px solid #ECF0F1;
-            padding-bottom: 20px;
-        }
-        .question-section {
-            margin-top: 30px;
-            margin-bottom: 30px;
-            text-align: left;
-        }
-        .question-number {
-            font-size: 1.8em;
-            color: #2C3E50;
-            margin-bottom: 20px;
-            font-weight: bold;
-            text-align: center;
-        }
-        .question-text {
-            font-size: 1.3em;
-            color: #2C3E50;
-            margin-bottom: 20px;
             padding: 20px;
-            background-color: #F8F9FA;
-            border-radius: 8px;
-            border-left: 4px solid #3498DB;
+            color: white;
         }
-        .options-container {
-            margin: 20px 0;
+        
+        .container {
+            max-width: 400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
         }
-        .option-item {
+        
+        .header {
+            background: #4f46e5;
+            padding: 20px;
+            text-align: center;
+            color: white;
+            position: relative;
+        }
+        
+        .time-display {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .intervals {
+            font-size: 14px;
+            opacity: 0.9;
+        }
+        
+        .settings-icon {
+            position: absolute;
+            left: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+        
+        .display-icon {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 24px;
+            height: 24px;
+            cursor: pointer;
+        }
+        
+        .content {
+            padding: 20px;
+            background: white;
+            color: #333;
+        }
+        
+        .timer-row {
             display: flex;
             align-items: center;
-            margin: 15px 0;
-            padding: 15px;
-            background-color: #FFFFFF;
-            border: 2px solid #ECF0F1;
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s ease;
+            padding: 15px 0;
+            border-bottom: 1px solid #e5e7eb;
         }
-        .option-item:hover {
-            border-color: #3498DB;
-            background-color: #F8F9FA;
+        
+        .timer-row:last-child {
+            border-bottom: none;
         }
-        .option-item.selected {
-            border-color: #3498DB;
-            background-color: #E3F2FD;
-        }
-        .option-item input[type="radio"] {
+        
+        .icon {
+            width: 40px;
+            height: 40px;
             margin-right: 15px;
-            transform: scale(1.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #4f46e5;
+            font-size: 20px;
         }
-        .option-text {
-            font-size: 1.1em;
-            color: #2C3E50;
-        }
-        .progress-bar-container {
-            width: 100%;
-            background-color: #ECF0F1;
-            border-radius: 5px;
-            height: 10px;
-            margin-bottom: 20px;
-            overflow: hidden;
-        }
-        .progress-bar {
-            height: 100%;
-            width: 0%;
-            background-color: #3498DB;
-            border-radius: 5px;
-            transition: width 0.3s ease;
-        }
-        .navigation-buttons {
+        
+        .timer-info {
+            flex: 1;
             text-align: center;
-            margin-top: 30px;
         }
-        .button-next {
-            background-color: #3498DB;
-            color: white;
-            padding: 15px 30px;
-            border: none;
-            border-radius: 8px;
-            font-size: 1.2em;
-            cursor: pointer;
-            transition: background-color 0.3s ease;
-            margin: 0 10px;
+        
+        .timer-label {
+            font-size: 16px;
+            font-weight: 600;
+            color: #4f46e5;
+            margin-bottom: 5px;
         }
-        .button-next:hover {
-            background-color: #2980B9;
-        }
-        .button-next:disabled {
-            background-color: #BDC3C7;
-            cursor: not-allowed;
-        }
-        .notification {
-            margin-top: 20px;
-            font-size: 1em;
-            color: #E74C3C;
-            font-weight: bold;
-            display: none;
-            padding: 10px;
-            background-color: #FADBD8;
-            border-radius: 5px;
-        }
-        .phase-display {
-            font-size: 1.2em;
-            color: #7F8C8D;
+        
+        .timer-description {
+            font-size: 14px;
+            color: #9ca3af;
             margin-bottom: 10px;
         }
-        .exam-ended {
-            color: #E74C3C;
-            font-size: 2em;
+        
+        .timer-value {
+            font-size: 18px;
             font-weight: bold;
+            color: #333;
         }
-        .waiting-state {
-            color: #95A5A6;
-            font-style: italic;
+        
+        .controls {
+            display: flex;
+            align-items: center;
+            gap: 10px;
         }
-        .loading {
-            color: #3498DB;
-            font-style: italic;
+        
+        .btn-control {
+            width: 36px;
+            height: 36px;
+            border-radius: 50%;
+            border: none;
+            background: #4f46e5;
+            color: white;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
         }
-        .no-questions {
-            color: #E67E22;
-            font-size: 1.2em;
-            padding: 20px;
-            background-color: #FEF9E7;
-            border-radius: 8px;
-            border: 1px solid #F4D03F;
+        
+        .btn-control:hover {
+            background: #3730a3;
+            transform: scale(1.05);
+        }
+        
+        .btn-control:active {
+            transform: scale(0.95);
+        }
+        
+        .start-button {
+            width: 100%;
+            background: #4f46e5;
+            color: white;
+            border: none;
+            padding: 18px;
+            border-radius: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.2s;
+        }
+        
+        .start-button:hover {
+            background: #3730a3;
+            transform: translateY(-2px);
+        }
+        
+        .start-button:active {
+            transform: translateY(0);
+        }
+        
+        .description-input {
+            width: 100%;
+            border: none;
+            background: transparent;
+            color: #9ca3af;
+            font-size: 14px;
+            text-align: center;
+            outline: none;
+            padding: 5px;
+        }
+        
+        .description-input:focus {
+            color: #4f46e5;
+        }
+        
+        .sound-icon {
+            width: 20px;
+            height: 20px;
+            margin-left: 10px;
+            color: #4f46e5;
+            cursor: pointer;
+        }
+        
+        @media (max-width: 480px) {
+            .container {
+                margin: 10px;
+                max-width: none;
+            }
+            
+            .content {
+                padding: 15px;
+            }
         }
     </style>
 </head>
 <body>
-    <div class="dashboard-container">
-        <div class="timer-global" id="timer">--:--:--</div>
-        <div class="exam-info" id="title">En attente de configuration...</div>
-        <div class="phase-display" id="phase">Prêt à commencer</div>
-        <div class="student-info">Étudiant: Jean Dupont, ID: 12345</div>
-
-        <div class="progress-bar-container">
-            <div class="progress-bar" id="progress-bar"></div>
+    <div class="container">
+        <div class="header">
+            <div class="settings-icon" onclick="openSettings()">⚙️</div>
+            <div class="time-display" id="timeDisplay">04:00</div>
+            <div class="intervals" id="intervalsDisplay">16 intervals</div>
+            <div class="display-icon" onclick="openDisplay()">👁️</div>
         </div>
-
-        <div class="question-section">
-            <div class="question-number" id="question-number">Question 1 / --</div>
-            
-            <div id="question-content">
-                <div class="loading">Chargement des questions...</div>
+        
+        <div class="content">
+            <div class="timer-row">
+                <div class="icon">🏃</div>
+                <div class="timer-info">
+                    <div class="timer-label">Prepare</div>
+                    <div class="timer-value" id="prepareValue">10</div>
+                </div>
+                <div class="controls">
+                    <button class="btn-control" onclick="decreaseValue('prepare')">−</button>
+                    <button class="btn-control" onclick="increaseValue('prepare')">+</button>
+                </div>
             </div>
             
-            <div class="navigation-buttons">
-                <button class="button-next" id="button-next" onclick="nextQuestion()">Question Suivante</button>
+            <div class="timer-row">
+                <div class="icon">🏋️</div>
+                <div class="timer-info">
+                    <div class="timer-label">Work</div>
+                    <div class="sound-icon">🔊</div>
+                    <input type="text" class="description-input" id="workDescription" placeholder="Add description" value="">
+                    <div class="timer-value" id="workValue">20</div>
+                </div>
+                <div class="controls">
+                    <button class="btn-control" onclick="decreaseValue('work')">−</button>
+                    <button class="btn-control" onclick="increaseValue('work')">+</button>
+                </div>
             </div>
+            
+            <div class="timer-row">
+                <div class="icon">🤸</div>
+                <div class="timer-info">
+                    <div class="timer-label">Rest</div>
+                    <div class="sound-icon">🔊</div>
+                    <input type="text" class="description-input" id="restDescription" placeholder="Add description" value="">
+                    <div class="timer-value" id="restValue">10</div>
+                </div>
+                <div class="controls">
+                    <button class="btn-control" onclick="decreaseValue('rest')">−</button>
+                    <button class="btn-control" onclick="increaseValue('rest')">+</button>
+                </div>
+            </div>
+            
+            <div class="timer-row">
+                <div class="icon">🔄</div>
+                <div class="timer-info">
+                    <div class="timer-label">Cycles (work & rest)</div>
+                    <div class="timer-value" id="cyclesValue">8</div>
+                </div>
+                <div class="controls">
+                    <button class="btn-control" onclick="decreaseValue('cycles')">−</button>
+                    <button class="btn-control" onclick="increaseValue('cycles')">+</button>
+                </div>
+            </div>
+            
+            <div class="timer-row">
+                <div class="icon">🔁</div>
+                <div class="timer-info">
+                    <div class="timer-label">Sets (repeat all)</div>
+                    <div class="timer-value" id="setsValue">1</div>
+                </div>
+                <div class="controls">
+                    <button class="btn-control" onclick="decreaseValue('sets')">−</button>
+                    <button class="btn-control" onclick="increaseValue('sets')">+</button>
+                </div>
+            </div>
+            
+            <div class="timer-row">
+                <div class="icon">💺</div>
+                <div class="timer-info">
+                    <div class="timer-label">Rest between sets</div>
+                    <div class="timer-value" id="restBetweenSetsValue">0</div>
+                </div>
+                <div class="controls">
+                    <button class="btn-control" onclick="decreaseValue('restBetweenSets')">−</button>
+                    <button class="btn-control" onclick="increaseValue('restBetweenSets')">+</button>
+                </div>
+            </div>
+            
+            <div class="timer-row">
+                <div class="icon">🛋️</div>
+                <div class="timer-info">
+                    <div class="timer-label">Cool down</div>
+                    <div class="timer-value" id="coolDownValue">0</div>
+                </div>
+                <div class="controls">
+                    <button class="btn-control" onclick="decreaseValue('coolDown')">−</button>
+                    <button class="btn-control" onclick="increaseValue('coolDown')">+</button>
+                </div>
+            </div>
+            
+            <button class="start-button" onclick="startTimer()">START</button>
         </div>
-
-        <div class="notification" id="notification"></div>
     </div>
-
-    <!-- Audio elements -->
-    <audio id="audio-prepare" src="./audio/prepare.mp3"></audio>
-    <audio id="audio-work" src="./audio/work.mp3"></audio>
-    <audio id="audio-rest" src="./audio/rest.mp3"></audio>
-    <audio id="audio-done" src="./audio/done.mp3"></audio>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
-        // Variables globales pour l'examen
-        let currentQuestion = 1;
-        let totalQuestions = 20;
-        let totalTimeRemaining = 0;
-        let examStarted = false;
-        let examEnded = false;
-        let globalInterval = null;
-        let answers = {};
-        let questions = [];
-        let currentQuestionData = null;
-
-        // Éléments DOM
-        const socket = io("http://localhost:3000");
-        const titleEl = document.getElementById('title');
-        const timerEl = document.getElementById('timer');
-        const phaseEl = document.getElementById('phase');
-        const questionNumberEl = document.getElementById('question-number');
-        const questionContentEl = document.getElementById('question-content');
-        const buttonNextEl = document.getElementById('button-next');
-        const notificationEl = document.getElementById('notification');
-        const progressBarEl = document.getElementById('progress-bar');
-
-        // Charger les questions au démarrage
-        loadQuestions();
-
-        function playSound(name) {
-            const audio = document.getElementById(`audio-${name}`);
-            if (audio) {
-                audio.play().catch(err => console.log('Erreur audio:', err));
-            }
-        }
-
-        function formatTime(seconds) {
-            const h = Math.floor(seconds / 3600);
-            const m = Math.floor((seconds % 3600) / 60);
-            const s = seconds % 60;
-            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
-        }
-
-        function loadQuestions() {
-            fetch('/questions')
+        const socket = io();
+        
+        // Configuration par défaut
+        let config = {
+            prepare: 10,
+            work: 20,
+            rest: 10,
+            cycles: 8,
+            sets: 1,
+            restBetweenSets: 0,
+            coolDown: 0,
+            workDescription: '',
+            restDescription: ''
+        };
+        
+        // Charger la configuration depuis le serveur
+        function loadConfig() {
+            fetch('/config')
                 .then(res => res.json())
                 .then(data => {
-                    questions = data;
-                    if (questions.length === 0) {
-                        questionContentEl.innerHTML = `
-                            <div class="no-questions">
-                                ⚠️ Aucune question disponible.<br>
-                                Veuillez demander à l'administrateur de créer des questions.
-                            </div>
-                        `;
-                    } else {
-                        displayCurrentQuestion();
-                    }
+                    config = {...config, ...data};
+                    updateDisplay();
                 })
                 .catch(err => {
-                    console.error('Erreur lors du chargement des questions:', err);
-                    questionContentEl.innerHTML = `
-                        <div class="no-questions">
-                            ❌ Erreur lors du chargement des questions.<br>
-                            Veuillez vérifier la connexion au serveur.
-                        </div>
-                    `;
+                    console.log('Erreur lors du chargement de la configuration:', err);
+                    updateDisplay();
                 });
         }
-
-        function displayCurrentQuestion() {
-            if (questions.length === 0) {
-                return;
-            }
-
-            const questionIndex = (currentQuestion - 1) % questions.length;
-            currentQuestionData = questions[questionIndex];
-
-            if (!currentQuestionData) {
-                questionContentEl.innerHTML = '<div class="loading">Question non trouvée...</div>';
-                return;
-            }
-
-            const optionsHtml = currentQuestionData.options.map((option, index) => `
-                <div class="option-item" onclick="selectOption(${index})">
-                    <input type="radio" name="answer" value="${index}" id="option-${index}">
-                    <label class="option-text" for="option-${index}">
-                        ${String.fromCharCode(65 + index)}) ${option}
-                    </label>
-                </div>
-            `).join('');
-
-            questionContentEl.innerHTML = `
-                <div class="question-text">
-                    ${currentQuestionData.question}
-                </div>
-                <div class="options-container">
-                    ${optionsHtml}
-                </div>
-            `;
-
-            // Restaurer la réponse précédente si elle existe
-            const savedAnswer = answers[currentQuestion];
-            if (savedAnswer !== undefined) {
-                selectOption(savedAnswer, false);
-            }
-        }
-
-        function selectOption(optionIndex, playSound = true) {
-            // Décocher toutes les options
-            document.querySelectorAll('.option-item').forEach(item => {
-                item.classList.remove('selected');
-            });
-            document.querySelectorAll('input[name="answer"]').forEach(radio => {
-                radio.checked = false;
-            });
-
-            // Sélectionner l'option choisie
-            const selectedOption = document.getElementById(`option-${optionIndex}`);
-            const selectedItem = selectedOption.closest('.option-item');
-            
-            selectedOption.checked = true;
-            selectedItem.classList.add('selected');
-
-            // Sauvegarder la réponse
-            answers[currentQuestion] = optionIndex;
-            
-            if (playSound) {
-                // Son de sélection (utiliser le son work)
-                playSound('work');
-            }
-        }
-
+        
+        // Mettre à jour l'affichage
         function updateDisplay() {
-            // Mise à jour du minuteur global
-            timerEl.textContent = formatTime(totalTimeRemaining);
+            document.getElementById('prepareValue').textContent = config.prepare;
+            document.getElementById('workValue').textContent = config.work;
+            document.getElementById('restValue').textContent = config.rest;
+            document.getElementById('cyclesValue').textContent = config.cycles;
+            document.getElementById('setsValue').textContent = config.sets;
+            document.getElementById('restBetweenSetsValue').textContent = config.restBetweenSets;
+            document.getElementById('coolDownValue').textContent = config.coolDown;
+            document.getElementById('workDescription').value = config.workDescription || '';
+            document.getElementById('restDescription').value = config.restDescription || '';
             
-            // Mise à jour du numéro de question
-            const displayTotal = Math.min(totalQuestions, questions.length);
-            questionNumberEl.textContent = `Question ${currentQuestion} / ${displayTotal}`;
+            updateTimeDisplay();
+        }
+        
+        // Calculer et afficher le temps total
+        function updateTimeDisplay() {
+            const totalTime = calculateTotalTime();
+            const minutes = Math.floor(totalTime / 60);
+            const seconds = totalTime % 60;
+            const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
             
-            // Mise à jour de la barre de progression
-            const progress = ((currentQuestion - 1) / displayTotal) * 100;
-            progressBarEl.style.width = `${progress}%`;
+            const totalIntervals = config.cycles * config.sets;
             
-            // Notifications basées sur le temps restant
-            if (totalTimeRemaining <= 300 && totalTimeRemaining > 0) { // 5 minutes
-                notificationEl.textContent = "⚠️ 5 minutes restantes !";
-                notificationEl.style.display = 'block';
-            } else if (totalTimeRemaining <= 600 && totalTimeRemaining > 300) { // 10 minutes
-                notificationEl.textContent = "⏰ 10 minutes restantes";
-                notificationEl.style.display = 'block';
+            document.getElementById('timeDisplay').textContent = timeString;
+            document.getElementById('intervalsDisplay').textContent = `${totalIntervals} intervals`;
+        }
+        
+        // Calculer le temps total
+        function calculateTotalTime() {
+            const workRestTime = (config.work + config.rest) * config.cycles;
+            const setTime = workRestTime + config.restBetweenSets;
+            const totalTime = config.prepare + (setTime * config.sets) - config.restBetweenSets + config.coolDown;
+            return totalTime;
+        }
+        
+        // Augmenter une valeur
+        function increaseValue(type) {
+            if (type === 'prepare' || type === 'work' || type === 'rest' || type === 'restBetweenSets' || type === 'coolDown') {
+                config[type] += 5;
             } else {
-                notificationEl.style.display = 'none';
+                config[type] += 1;
             }
-        }
-
-        function nextQuestion() {
-            if (examEnded) return;
-            
-            // Sauvegarder la réponse actuelle
-            saveCurrentAnswer();
-
-            // Passer à la question suivante
-            const maxQuestions = Math.min(totalQuestions, questions.length);
-            if (currentQuestion < maxQuestions) {
-                currentQuestion++;
-                displayCurrentQuestion();
-                updateDisplay();
-                playSound('work'); // Son pour nouvelle question
-            } else {
-                endExam();
-            }
-        }
-
-        function saveCurrentAnswer() {
-            const selectedOption = document.querySelector('input[name="answer"]:checked');
-            if (selectedOption) {
-                const answerData = {
-                    question_id: currentQuestion,
-                    answer: parseInt(selectedOption.value),
-                    question_text: currentQuestionData ? currentQuestionData.question : '',
-                    selected_option: currentQuestionData ? currentQuestionData.options[parseInt(selectedOption.value)] : '',
-                    is_correct: currentQuestionData ? (parseInt(selectedOption.value) === currentQuestionData.correct) : false
-                };
-                
-                // Sauvegarder localement
-                answers[currentQuestion] = answerData;
-                
-                // Sauvegarder sur le serveur
-                fetch('/answers', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(answerData)
-                }).catch(err => console.log('Erreur sauvegarde:', err));
-            }
-        }
-
-        function endExam() {
-            examEnded = true;
-            clearInterval(globalInterval);
-            
-            // Sauvegarder la dernière réponse
-            saveCurrentAnswer();
-            
-            timerEl.textContent = "TERMINÉ";
-            timerEl.className = "timer-global exam-ended";
-            phaseEl.textContent = "Fin de la composition";
-            buttonNextEl.style.display = 'none';
-            notificationEl.textContent = "🎯 Examen terminé - Réponses enregistrées";
-            notificationEl.style.display = 'block';
-            
-            // Afficher un résumé
-            const totalAnswered = Object.keys(answers).length;
-            questionContentEl.innerHTML = `
-                <div style="text-align: center; padding: 30px;">
-                    <h2>🎯 Examen Terminé</h2>
-                    <p>Vous avez répondu à <strong>${totalAnswered}</strong> questions sur <strong>${Math.min(totalQuestions, questions.length)}</strong>.</p>
-                    <p>Vos réponses ont été enregistrées automatiquement.</p>
-                </div>
-            `;
-            
-            playSound('done');
-            console.log("Réponses finales:", answers);
-        }
-
-        function startExam(config) {
-            examStarted = true;
-            examEnded = false;
-            
-            // Configuration de l'examen
-            titleEl.textContent = config.title || "Examen Universitaire";
-            totalQuestions = config.totalQuestions || 20;
-            totalTimeRemaining = config.totalTimeSeconds || (config.totalTime * 60) || 5400;
-            
-            // Réinitialisation
-            currentQuestion = 1;
-            answers = {};
-            
-            // Recharger les questions
-            loadQuestions();
-            
-            // Affichage initial
-            phaseEl.textContent = "Examen en cours";
-            buttonNextEl.style.display = 'inline-block';
-            timerEl.className = "timer-global";
             updateDisplay();
-            
-            // Son de début
-            playSound('prepare');
-            
-            // Démarrage du minuteur global
-            clearInterval(globalInterval);
-            globalInterval = setInterval(() => {
-                totalTimeRemaining--;
-                updateDisplay();
-                
-                if (totalTimeRemaining <= 0) {
-                    endExam();
+            saveConfig();
+        }
+        
+        // Diminuer une valeur
+        function decreaseValue(type) {
+            if (config[type] > 0) {
+                if (type === 'prepare' || type === 'work' || type === 'rest' || type === 'restBetweenSets' || type === 'coolDown') {
+                    config[type] = Math.max(0, config[type] - 5);
+                } else {
+                    config[type] = Math.max(1, config[type] - 1);
                 }
-            }, 1000);
-        }
-
-        function resetExam() {
-            examStarted = false;
-            examEnded = false;
-            clearInterval(globalInterval);
-            
-            // Réinitialisation de l'affichage
-            titleEl.textContent = "En attente de configuration...";
-            phaseEl.textContent = "Prêt à commencer";
-            timerEl.textContent = "--:--:--";
-            timerEl.className = "timer-global";
-            
-            // Reset de l'examen
-            currentQuestion = 1;
-            totalQuestions = 20;
-            totalTimeRemaining = 0;
-            answers = {};
-            
-            // Recharger les questions
-            loadQuestions();
-            
-            updateDisplay();
-            buttonNextEl.style.display = 'inline-block';
-            notificationEl.style.display = 'none';
-            progressBarEl.style.width = '0%';
-        }
-
-        // Gestionnaires d'événements Socket.IO
-        socket.on('start', data => {
-            console.log('Démarrage de l\'examen avec la configuration:', data);
-            startExam(data);
-        });
-
-        socket.on('reset', () => {
-            console.log('Réinitialisation de l\'examen');
-            resetExam();
-        });
-
-        // Gestion de la fermeture de la page
-        window.addEventListener('beforeunload', (e) => {
-            if (examStarted && !examEnded) {
-                // Sauvegarder la réponse actuelle avant de quitter
-                saveCurrentAnswer();
-                e.preventDefault();
-                e.returnValue = 'Êtes-vous sûr de vouloir quitter l\'examen en cours ?';
+                updateDisplay();
+                saveConfig();
             }
+        }
+        
+        // Sauvegarder la configuration
+        function saveConfig() {
+            // Récupérer les descriptions
+            config.workDescription = document.getElementById('workDescription').value;
+            config.restDescription = document.getElementById('restDescription').value;
+            
+            fetch('/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(config)
+            })
+            .catch(err => console.log('Erreur lors de la sauvegarde:', err));
+        }
+        
+        // Démarrer le timer
+        function startTimer() {
+            saveConfig();
+            socket.emit('start', config);
+            // Rediriger vers la page d'affichage
+            window.location.href = '/display.html';
+        }
+        
+        // Ouvrir les paramètres
+        function openSettings() {
+            // Fonctionnalité à implémenter
+            console.log('Ouvrir les paramètres');
+        }
+        
+        // Ouvrir l'affichage
+        function openDisplay() {
+            window.location.href = '/display.html';
+        }
+        
+        // Gérer les changements de description
+        document.getElementById('workDescription').addEventListener('input', saveConfig);
+        document.getElementById('restDescription').addEventListener('input', saveConfig);
+        
+        // Charger la configuration au démarrage
+        loadConfig();
+        
+        socket.on('connect', () => {
+            console.log('Connecté au serveur');
         });
-
-        // Initialisation
-        updateDisplay();
     </script>
 </body>
 </html>
