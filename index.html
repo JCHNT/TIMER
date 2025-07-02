@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Timer Configuration - ECOS</title>
+    <title>TIMER ECOS</title>
     <style>
         * {
             margin: 0;
@@ -11,449 +11,331 @@
             box-sizing: border-box;
         }
         
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+        body { 
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            text-align: center; 
+            font-size: 2em; 
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            margin: 0; 
+            padding: 40px; 
             min-height: 100vh;
-            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
             color: white;
         }
         
         .container {
-            max-width: 400px;
-            margin: 0 auto;
-            background: white;
-            border-radius: 20px;
-            overflow: hidden;
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            background: rgba(255, 255, 255, 0.15);
+            backdrop-filter: blur(20px);
+            border-radius: 30px;
+            padding: 60px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            min-width: 600px;
+            max-width: 800px;
         }
         
-        .header {
-            background: #4f46e5;
-            padding: 20px;
-            text-align: center;
-            color: white;
-            position: relative;
+        .title { 
+            font-size: 1.8em; 
+            margin-bottom: 40px; 
+            font-weight: 300;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            letter-spacing: 2px;
         }
         
-        .time-display {
-            font-size: 24px;
-            font-weight: bold;
-            margin-bottom: 5px;
-        }
-        
-        .intervals {
-            font-size: 14px;
-            opacity: 0.9;
-        }
-        
-        .settings-icon {
-            position: absolute;
-            left: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-        }
-        
-        .display-icon {
-            position: absolute;
-            right: 20px;
-            top: 50%;
-            transform: translateY(-50%);
-            width: 24px;
-            height: 24px;
-            cursor: pointer;
-        }
-        
-        .content {
-            padding: 20px;
-            background: white;
-            color: #333;
-        }
-        
-        .timer-row {
-            display: flex;
-            align-items: center;
-            padding: 15px 0;
-            border-bottom: 1px solid #e5e7eb;
-        }
-        
-        .timer-row:last-child {
-            border-bottom: none;
-        }
-        
-        .icon {
-            width: 40px;
-            height: 40px;
-            margin-right: 15px;
+        #phase { 
+            font-size: 3em; 
+            color: #fff; 
+            margin-bottom: 30px; 
+            font-weight: 200;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            min-height: 80px;
             display: flex;
             align-items: center;
             justify-content: center;
-            color: #4f46e5;
-            font-size: 20px;
         }
         
-        .timer-info {
-            flex: 1;
-            text-align: center;
+        .timer { 
+            font-size: 5em; 
+            font-weight: 100; 
+            margin-bottom: 30px; 
+            color: #fff;
+            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            font-family: 'Courier New', monospace;
+            letter-spacing: 4px;
         }
         
-        .timer-label {
-            font-size: 16px;
-            font-weight: 600;
-            color: #4f46e5;
-            margin-bottom: 5px;
+        .progress-info {
+            font-size: 1em;
+            opacity: 0.9;
+            margin-bottom: 30px;
+            font-weight: 300;
         }
         
-        .timer-description {
-            font-size: 14px;
-            color: #9ca3af;
-            margin-bottom: 10px;
-        }
-        
-        .timer-value {
-            font-size: 18px;
-            font-weight: bold;
-            color: #333;
+        .description {
+            font-size: 0.8em;
+            opacity: 0.8;
+            margin-bottom: 30px;
+            font-style: italic;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         
         .controls {
             display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        
-        .btn-control {
-            width: 36px;
-            height: 36px;
-            border-radius: 50%;
-            border: none;
-            background: #4f46e5;
-            color: white;
-            font-size: 18px;
-            font-weight: bold;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
+            gap: 30px;
             justify-content: center;
-            transition: all 0.2s;
+            margin-top: 40px;
         }
         
-        .btn-control:hover {
-            background: #3730a3;
-            transform: scale(1.05);
-        }
-        
-        .btn-control:active {
-            transform: scale(0.95);
-        }
-        
-        .start-button {
-            width: 100%;
-            background: #4f46e5;
+        .control-btn {
+            background: rgba(255, 255, 255, 0.2);
             color: white;
-            border: none;
-            padding: 18px;
-            border-radius: 15px;
-            font-size: 18px;
-            font-weight: bold;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            padding: 20px 40px;
+            border-radius: 50px;
+            font-size: 0.6em;
             cursor: pointer;
-            margin-top: 20px;
-            transition: all 0.2s;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-block;
+            font-weight: 300;
+            letter-spacing: 1px;
         }
         
-        .start-button:hover {
-            background: #3730a3;
-            transform: translateY(-2px);
+        .control-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            border-color: rgba(255, 255, 255, 0.5);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
         }
         
-        .start-button:active {
-            transform: translateY(0);
-        }
-        
-        .description-input {
-            width: 100%;
-            border: none;
-            background: transparent;
-            color: #9ca3af;
-            font-size: 14px;
-            text-align: center;
-            outline: none;
-            padding: 5px;
-        }
-        
-        .description-input:focus {
-            color: #4f46e5;
-        }
-        
-        .sound-icon {
+        .status-indicator {
+            position: absolute;
+            top: 30px;
+            right: 30px;
             width: 20px;
             height: 20px;
-            margin-left: 10px;
-            color: #4f46e5;
-            cursor: pointer;
+            border-radius: 50%;
+            background: #4ade80;
+            box-shadow: 0 0 20px rgba(74, 222, 128, 0.5);
+            animation: pulse 2s infinite;
         }
         
-        @media (max-width: 480px) {
-            .container {
-                margin: 10px;
-                max-width: none;
-            }
-            
-            .content {
-                padding: 15px;
-            }
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+        
+        .phase-transition {
+            animation: fadeIn 0.5s ease-in-out;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: scale(0.9); }
+            to { opacity: 1; transform: scale(1); }
         }
     </style>
 </head>
 <body>
+    <div class="status-indicator" id="statusIndicator"></div>
+    
     <div class="container">
-        <div class="header">
-            <div class="settings-icon" onclick="openSettings()">⚙️</div>
-            <div class="time-display" id="timeDisplay">04:00</div>
-            <div class="intervals" id="intervalsDisplay">16 intervals</div>
-            <div class="display-icon" onclick="openDisplay()">👁️</div>
-        </div>
+        <div id="title" class="title">TIMER ECOS</div>
+        <div id="phase" class="phase-transition">En attente...</div>
+        <div id="description" class="description"></div>
+        <div id="timer" class="timer">--:--</div>
+        <div id="progress" class="progress-info"></div>
         
-        <div class="content">
-            <div class="timer-row">
-                <div class="icon">🏃</div>
-                <div class="timer-info">
-                    <div class="timer-label">Prepare</div>
-                    <div class="timer-value" id="prepareValue">10</div>
-                </div>
-                <div class="controls">
-                    <button class="btn-control" onclick="decreaseValue('prepare')">−</button>
-                    <button class="btn-control" onclick="increaseValue('prepare')">+</button>
-                </div>
-            </div>
-            
-            <div class="timer-row">
-                <div class="icon">🏋️</div>
-                <div class="timer-info">
-                    <div class="timer-label">Work</div>
-                    <div class="sound-icon">🔊</div>
-                    <input type="text" class="description-input" id="workDescription" placeholder="Add description" value="">
-                    <div class="timer-value" id="workValue">20</div>
-                </div>
-                <div class="controls">
-                    <button class="btn-control" onclick="decreaseValue('work')">−</button>
-                    <button class="btn-control" onclick="increaseValue('work')">+</button>
-                </div>
-            </div>
-            
-            <div class="timer-row">
-                <div class="icon">🤸</div>
-                <div class="timer-info">
-                    <div class="timer-label">Rest</div>
-                    <div class="sound-icon">🔊</div>
-                    <input type="text" class="description-input" id="restDescription" placeholder="Add description" value="">
-                    <div class="timer-value" id="restValue">10</div>
-                </div>
-                <div class="controls">
-                    <button class="btn-control" onclick="decreaseValue('rest')">−</button>
-                    <button class="btn-control" onclick="increaseValue('rest')">+</button>
-                </div>
-            </div>
-            
-            <div class="timer-row">
-                <div class="icon">🔄</div>
-                <div class="timer-info">
-                    <div class="timer-label">Cycles (work & rest)</div>
-                    <div class="timer-value" id="cyclesValue">8</div>
-                </div>
-                <div class="controls">
-                    <button class="btn-control" onclick="decreaseValue('cycles')">−</button>
-                    <button class="btn-control" onclick="increaseValue('cycles')">+</button>
-                </div>
-            </div>
-            
-            <div class="timer-row">
-                <div class="icon">🔁</div>
-                <div class="timer-info">
-                    <div class="timer-label">Sets (repeat all)</div>
-                    <div class="timer-value" id="setsValue">1</div>
-                </div>
-                <div class="controls">
-                    <button class="btn-control" onclick="decreaseValue('sets')">−</button>
-                    <button class="btn-control" onclick="increaseValue('sets')">+</button>
-                </div>
-            </div>
-            
-            <div class="timer-row">
-                <div class="icon">💺</div>
-                <div class="timer-info">
-                    <div class="timer-label">Rest between sets</div>
-                    <div class="timer-value" id="restBetweenSetsValue">0</div>
-                </div>
-                <div class="controls">
-                    <button class="btn-control" onclick="decreaseValue('restBetweenSets')">−</button>
-                    <button class="btn-control" onclick="increaseValue('restBetweenSets')">+</button>
-                </div>
-            </div>
-            
-            <div class="timer-row">
-                <div class="icon">🛋️</div>
-                <div class="timer-info">
-                    <div class="timer-label">Cool down</div>
-                    <div class="timer-value" id="coolDownValue">0</div>
-                </div>
-                <div class="controls">
-                    <button class="btn-control" onclick="decreaseValue('coolDown')">−</button>
-                    <button class="btn-control" onclick="increaseValue('coolDown')">+</button>
-                </div>
-            </div>
-            
-            <button class="start-button" onclick="startTimer()">START</button>
+        <div class="controls">
+            <a href="/admin.html" class="control-btn">Configuration</a>
+            <button class="control-btn" onclick="resetTimer()">Réinitialiser</button>
         </div>
     </div>
-
-    <audio id="audio_prepare" src="/audio/prepare.mp3"></audio>
-    <audio id="audio_work" src="/audio/work.mp3"></audio>
-    <audio id="audio_rest" src="/audio/rest.mp3"></audio>
-    <audio id="audio_done" src="/audio/done.mp3"></audio>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
-        
-        // Configuration par défaut
-        let config = {
-            title: 'TIMER ECOS',
-            prepare: 10,
-            work: 20,
-            rest: 10,
-            cycles: 8,
-            sets: 1,
-            restBetweenSets: 0,
-            coolDown: 0,
-            workDescription: '',
-            restDescription: ''
-        };
-        
-        // Charger la configuration depuis le serveur
-        function loadConfig() {
-            fetch('/config')
-                .then(res => res.json())
-                .then(data => {
-                    config = {...config, ...data};
-                    updateDisplay();
-                })
-                .catch(err => {
-                    console.log('Erreur lors du chargement de la configuration:', err);
-                    updateDisplay();
-                });
-        }
-        
-        // Mettre à jour l'affichage
-        function updateDisplay() {
-            document.getElementById('prepareValue').textContent = config.prepare;
-            document.getElementById('workValue').textContent = config.work;
-            document.getElementById('restValue').textContent = config.rest;
-            document.getElementById('cyclesValue').textContent = config.cycles;
-            document.getElementById('setsValue').textContent = config.sets;
-            document.getElementById('restBetweenSetsValue').textContent = config.restBetweenSets;
-            document.getElementById('coolDownValue').textContent = config.coolDown;
-            document.getElementById('workDescription').value = config.workDescription || '';
-            document.getElementById('restDescription').value = config.restDescription || '';
-            
-            updateTimeDisplay();
-        }
-        
-        // Calculer et afficher le temps total
-        function updateTimeDisplay() {
-            const totalTime = calculateTotalTime();
-            const minutes = Math.floor(totalTime / 60);
-            const seconds = totalTime % 60;
-            const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            
-            const totalIntervals = config.cycles * config.sets;
-            
-            document.getElementById('timeDisplay').textContent = timeString;
-            document.getElementById('intervalsDisplay').textContent = `${totalIntervals} intervals`;
-        }
-        
-        // Calculer le temps total
-        function calculateTotalTime() {
-            const workRestTime = (config.work + config.rest) * config.cycles;
-            const setTime = workRestTime + config.restBetweenSets;
-            const totalTime = config.prepare + (setTime * config.sets) - config.restBetweenSets + config.coolDown;
-            return totalTime;
-        }
-        
-        // Augmenter une valeur
-        function increaseValue(type) {
-            if (type === 'prepare' || type === 'work' || type === 'rest' || type === 'restBetweenSets' || type === 'coolDown') {
-                config[type] += 5;
+
+        const titleEl = document.getElementById('title');
+        const timerEl = document.getElementById('timer');
+        const phaseEl = document.getElementById('phase');
+        const descriptionEl = document.getElementById('description');
+        const progressEl = document.getElementById('progress');
+        const statusEl = document.getElementById('statusIndicator');
+
+        let interval;
+        let currentConfig = {};
+        let currentSet = 1;
+        let currentCycle = 1;
+        let isRunning = false;
+
+        function updateStatusIndicator(running) {
+            isRunning = running;
+            if (running) {
+                statusEl.style.background = '#ef4444';
+                statusEl.style.boxShadow = '0 0 20px rgba(239, 68, 68, 0.5)';
             } else {
-                config[type] += 1;
-            }
-            updateDisplay();
-            saveConfig();
-        }
-        
-        // Diminuer une valeur
-        function decreaseValue(type) {
-            if (config[type] > 0) {
-                if (type === 'prepare' || type === 'work' || type === 'rest' || type === 'restBetweenSets' || type === 'coolDown') {
-                    config[type] = Math.max(0, config[type] - 5);
-                } else {
-                    config[type] = Math.max(1, config[type] - 1);
-                }
-                updateDisplay();
-                saveConfig();
+                statusEl.style.background = '#4ade80';
+                statusEl.style.boxShadow = '0 0 20px rgba(74, 222, 128, 0.5)';
             }
         }
-        
-        // Sauvegarder la configuration
-        function saveConfig() {
-            // Récupérer les descriptions
-            config.workDescription = document.getElementById('workDescription').value;
-            config.restDescription = document.getElementById('restDescription').value;
+
+        function startSequence(config) {
+            currentConfig = config;
+            titleEl.textContent = config.title || 'TIMER ECOS';
+            currentSet = 1;
+            currentCycle = 1;
+            updateStatusIndicator(true);
             
-            fetch('/config', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(config)
-            })
-            .catch(err => console.log('Erreur lors de la sauvegarde:', err));
+            // Commencer par la préparation
+            runPhase('prepare', config.prepare, () => {
+                runSet(currentSet, config);
+            });
         }
-        
-        // Démarrer le timer
-        function startTimer() {
-            saveConfig();
-            // Émettre l'événement start via Socket.IO pour synchroniser avec index.html
-            socket.emit('start', config);
-            alert('Timer démarré ! Consultez la page principale pour voir le chrono.');
+
+        function runSet(setNumber, config) {
+            if (setNumber > config.sets) {
+                // Tous les sets sont terminés, cool down
+                if (config.coolDown > 0) {
+                    runPhase('coolDown', config.coolDown, () => {
+                        finishTimer();
+                    });
+                } else {
+                    finishTimer();
+                }
+                return;
+            }
+            
+            currentCycle = 1;
+            runWorkCycle(currentCycle, setNumber, config);
         }
-        
-        // Ouvrir les paramètres
-        function openSettings() {
-            // Fonctionnalité à implémenter
-            console.log('Ouvrir les paramètres');
+
+        function runWorkCycle(cycle, setNumber, config) {
+            if (cycle > config.cycles) {
+                // Cycles terminés pour ce set
+                if (setNumber < config.sets && config.restBetweenSets > 0) {
+                    // Repos entre les sets
+                    runPhase('restBetweenSets', config.restBetweenSets, () => {
+                        currentSet++;
+                        runSet(currentSet, config);
+                    });
+                } else {
+                    currentSet++;
+                    runSet(currentSet, config);
+                }
+                return;
+            }
+            
+            // Phase de travail
+            runPhase('work', config.work, () => {
+                // Phase de repos
+                runPhase('rest', config.rest, () => {
+                    currentCycle++;
+                    runWorkCycle(currentCycle, setNumber, config);
+                });
+            });
         }
-        
-        // Ouvrir l'affichage
-        function openDisplay() {
-            window.open('/', '_blank');
+
+        function runPhase(type, duration, next) {
+            const phaseInfo = getPhaseInfo(type);
+            phaseEl.textContent = phaseInfo.label;
+            phaseEl.className = 'phase-transition';
+            descriptionEl.textContent = phaseInfo.description;
+            
+            // Afficher les informations de progression
+            updateProgress();
+            
+            clearInterval(interval);
+            
+            interval = setInterval(() => {
+                let m = Math.floor(duration / 60).toString().padStart(2, '0');
+                let s = (duration % 60).toString().padStart(2, '0');
+                timerEl.textContent = `${m}:${s}`;
+                
+                if (--duration < 0) {
+                    clearInterval(interval);
+                    next();
+                }
+            }, 1000);
         }
-        
-        // Gérer les changements de description
-        document.getElementById('workDescription').addEventListener('input', saveConfig);
-        document.getElementById('restDescription').addEventListener('input', saveConfig);
-        
-        // Charger la configuration au démarrage
-        loadConfig();
-        
+
+        function getPhaseInfo(type) {
+            switch (type) {
+                case 'prepare':
+                    return { label: 'Préparation', description: 'Préparez-vous pour commencer...' };
+                case 'work':
+                    return { 
+                        label: 'Travail', 
+                        description: currentConfig.workDescription || 'Phase de travail active'
+                    };
+                case 'rest':
+                    return { 
+                        label: 'Repos', 
+                        description: currentConfig.restDescription || 'Phase de repos'
+                    };
+                case 'restBetweenSets':
+                    return { label: 'Repos entre séries', description: 'Pause entre les séries d\'exercices' };
+                case 'coolDown':
+                    return { label: 'Récupération', description: 'Phase de récupération finale' };
+                default:
+                    return { label: '', description: '' };
+            }
+        }
+
+        function updateProgress() {
+            if (currentConfig.sets && currentConfig.cycles) {
+                progressEl.textContent = `Série ${currentSet}/${currentConfig.sets} • Cycle ${currentCycle}/${currentConfig.cycles}`;
+            }
+        }
+
+        function finishTimer() {
+            phaseEl.textContent = 'Session terminée';
+            phaseEl.className = 'phase-transition';
+            timerEl.textContent = '00:00';
+            descriptionEl.textContent = 'Félicitations ! Vous avez terminé votre session.';
+            progressEl.textContent = 'Session complète';
+            updateStatusIndicator(false);
+        }
+
+        function resetTimer() {
+            clearInterval(interval);
+            phaseEl.textContent = 'Réinitialisé';
+            phaseEl.className = 'phase-transition';
+            timerEl.textContent = '--:--';
+            descriptionEl.textContent = 'Timer réinitialisé';
+            progressEl.textContent = '';
+            updateStatusIndicator(false);
+            socket.emit('reset');
+        }
+
+        socket.on('start', data => {
+            clearInterval(interval);
+            startSequence(data);
+        });
+
+        socket.on('reset', () => {
+            resetTimer();
+        });
+
         socket.on('connect', () => {
             console.log('Connecté au serveur');
+            updateStatusIndicator(false);
         });
-        
+
         socket.on('disconnect', () => {
             console.log('Déconnecté du serveur');
+            statusEl.style.background = '#6b7280';
+            statusEl.style.boxShadow = '0 0 20px rgba(107, 114, 128, 0.5)';
         });
+
+        // Initialisation
+        updateStatusIndicator(false);
     </script>
 </body>
 </html>

@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TIMER SYNCHRONISE</title>
+    <title>Configuration TIMER ECOS</title>
     <style>
         * {
             margin: 0;
@@ -11,289 +11,569 @@
             box-sizing: border-box;
         }
         
-        body { 
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            text-align: center; 
-            font-size: 2em; 
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-            margin: 0; 
-            padding: 40px; 
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
+            padding: 40px;
             color: white;
         }
         
         .container {
-            background: rgba(255, 255, 255, 0.1);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 40px;
-            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
-            border: 1px solid rgba(255, 255, 255, 0.2);
-            min-width: 400px;
+            max-width: 900px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 25px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
         }
         
-        .title { 
-            font-size: 1.5em; 
-            margin-bottom: 30px; 
-            font-weight: bold;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+        .header {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            padding: 30px;
+            text-align: center;
+            color: white;
+            position: relative;
         }
         
-        #phase { 
-            font-size: 2.5em; 
-            color: #fff; 
-            margin-bottom: 30px; 
+        .header h1 {
+            font-size: 2.5em;
             font-weight: 300;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+            margin-bottom: 10px;
+            letter-spacing: 2px;
         }
         
-        .timer { 
-            font-size: 4em; 
-            font-weight: bold; 
-            margin-bottom: 20px; 
-            color: #fff;
-            text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
-            font-family: 'Courier New', monospace;
+        .time-display {
+            font-size: 1.8em;
+            font-weight: 600;
+            margin-bottom: 8px;
         }
         
-        .progress-info {
-            font-size: 0.8em;
-            opacity: 0.8;
+        .intervals {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+        
+        .nav-icons {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            display: flex;
+            gap: 15px;
+        }
+        
+        .nav-icon {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2em;
+        }
+        
+        .nav-icon:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+        
+        .content {
+            padding: 40px;
+            background: white;
+            color: #333;
+        }
+        
+        .config-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+            margin-bottom: 40px;
+        }
+        
+        .config-item {
+            background: #f8fafc;
+            border-radius: 15px;
+            padding: 25px;
+            border: 2px solid #e2e8f0;
+            transition: all 0.3s ease;
+        }
+        
+        .config-item:hover {
+            border-color: #4f46e5;
+            box-shadow: 0 5px 15px rgba(79, 70, 229, 0.1);
+        }
+        
+        .config-header {
+            display: flex;
+            align-items: center;
             margin-bottom: 20px;
         }
         
-        .description {
-            font-size: 0.6em;
-            opacity: 0.7;
-            margin-bottom: 20px;
-            font-style: italic;
+        .config-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-size: 1.5em;
+            color: white;
         }
         
-        .controls {
+        .config-info {
+            flex: 1;
+        }
+        
+        .config-label {
+            font-size: 1.2em;
+            font-weight: 600;
+            color: #1e293b;
+            margin-bottom: 5px;
+        }
+        
+        .config-subtitle {
+            font-size: 0.9em;
+            color: #64748b;
+        }
+        
+        .config-controls {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+        
+        .value-display {
+            font-size: 2em;
+            font-weight: 700;
+            color: #4f46e5;
+            min-width: 80px;
+            text-align: center;
+        }
+        
+        .control-buttons {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn-control {
+            width: 45px;
+            height: 45px;
+            border-radius: 50%;
+            border: none;
+            background: #4f46e5;
+            color: white;
+            font-size: 1.5em;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+        
+        .btn-control:hover {
+            background: #3730a3;
+            transform: scale(1.1);
+        }
+        
+        .btn-control:active {
+            transform: scale(0.95);
+        }
+        
+        .description-section {
+            grid-column: span 2;
+        }
+        
+        .description-input {
+            width: 100%;
+            border: 2px solid #e2e8f0;
+            background: white;
+            color: #1e293b;
+            font-size: 1em;
+            padding: 12px 15px;
+            border-radius: 8px;
+            outline: none;
+            transition: border-color 0.3s ease;
+            margin-top: 10px;
+        }
+        
+        .description-input:focus {
+            border-color: #4f46e5;
+        }
+        
+        .action-buttons {
             display: flex;
             gap: 20px;
             justify-content: center;
             margin-top: 30px;
         }
         
-        .control-btn {
-            background: rgba(255, 255, 255, 0.2);
-            color: white;
+        .btn-action {
+            padding: 18px 40px;
             border: none;
-            padding: 15px 30px;
-            border-radius: 25px;
-            font-size: 0.5em;
+            border-radius: 50px;
+            font-size: 1.1em;
+            font-weight: 600;
             cursor: pointer;
             transition: all 0.3s ease;
             text-decoration: none;
             display: inline-block;
+            text-align: center;
+            min-width: 180px;
         }
         
-        .control-btn:hover {
-            background: rgba(255, 255, 255, 0.3);
+        .btn-primary {
+            background: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: #f1f5f9;
+            color: #475569;
+            border: 2px solid #e2e8f0;
+        }
+        
+        .btn-action:hover {
             transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
         }
         
-        @media (max-width: 768px) {
-            body { font-size: 1.5em; padding: 20px; }
-            .timer { font-size: 3em; }
-            #phase { font-size: 2em; }
-            .container { min-width: auto; }
+        .btn-primary:hover {
+            background: linear-gradient(135deg, #3730a3 0%, #6d28d9 100%);
+        }
+        
+        .btn-secondary:hover {
+            background: #e2e8f0;
+        }
+        
+        .status-bar {
+            background: #f8fafc;
+            padding: 15px 30px;
+            border-top: 1px solid #e2e8f0;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 0.9em;
+            color: #64748b;
+        }
+        
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #10b981;
+            animation: pulse 2s infinite;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <div id="title" class="title">TIMER ECOS</div>
-        <div id="phase">En attente...</div>
-        <div id="description" class="description"></div>
-        <div id="timer" class="timer">---</div>
-        <div id="progress" class="progress-info"></div>
+        <div class="header">
+            <div class="nav-icons">
+                <div class="nav-icon" onclick="openDisplay()" title="Voir le timer">👁️</div>
+                <div class="nav-icon" onclick="openSettings()" title="Paramètres">⚙️</div>
+            </div>
+            <h1>Configuration Timer</h1>
+            <div class="time-display" id="timeDisplay">04:00</div>
+            <div class="intervals" id="intervalsDisplay">16 intervalles</div>
+        </div>
         
-        <div class="controls">
-            <a href="/admin.html" class="control-btn">Administration</a>
-            <button class="control-btn" onclick="resetTimer()">Réinitialiser</button>
+        <div class="content">
+            <div class="config-grid">
+                <div class="config-item">
+                    <div class="config-header">
+                        <div class="config-icon">🏃</div>
+                        <div class="config-info">
+                            <div class="config-label">Préparation</div>
+                            <div class="config-subtitle">Temps de préparation</div>
+                        </div>
+                    </div>
+                    <div class="config-controls">
+                        <div class="value-display" id="prepareValue">10</div>
+                        <div class="control-buttons">
+                            <button class="btn-control" onclick="decreaseValue('prepare')">−</button>
+                            <button class="btn-control" onclick="increaseValue('prepare')">+</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="config-item">
+                    <div class="config-header">
+                        <div class="config-icon">🏋️</div>
+                        <div class="config-info">
+                            <div class="config-label">Travail</div>
+                            <div class="config-subtitle">Durée d'exercice</div>
+                        </div>
+                    </div>
+                    <div class="config-controls">
+                        <div class="value-display" id="workValue">20</div>
+                        <div class="control-buttons">
+                            <button class="btn-control" onclick="decreaseValue('work')">−</button>
+                            <button class="btn-control" onclick="increaseValue('work')">+</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="config-item">
+                    <div class="config-header">
+                        <div class="config-icon">🤸</div>
+                        <div class="config-info">
+                            <div class="config-label">Repos</div>
+                            <div class="config-subtitle">Durée de repos</div>
+                        </div>
+                    </div>
+                    <div class="config-controls">
+                        <div class="value-display" id="restValue">10</div>
+                        <div class="control-buttons">
+                            <button class="btn-control" onclick="decreaseValue('rest')">−</button>
+                            <button class="btn-control" onclick="increaseValue('rest')">+</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="config-item">
+                    <div class="config-header">
+                        <div class="config-icon">🔄</div>
+                        <div class="config-info">
+                            <div class="config-label">Cycles</div>
+                            <div class="config-subtitle">Répétitions travail/repos</div>
+                        </div>
+                    </div>
+                    <div class="config-controls">
+                        <div class="value-display" id="cyclesValue">8</div>
+                        <div class="control-buttons">
+                            <button class="btn-control" onclick="decreaseValue('cycles')">−</button>
+                            <button class="btn-control" onclick="increaseValue('cycles')">+</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="config-item">
+                    <div class="config-header">
+                        <div class="config-icon">🔁</div>
+                        <div class="config-info">
+                            <div class="config-label">Séries</div>
+                            <div class="config-subtitle">Nombre de séries complètes</div>
+                        </div>
+                    </div>
+                    <div class="config-controls">
+                        <div class="value-display" id="setsValue">1</div>
+                        <div class="control-buttons">
+                            <button class="btn-control" onclick="decreaseValue('sets')">−</button>
+                            <button class="btn-control" onclick="increaseValue('sets')">+</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="config-item">
+                    <div class="config-header">
+                        <div class="config-icon">💺</div>
+                        <div class="config-info">
+                            <div class="config-label">Repos entre séries</div>
+                            <div class="config-subtitle">Pause entre les séries</div>
+                        </div>
+                    </div>
+                    <div class="config-controls">
+                        <div class="value-display" id="restBetweenSetsValue">0</div>
+                        <div class="control-buttons">
+                            <button class="btn-control" onclick="decreaseValue('restBetweenSets')">−</button>
+                            <button class="btn-control" onclick="increaseValue('restBetweenSets')">+</button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="config-item description-section">
+                    <div class="config-header">
+                        <div class="config-icon">📝</div>
+                        <div class="config-info">
+                            <div class="config-label">Descriptions personnalisées</div>
+                            <div class="config-subtitle">Instructions pour les phases de travail et repos</div>
+                        </div>
+                    </div>
+                    <input type="text" class="description-input" id="workDescription" placeholder="Description pour la phase de travail (ex: Pompes, Squats...)">
+                    <input type="text" class="description-input" id="restDescription" placeholder="Description pour la phase de repos (ex: Repos actif, Étirements...)">
+                </div>
+            </div>
+            
+            <div class="action-buttons">
+                <button class="btn-action btn-primary" onclick="startTimer()">Démarrer le Timer</button>
+                <a href="/" class="btn-action btn-secondary">Voir l'affichage</a>
+            </div>
+        </div>
+        
+        <div class="status-bar">
+            <div class="connection-status">
+                <div class="status-dot" id="statusDot"></div>
+                <span id="connectionStatus">Connecté au serveur</span>
+            </div>
+            <div>Configuration automatiquement sauvegardée</div>
         </div>
     </div>
-    
-    <audio id="audio_prepare" src="/audio/prepare.mp3"></audio>
-    <audio id="audio_work" src="/audio/work.mp3"></audio>
-    <audio id="audio_rest" src="/audio/rest.mp3"></audio>
-    <audio id="audio_done" src="/audio/done.mp3"></audio>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
         const socket = io();
-
-        const titleEl = document.getElementById('title');
-        const timerEl = document.getElementById('timer');
-        const phaseEl = document.getElementById('phase');
-        const descriptionEl = document.getElementById('description');
-        const progressEl = document.getElementById('progress');
-
-        const audio = {
-            prepare: document.getElementById('audio_prepare'),
-            work: document.getElementById('audio_work'),
-            rest: document.getElementById('audio_rest'),
-            done: document.getElementById('audio_done')
+        
+        // Configuration par défaut
+        let config = {
+            title: 'TIMER ECOS',
+            prepare: 10,
+            work: 20,
+            rest: 10,
+            cycles: 8,
+            sets: 1,
+            restBetweenSets: 0,
+            coolDown: 0,
+            workDescription: '',
+            restDescription: ''
         };
-
-        let interval;
-        let currentConfig = {};
-        let currentSet = 1;
-        let currentCycle = 1;
-
-        function playSound(name) {
-            if (audio[name]) {
-                audio[name].play().catch(e => console.log('Audio play failed:', e));
-            }
-        }
-
-        function startSequence(config) {
-            currentConfig = config;
-            titleEl.textContent = config.title || 'TIMER ECOS';
-            currentSet = 1;
-            currentCycle = 1;
-            
-            // Commencer par la préparation
-            runPhase('prepare', config.prepare, () => {
-                runSet(currentSet, config);
-            });
-        }
-
-        function runSet(setNumber, config) {
-            if (setNumber > config.sets) {
-                // Tous les sets sont terminés, cool down
-                if (config.coolDown > 0) {
-                    runPhase('coolDown', config.coolDown, () => {
-                        phaseEl.textContent = 'Terminé';
-                        timerEl.textContent = '---';
-                        descriptionEl.textContent = '';
-                        progressEl.textContent = '';
-                        playSound('done');
-                    });
-                } else {
-                    phaseEl.textContent = 'Terminé';
-                    timerEl.textContent = '---';
-                    descriptionEl.textContent = '';
-                    progressEl.textContent = '';
-                    playSound('done');
-                }
-                return;
-            }
-            
-            currentCycle = 1;
-            runWorkCycle(currentCycle, setNumber, config);
-        }
-
-        function runWorkCycle(cycle, setNumber, config) {
-            if (cycle > config.cycles) {
-                // Cycles terminés pour ce set
-                if (setNumber < config.sets && config.restBetweenSets > 0) {
-                    // Repos entre les sets
-                    runPhase('restBetweenSets', config.restBetweenSets, () => {
-                        currentSet++;
-                        runSet(currentSet, config);
-                    });
-                } else {
-                    currentSet++;
-                    runSet(currentSet, config);
-                }
-                return;
-            }
-            
-            // Phase de travail
-            runPhase('work', config.work, () => {
-                // Phase de repos
-                runPhase('rest', config.rest, () => {
-                    currentCycle++;
-                    runWorkCycle(currentCycle, setNumber, config);
+        
+        // Charger la configuration depuis le serveur
+        function loadConfig() {
+            fetch('/config')
+                .then(res => res.json())
+                .then(data => {
+                    config = {...config, ...data};
+                    updateDisplay();
+                })
+                .catch(err => {
+                    console.log('Erreur lors du chargement de la configuration:', err);
+                    updateDisplay();
                 });
-            });
         }
-
-        function runPhase(type, duration, next) {
-            const phaseInfo = getPhaseInfo(type);
-            phaseEl.textContent = phaseInfo.label;
-            descriptionEl.textContent = phaseInfo.description;
+        
+        // Mettre à jour l'affichage
+        function updateDisplay() {
+            document.getElementById('prepareValue').textContent = config.prepare;
+            document.getElementById('workValue').textContent = config.work;
+            document.getElementById('restValue').textContent = config.rest;
+            document.getElementById('cyclesValue').textContent = config.cycles;
+            document.getElementById('setsValue').textContent = config.sets;
+            document.getElementById('restBetweenSetsValue').textContent = config.restBetweenSets;
+            document.getElementById('workDescription').value = config.workDescription || '';
+            document.getElementById('restDescription').value = config.restDescription || '';
             
-            // Afficher les informations de progression
-            updateProgress();
+            updateTimeDisplay();
+        }
+        
+        // Calculer et afficher le temps total
+        function updateTimeDisplay() {
+            const totalTime = calculateTotalTime();
+            const minutes = Math.floor(totalTime / 60);
+            const seconds = totalTime % 60;
+            const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
             
-            playSound(type);
-            clearInterval(interval);
+            const totalIntervals = config.cycles * config.sets;
             
-            interval = setInterval(() => {
-                let m = Math.floor(duration / 60).toString().padStart(2, '0');
-                let s = (duration % 60).toString().padStart(2, '0');
-                timerEl.textContent = `${m}:${s}`;
-                
-                if (--duration < 0) {
-                    clearInterval(interval);
-                    next();
+            document.getElementById('timeDisplay').textContent = timeString;
+            document.getElementById('intervalsDisplay').textContent = `${totalIntervals} intervalles`;
+        }
+        
+        // Calculer le temps total
+        function calculateTotalTime() {
+            const workRestTime = (config.work + config.rest) * config.cycles;
+            const setTime = workRestTime + config.restBetweenSets;
+            const totalTime = config.prepare + (setTime * config.sets) - config.restBetweenSets + config.coolDown;
+            return totalTime;
+        }
+        
+        // Augmenter une valeur
+        function increaseValue(type) {
+            if (type === 'prepare' || type === 'work' || type === 'rest' || type === 'restBetweenSets' || type === 'coolDown') {
+                config[type] += 5;
+            } else {
+                config[type] += 1;
+            }
+            updateDisplay();
+            saveConfig();
+        }
+        
+        // Diminuer une valeur
+        function decreaseValue(type) {
+            if (config[type] > 0) {
+                if (type === 'prepare' || type === 'work' || type === 'rest' || type === 'restBetweenSets' || type === 'coolDown') {
+                    config[type] = Math.max(0, config[type] - 5);
+                } else {
+                    config[type] = Math.max(1, config[type] - 1);
                 }
-            }, 1000);
-        }
-
-        function getPhaseInfo(type) {
-            switch (type) {
-                case 'prepare':
-                    return { label: 'Préparation', description: 'Préparez-vous...' };
-                case 'work':
-                    return { 
-                        label: 'Travail', 
-                        description: currentConfig.workDescription || 'Phase de travail'
-                    };
-                case 'rest':
-                    return { 
-                        label: 'Repos', 
-                        description: currentConfig.restDescription || 'Phase de repos'
-                    };
-                case 'restBetweenSets':
-                    return { label: 'Repos entre sets', description: 'Repos entre les séries' };
-                case 'coolDown':
-                    return { label: 'Récupération', description: 'Phase de récupération' };
-                default:
-                    return { label: '', description: '' };
+                updateDisplay();
+                saveConfig();
             }
         }
-
-        function updateProgress() {
-            if (currentConfig.sets && currentConfig.cycles) {
-                progressEl.textContent = `Set ${currentSet}/${currentConfig.sets} - Cycle ${currentCycle}/${currentConfig.cycles}`;
-            }
+        
+        // Sauvegarder la configuration
+        function saveConfig() {
+            // Récupérer les descriptions
+            config.workDescription = document.getElementById('workDescription').value;
+            config.restDescription = document.getElementById('restDescription').value;
+            
+            fetch('/config', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(config)
+            })
+            .catch(err => console.log('Erreur lors de la sauvegarde:', err));
         }
-
-        function resetTimer() {
-            clearInterval(interval);
-            phaseEl.textContent = 'Réinitialisé';
-            timerEl.textContent = '---';
-            descriptionEl.textContent = '';
-            progressEl.textContent = '';
-            socket.emit('reset');
+        
+        // Démarrer le timer
+        function startTimer() {
+            saveConfig();
+            // Émettre l'événement start via Socket.IO pour synchroniser avec index.html
+            socket.emit('start', config);
+            
+            // Notification visuelle
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = 'Timer démarré !';
+            btn.style.background = '#10b981';
+            
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '';
+            }, 2000);
         }
-
-        socket.on('start', data => {
-            clearInterval(interval);
-            startSequence(data);
-        });
-
-        socket.on('reset', () => {
-            resetTimer();
-        });
-
+        
+        // Ouvrir les paramètres
+        function openSettings() {
+            alert('Fonctionnalité à venir : Paramètres avancés');
+        }
+        
+        // Ouvrir l'affichage
+        function openDisplay() {
+            window.open('/', '_blank');
+        }
+        
+        // Gérer les changements de description
+        document.getElementById('workDescription').addEventListener('input', saveConfig);
+        document.getElementById('restDescription').addEventListener('input', saveConfig);
+        
+        // Gestion de la connexion Socket.IO
         socket.on('connect', () => {
             console.log('Connecté au serveur');
+            document.getElementById('connectionStatus').textContent = 'Connecté au serveur';
+            document.getElementById('statusDot').style.background = '#10b981';
         });
-
+        
         socket.on('disconnect', () => {
             console.log('Déconnecté du serveur');
+            document.getElementById('connectionStatus').textContent = 'Déconnecté du serveur';
+            document.getElementById('statusDot').style.background = '#ef4444';
         });
+        
+        // Charger la configuration au démarrage
+        loadConfig();
     </script>
 </body>
 </html>
-
