@@ -307,13 +307,13 @@ app.get("/server-info", (req, res) => {
   res.json(serverInfo);
 });
 
-// Gestion des connexions Socket.IO
+// Gestion des connexions Socket.IO AVEC CORRECTIONS ANTI-BOUCLE
 io.on("connection", socket => {
-  console.log(`Client connecté: ${socket.id}`);
+  console.log(`✅ Client connecté: ${socket.id}`);
 
-  // Événement de démarrage du timer
+  // ✅ CORRECTION : Événement de démarrage du timer
   socket.on("start", data => {
-    console.log("Démarrage du timer avec la configuration:", {
+    console.log(`🏁 Démarrage du timer par ${socket.id} avec config:`, {
       prepare: data.prepare,
       work: data.work,
       rest: data.rest,
@@ -321,27 +321,28 @@ io.on("connection", socket => {
       sets: data.sets
     });
     
-    // Diffuser à tous les clients connectés
+    // Diffuser à tous les clients (y compris l'expéditeur pour la sync)
     io.emit("start", data);
   });
 
-  // Événement de reset du timer
+  // ✅ CORRECTION MAJEURE : Événement de reset - éviter boucle infinie
   socket.on("reset", () => {
-    console.log("Reset du timer demandé");
-    io.emit("reset");
+    console.log(`🔄 Reset du timer demandé par ${socket.id}`);
+    // CRITICAL FIX: broadcast seulement aux AUTRES clients
+    socket.broadcast.emit("reset");
   });
 
   // Événement de test audio
   socket.on("audioTest", (audioSettings) => {
-    console.log("Test audio demandé avec paramètres:", audioSettings);
+    console.log(`🔊 Test audio demandé par ${socket.id} avec paramètres:`, audioSettings);
     // Diffuser les paramètres audio pour test à tous les clients
     io.emit("audioTest", audioSettings);
   });
 
   // Événement de terminaison
   socket.on("terminate", () => {
-    console.log("Demande de terminaison via Socket.IO");
-    io.emit("examTerminated", { terminatedBy: 'Socket.IO' });
+    console.log(`🛑 Demande de terminaison via Socket.IO par ${socket.id}`);
+    io.emit("examTerminated", { terminatedBy: socket.id });
     setTimeout(() => {
       console.log("Arrêt du serveur via Socket.IO...");
       process.exit(0);
@@ -350,14 +351,14 @@ io.on("connection", socket => {
 
   // Événement de mise à jour des paramètres audio
   socket.on("updateAudioSettings", (audioSettings) => {
-    console.log("Mise à jour des paramètres audio:", audioSettings);
-    // Diffuser les nouveaux paramètres à tous les clients
+    console.log(`🔊 Mise à jour des paramètres audio par ${socket.id}:`, audioSettings);
+    // Diffuser les nouveaux paramètres aux autres clients
     socket.broadcast.emit("audioSettingsUpdated", audioSettings);
   });
 
   // Gestion de la déconnexion
   socket.on("disconnect", () => {
-    console.log(`Client déconnecté: ${socket.id}`);
+    console.log(`❌ Client déconnecté: ${socket.id}`);
   });
 });
 
@@ -399,7 +400,7 @@ async function startServer() {
     // Démarrer le serveur
     server.listen(PORT, () => {
       console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
-      console.log('🚀 TIMER ECOS - SERVEUR DÉMARRÉ');
+      console.log('🚀 TIMER ECOS - SERVEUR DÉMARRÉ (Version Anti-Boucle v2.0)');
       console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
       console.log(`📍 URL principale    : http://localhost:${PORT}`);
       console.log(`⚙️  Administration   : http://localhost:${PORT}/admin.html`);
@@ -416,6 +417,7 @@ async function startServer() {
       console.log('   • QR Code d\'accès');
       console.log('   • Raccourcis clavier');
       console.log('   • Synchronisation temps réel');
+      console.log('   • 🔧 CORRECTION: Boucle infinie reset résolue');
       console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
     });
   } catch (error) {

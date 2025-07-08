@@ -597,7 +597,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script>
     <script>
-        console.log('🚀 Démarrage Timer ECOS...');
+        console.log('🚀 Démarrage Timer ECOS v2.0 Anti-Boucle...');
         
         // Variables globales
         let socket;
@@ -611,10 +611,20 @@
         let audioContext;
         let globalVolume = 0.7;
         let soundsEnabled = true;
+        
+        // Variables pour éviter les appels multiples - CORRECTION BOUCLE INFINIE
+        let isResetting = false;
+        let resetTimeout = null;
 
-        // Initialisation Socket.IO avec retry
+        // Initialisation Socket.IO avec retry et nettoyage
         function initSocket() {
             console.log('🔌 Connexion Socket.IO...');
+            
+            // Déconnecter et nettoyer les anciens listeners si ils existent
+            if (socket) {
+                socket.disconnect();
+                socket.removeAllListeners();
+            }
             
             socket = io({
                 transports: ['websocket', 'polling'],
@@ -623,7 +633,7 @@
             });
 
             socket.on('connect', () => {
-                console.log('✅ Socket.IO connecté');
+                console.log('✅ Socket.IO connecté avec ID:', socket.id);
                 updateStatusIndicator(false);
             });
 
@@ -637,21 +647,21 @@
                 updateStatusIndicator('error');
             });
 
-            // Événements timer
+            // Événements timer avec protection contre les doublons
             socket.on('start', (data) => {
-                console.log('🏁 Timer démarré avec config:', data);
+                console.log('🏁 Timer démarré avec config depuis serveur:', data);
                 clearInterval(interval);
                 startSequence(data);
             });
 
-            // CORRECTION BOUCLE INFINIE : utiliser doResetTimer au lieu de resetTimer
+            // ✅ CORRECTION MAJEURE : reset avec protection contre les boucles
             socket.on('reset', () => {
-                console.log('🔄 Timer réinitialisé depuis le serveur');
-                doResetTimer(); // Utiliser SEULEMENT la fonction locale
+                console.log('🔄 Reset reçu du serveur, socket ID:', socket.id);
+                doResetTimer(); // Seulement reset local, JAMAIS d'émission depuis ici
             });
 
             socket.on('examTerminated', () => {
-                console.log('🛑 Examen terminé');
+                console.log('🛑 Examen terminé depuis serveur');
                 phaseEl.textContent = 'Examen terminé';
                 phaseEl.className = 'phase-transition';
                 timerEl.textContent = '00:00';
@@ -883,7 +893,7 @@
             });
         }
 
-        // Timer functions
+        // Timer functions avec protection contre le reset
         function updateStatusIndicator(status) {
             if (status === 'disconnected') {
                 statusEl.style.background = '#8E8E93';
@@ -908,6 +918,13 @@
             currentSet = 1;
             currentCycle = 1;
             updateStatusIndicator(true);
+            
+            // Réinitialiser les flags de reset
+            isResetting = false;
+            if (resetTimeout) {
+                clearTimeout(resetTimeout);
+                resetTimeout = null;
+            }
             
             playPrepareSound();
             speak('Début de la session. Préparez-vous.');
@@ -956,6 +973,12 @@
         }
 
         function runPhase(type, duration, next) {
+            // Vérifier si un reset a été fait pendant ce temps
+            if (isResetting) {
+                console.log('⚠️ Phase annulée car reset en cours');
+                return;
+            }
+            
             const phaseInfo = getPhaseInfo(type);
             phaseEl.textContent = phaseInfo.label;
             phaseEl.className = 'phase-transition';
@@ -989,6 +1012,12 @@
             clearInterval(interval);
             
             interval = setInterval(() => {
+                // Vérifier si un reset a été fait
+                if (isResetting) {
+                    clearInterval(interval);
+                    return;
+                }
+                
                 let m = Math.floor(duration / 60).toString().padStart(2, '0');
                 let s = (duration % 60).toString().padStart(2, '0');
                 timerEl.textContent = `${m}:${s}`;
@@ -1000,7 +1029,10 @@
                 
                 if (--duration < 0) {
                     clearInterval(interval);
-                    next();
+                    // Vérifier encore une fois avant de continuer
+                    if (!isResetting) {
+                        next();
+                    }
                 }
             }, 1000);
         }
@@ -1046,12 +1078,26 @@
             speak('Session terminée ! Félicitations !');
         }
 
-        // CORRECTION BOUCLE INFINIE : Séparation des fonctions de reset
+        // ✅ CORRECTION MAJEURE BOUCLE INFINIE : Séparation des fonctions de reset avec protection complète
         
-        // Fonction de reset local (sans émettre d'événement)
+        // Fonction de reset local avec protection contre les appels multiples
         function doResetTimer() {
-            console.log('🔄 Reset timer local');
+            if (isResetting) {
+                console.log('⚠️ Reset déjà en cours, ignoré');
+                return;
+            }
+            
+            isResetting = true;
+            console.log('🔄 Reset timer local uniquement (pas d\'émission)');
+            
+            // Nettoyer tous les intervals et timeouts
             clearInterval(interval);
+            if (resetTimeout) {
+                clearTimeout(resetTimeout);
+                resetTimeout = null;
+            }
+            
+            // Réinitialiser l'état du timer
             phaseEl.textContent = 'Réinitialisé';
             phaseEl.className = 'phase-transition';
             timerEl.textContent = '--:--';
@@ -1059,19 +1105,42 @@
             progressEl.textContent = '';
             updateStatusIndicator(false);
             
+            // Réinitialiser les variables de state
+            currentSet = 1;
+            currentCycle = 1;
+            currentConfig = {};
+            
             playBeep(300, 200);
             speak('Timer réinitialisé');
+            
+            // Débloquer après un délai pour éviter les appels multiples
+            setTimeout(() => {
+                isResetting = false;
+                console.log('🔓 Reset débloqué, prêt pour nouveau cycle');
+            }, 1000);
         }
 
-        // Fonction de reset qui émet l'événement (appelée par le bouton)
+        // Fonction de reset qui émet l'événement (appelée par le bouton uniquement)
         function resetTimer() {
-            console.log('🔄 Reset timer avec diffusion');
-            doResetTimer(); // Reset local d'abord
+            console.log('🔄 Reset timer avec diffusion vers autres clients');
             
-            // Puis diffuser aux autres clients
-            if (socket && socket.connected) {
-                socket.emit('reset');
+            // Reset local d'abord
+            doResetTimer();
+            
+            // Éviter les émissions multiples rapides
+            if (resetTimeout) {
+                clearTimeout(resetTimeout);
             }
+            
+            resetTimeout = setTimeout(() => {
+                if (socket && socket.connected) {
+                    console.log('📡 Émission événement reset vers serveur (broadcast aux autres)');
+                    socket.emit('reset');
+                } else {
+                    console.warn('⚠️ Socket non connecté pour reset');
+                }
+                resetTimeout = null;
+            }, 100);
         }
 
         function showTerminateModal() {
@@ -1164,7 +1233,7 @@
 
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('📱 Initialisation Timer ECOS...');
+            console.log('📱 Initialisation Timer ECOS v2.0 (Correction Boucle Reset Appliquée)...');
             
             // Charger les préférences
             const savedTheme = localStorage.getItem('timer-theme-quick') || 'auto';
@@ -1186,7 +1255,7 @@
                 }
             }, { once: true });
             
-            console.log('✅ Timer ECOS initialisé');
+            console.log('✅ Timer ECOS v2.0 initialisé avec corrections anti-boucle reset');
         });
     </script>
 </body>
