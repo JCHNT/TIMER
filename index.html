@@ -90,6 +90,7 @@
             gap: 30px;
             justify-content: center;
             margin-top: 40px;
+            flex-wrap: wrap;
         }
         
         .control-btn {
@@ -112,6 +113,21 @@
             border-color: rgba(255, 255, 255, 0.5);
             transform: translateY(-3px);
             box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+        }
+        
+        .terminate-btn {
+            background: rgba(220, 38, 38, 0.8);
+            border-color: rgba(220, 38, 38, 0.9);
+            color: white;
+            font-weight: 600;
+            margin-top: 20px;
+        }
+        
+        .terminate-btn:hover {
+            background: rgba(220, 38, 38, 1);
+            border-color: rgba(220, 38, 38, 1);
+            transform: translateY(-3px);
+            box-shadow: 0 10px 20px rgba(220, 38, 38, 0.3);
         }
         
         .status-indicator {
@@ -140,6 +156,75 @@
             from { opacity: 0; transform: scale(0.9); }
             to { opacity: 1; transform: scale(1); }
         }
+        
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(10px);
+        }
+        
+        .modal-content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            margin: 15% auto;
+            padding: 40px;
+            border-radius: 20px;
+            width: 80%;
+            max-width: 500px;
+            text-align: center;
+            color: #333;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+        }
+        
+        .modal h2 {
+            color: #dc2626;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+        
+        .modal p {
+            margin-bottom: 30px;
+            font-size: 0.9em;
+            line-height: 1.5;
+        }
+        
+        .modal-buttons {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+        }
+        
+        .modal-btn {
+            padding: 15px 30px;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            font-size: 0.8em;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            min-width: 120px;
+        }
+        
+        .modal-btn-confirm {
+            background: #dc2626;
+            color: white;
+        }
+        
+        .modal-btn-cancel {
+            background: #f3f4f6;
+            color: #374151;
+        }
+        
+        .modal-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
+        }
     </style>
 </head>
 <body>
@@ -156,6 +241,23 @@
             <a href="/admin.html" class="control-btn">Configuration</a>
             <button class="control-btn" onclick="resetTimer()">Réinitialiser</button>
         </div>
+        
+        <div class="controls">
+            <button class="control-btn terminate-btn" onclick="showTerminateModal()">Terminer l'examen</button>
+        </div>
+    </div>
+
+    <!-- Modal de confirmation -->
+    <div id="terminateModal" class="modal">
+        <div class="modal-content">
+            <h2>⚠️ Confirmer la terminaison</h2>
+            <p>Êtes-vous sûr de vouloir terminer l'examen ?<br>
+            Cette action arrêtera définitivement le serveur et mettra fin à la session pour tous les utilisateurs connectés.</p>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-confirm" onclick="terminateExam()">Oui, terminer</button>
+                <button class="modal-btn modal-btn-cancel" onclick="hideTerminateModal()">Annuler</button>
+            </div>
+        </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
@@ -168,6 +270,7 @@
         const descriptionEl = document.getElementById('description');
         const progressEl = document.getElementById('progress');
         const statusEl = document.getElementById('statusIndicator');
+        const terminateModal = document.getElementById('terminateModal');
 
         let interval;
         let currentConfig = {};
@@ -314,6 +417,49 @@
             socket.emit('reset');
         }
 
+        function showTerminateModal() {
+            terminateModal.style.display = 'block';
+        }
+
+        function hideTerminateModal() {
+            terminateModal.style.display = 'none';
+        }
+
+        function terminateExam() {
+            hideTerminateModal();
+            
+            // Afficher un message de terminaison
+            phaseEl.textContent = 'Examen terminé';
+            phaseEl.className = 'phase-transition';
+            timerEl.textContent = '00:00';
+            descriptionEl.textContent = 'L\'examen a été terminé. Le serveur va s\'arrêter.';
+            progressEl.textContent = 'Session terminée';
+            
+            // Envoyer la demande de terminaison au serveur
+            fetch('/terminate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log(data.message);
+            })
+            .catch(error => {
+                console.error('Erreur lors de la terminaison:', error);
+                // Fallback via Socket.IO
+                socket.emit('terminate');
+            });
+        }
+
+        // Fermer le modal en cliquant à l'extérieur
+        window.onclick = function(event) {
+            if (event.target === terminateModal) {
+                hideTerminateModal();
+            }
+        }
+
         socket.on('start', data => {
             clearInterval(interval);
             startSequence(data);
@@ -321,6 +467,16 @@
 
         socket.on('reset', () => {
             resetTimer();
+        });
+
+        socket.on('examTerminated', () => {
+            phaseEl.textContent = 'Examen terminé';
+            phaseEl.className = 'phase-transition';
+            timerEl.textContent = '00:00';
+            descriptionEl.textContent = 'L\'examen a été terminé par l\'administrateur.';
+            progressEl.textContent = 'Session terminée';
+            clearInterval(interval);
+            updateStatusIndicator(false);
         });
 
         socket.on('connect', () => {
