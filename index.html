@@ -65,7 +65,7 @@
             justify-content: center;
             align-items: center;
             color: var(--text-primary);
-            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all 0.3s ease;
             overflow-x: hidden;
         }
 
@@ -93,14 +93,21 @@
             margin: 20px;
         }
 
-        .floating-controls {
+        /* Contrôles simplifiés en haut */
+        .top-controls {
             position: fixed;
             top: 30px;
+            left: 30px;
             right: 30px;
             display: flex;
-            flex-direction: column;
-            gap: 12px;
+            justify-content: space-between;
+            align-items: center;
             z-index: 100;
+        }
+
+        .control-group {
+            display: flex;
+            gap: 12px;
         }
 
         .control-pill {
@@ -108,12 +115,12 @@
             backdrop-filter: blur(var(--blur-amount));
             border: 1px solid var(--border-color);
             border-radius: 20px;
-            padding: 12px;
+            padding: 12px 16px;
             display: flex;
             align-items: center;
             gap: 12px;
             box-shadow: 0 4px 20px var(--shadow-color);
-            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all 0.2s ease;
         }
 
         .control-pill:hover {
@@ -133,7 +140,7 @@
             align-items: center;
             justify-content: center;
             font-size: 16px;
-            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all 0.2s ease;
         }
 
         .control-btn-icon:hover {
@@ -145,13 +152,8 @@
             transform: scale(0.95);
         }
 
-        .theme-toggle {
-            position: relative;
-            overflow: hidden;
-        }
-
         #themeIcon {
-            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all 0.3s ease;
             display: inline-block;
         }
 
@@ -197,17 +199,14 @@
             transform: scale(1.1);
         }
 
+        /* Status indicator */
         .status-indicator {
-            position: fixed;
-            top: 30px;
-            left: 30px;
             width: 12px;
             height: 12px;
             border-radius: 6px;
             background: #34C759;
             box-shadow: 0 0 0 3px rgba(52, 199, 89, 0.3);
             animation: pulse-ios 2s infinite;
-            z-index: 100;
         }
 
         @keyframes pulse-ios {
@@ -292,7 +291,7 @@
             font-size: calc(16px * var(--font-size-multiplier));
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all 0.2s ease;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
@@ -325,7 +324,7 @@
         }
         
         .phase-transition {
-            animation: fadeInScale 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            animation: fadeInScale 0.6s ease;
         }
         
         @keyframes fadeInScale {
@@ -339,6 +338,7 @@
             }
         }
         
+        /* Modals */
         .modal {
             display: none;
             position: fixed;
@@ -349,7 +349,7 @@
             height: 100%;
             background-color: rgba(0, 0, 0, 0.4);
             backdrop-filter: blur(20px);
-            animation: modalFadeIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            animation: modalFadeIn 0.3s ease;
         }
 
         @keyframes modalFadeIn {
@@ -369,7 +369,7 @@
             color: var(--text-primary);
             box-shadow: 0 20px 60px var(--shadow-color);
             border: 1px solid var(--border-color);
-            animation: modalSlideIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            animation: modalSlideIn 0.4s ease;
         }
 
         @keyframes modalSlideIn {
@@ -411,7 +411,7 @@
             cursor: pointer;
             font-size: 16px;
             font-weight: 600;
-            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all 0.2s ease;
             min-width: 100px;
         }
         
@@ -444,74 +444,7 @@
             transform: translateY(0);
         }
 
-        .settings-modal .modal-content {
-            max-width: 600px;
-            text-align: left;
-        }
-
-        .settings-section {
-            margin-bottom: 30px;
-            padding: 24px;
-            background: rgba(var(--text-tertiary), 0.1);
-            border-radius: 16px;
-            border: 1px solid var(--border-color);
-        }
-
-        .settings-section h3 {
-            margin-bottom: 20px;
-            color: var(--text-primary);
-            font-size: 20px;
-            font-weight: 600;
-        }
-
-        .setting-item {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 16px;
-            padding: 12px 0;
-        }
-
-        .setting-label {
-            color: var(--text-primary);
-            font-size: 16px;
-            font-weight: 500;
-        }
-
-        .theme-selector, .font-size-selector {
-            padding: 8px 16px;
-            border-radius: 8px;
-            border: 1px solid var(--border-color);
-            background: var(--surface-color);
-            color: var(--text-primary);
-            font-size: 14px;
-            font-weight: 500;
-        }
-
-        .shortcuts-help {
-            background: rgba(var(--text-tertiary), 0.1);
-            padding: 20px;
-            border-radius: 12px;
-            margin-top: 20px;
-        }
-
-        .shortcut-item {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 12px;
-            font-size: 14px;
-        }
-
-        .key {
-            background: var(--text-tertiary);
-            color: var(--background-primary);
-            padding: 4px 8px;
-            border-radius: 6px;
-            font-family: 'SF Mono', 'Monaco', 'Cascadia Code', monospace;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
+        /* QR Code styling */
         .qr-container {
             text-align: center;
             padding: 20px;
@@ -538,19 +471,7 @@
             color: var(--text-secondary);
         }
 
-        .fullscreen-active {
-            --font-size-multiplier: 1.5;
-        }
-
-        .fullscreen-active .container {
-            min-width: 90vw;
-            max-width: 90vw;
-            min-height: 80vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-        }
-
+        /* Responsive */
         @media (max-width: 768px) {
             .container {
                 min-width: calc(100vw - 40px);
@@ -558,15 +479,16 @@
                 margin: 20px;
             }
 
-            .floating-controls {
-                top: 20px;
-                right: 20px;
-                scale: 0.9;
-            }
-
-            .status-indicator {
+            .top-controls {
                 top: 20px;
                 left: 20px;
+                right: 20px;
+                flex-direction: column;
+                gap: 12px;
+            }
+
+            .control-group {
+                justify-content: center;
             }
 
             .controls {
@@ -577,14 +499,6 @@
             .control-btn {
                 width: 100%;
                 max-width: 200px;
-            }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
             }
         }
 
@@ -606,38 +520,30 @@
 </head>
 <body>
     <div class="background-blur"></div>
-    <div class="status-indicator" id="statusIndicator"></div>
     
-    <div class="floating-controls">
-        <div class="control-pill">
-            <span class="volume-icon" id="volumeIcon" onclick="toggleMute()">🔊</span>
-            <div class="volume-control">
-                <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="70">
+    <div class="top-controls">
+        <div class="control-group">
+            <div class="status-indicator" id="statusIndicator"></div>
+            <div class="control-pill">
+                <span class="volume-icon" id="volumeIcon" onclick="toggleMute()">🔊</span>
+                <div class="volume-control">
+                    <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="70">
+                </div>
             </div>
         </div>
         
-        <div class="control-pill">
-            <button class="control-btn-icon theme-toggle" onclick="toggleTheme()" title="Mode sombre/clair" id="themeToggleBtn">
-                <span id="themeIcon">🌙</span>
-            </button>
-        </div>
-        
-        <div class="control-pill">
-            <button class="control-btn-icon" onclick="showQRCode()" title="QR Code d'accès (Q)">
-                <span>📱</span>
-            </button>
-        </div>
-        
-        <div class="control-pill">
-            <button class="control-btn-icon" onclick="showSettings()" title="Paramètres (P)">
-                <span>⚙️</span>
-            </button>
-        </div>
-        
-        <div class="control-pill">
-            <button class="control-btn-icon" onclick="toggleFullscreen()" title="Plein écran (F11)">
-                <span>⛶</span>
-            </button>
+        <div class="control-group">
+            <div class="control-pill">
+                <button class="control-btn-icon" onclick="toggleTheme()" title="Mode sombre/clair" id="themeToggleBtn">
+                    <span id="themeIcon">🌙</span>
+                </button>
+            </div>
+            
+            <div class="control-pill">
+                <button class="control-btn-icon" onclick="showQRCode()" title="QR Code d'accès">
+                    <span>📱</span>
+                </button>
+            </div>
         </div>
     </div>
     
@@ -654,11 +560,12 @@
         </div>
     </div>
 
-    <!-- Modals... -->
+    <!-- Modal de confirmation terminaison -->
     <div id="terminateModal" class="modal">
         <div class="modal-content">
             <h2>⚠️ Confirmer la terminaison</h2>
-            <p>Êtes-vous sûr de vouloir terminer l'examen ?</p>
+            <p>Êtes-vous sûr de vouloir terminer l'examen ?<br>
+            Cette action arrêtera définitivement le serveur et mettra fin à la session pour tous les utilisateurs connectés.</p>
             <div class="modal-buttons">
                 <button class="modal-btn modal-btn-confirm" onclick="terminateExam()">Oui, terminer</button>
                 <button class="modal-btn modal-btn-cancel" onclick="hideTerminateModal()">Annuler</button>
@@ -666,20 +573,213 @@
         </div>
     </div>
 
+    <!-- Modal QR Code -->
+    <div id="qrModal" class="modal">
+        <div class="modal-content">
+            <h2>📱 QR Code d'accès</h2>
+            <div class="qr-container">
+                <p>Scannez ce code pour accéder au timer :</p>
+                <div class="qr-code" id="qrCode">
+                    <!-- Le QR code sera généré ici -->
+                </div>
+                <div class="url-display" id="timerUrl"></div>
+                <p style="font-size: 14px; color: var(--text-secondary); margin-top: 10px;">
+                    Partagez cette URL ou ce QR code avec vos étudiants pour qu'ils puissent suivre le timer sur leurs appareils.
+                </p>
+            </div>
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-primary" onclick="copyUrl()">Copier l'URL</button>
+                <button class="modal-btn modal-btn-secondary" onclick="hideQRCode()">Fermer</button>
+            </div>
+        </div>
+    </div>
+
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script>
     <script>
-        // JavaScript complet avec gestion thèmes, audio, raccourcis...
-        const socket = io();
+        console.log('🚀 Démarrage Timer ECOS...');
+        
+        // Variables globales
+        let socket;
         let currentTheme = 'auto';
         let isDarkMode = false;
         let interval;
         let currentConfig = {};
+        let currentSet = 1;
+        let currentCycle = 1;
+        let isRunning = false;
+        let audioContext;
         let globalVolume = 0.7;
         let soundsEnabled = true;
-        let audioContext;
 
-        // Fonctions de basculement thème
+        // Initialisation Socket.IO avec retry
+        function initSocket() {
+            console.log('🔌 Connexion Socket.IO...');
+            
+            socket = io({
+                transports: ['websocket', 'polling'],
+                timeout: 5000,
+                forceNew: true
+            });
+
+            socket.on('connect', () => {
+                console.log('✅ Socket.IO connecté');
+                updateStatusIndicator(false);
+            });
+
+            socket.on('disconnect', (reason) => {
+                console.log('❌ Socket.IO déconnecté:', reason);
+                updateStatusIndicator('disconnected');
+            });
+
+            socket.on('connect_error', (error) => {
+                console.error('❌ Erreur Socket.IO:', error);
+                updateStatusIndicator('error');
+            });
+
+            // Événements timer
+            socket.on('start', (data) => {
+                console.log('🏁 Timer démarré avec config:', data);
+                clearInterval(interval);
+                startSequence(data);
+            });
+
+            socket.on('reset', () => {
+                console.log('🔄 Timer réinitialisé');
+                resetTimer();
+            });
+
+            socket.on('examTerminated', () => {
+                console.log('🛑 Examen terminé');
+                phaseEl.textContent = 'Examen terminé';
+                phaseEl.className = 'phase-transition';
+                timerEl.textContent = '00:00';
+                descriptionEl.textContent = 'L\'examen a été terminé par l\'administrateur.';
+                progressEl.textContent = 'Session terminée';
+                clearInterval(interval);
+                updateStatusIndicator(false);
+                
+                playBeep(200, 500);
+                speak('Examen terminé par l\'administrateur');
+            });
+        }
+
+        // Elements DOM
+        const titleEl = document.getElementById('title');
+        const timerEl = document.getElementById('timer');
+        const phaseEl = document.getElementById('phase');
+        const descriptionEl = document.getElementById('description');
+        const progressEl = document.getElementById('progress');
+        const statusEl = document.getElementById('statusIndicator');
+        const terminateModal = document.getElementById('terminateModal');
+        const qrModal = document.getElementById('qrModal');
+
+        // Initialisation audio
+        function initAudio() {
+            try {
+                audioContext = new (window.AudioContext || window.webkitAudioContext)();
+                console.log('🔊 Audio initialisé');
+            } catch (e) {
+                console.warn('⚠️ Audio non supporté:', e);
+            }
+        }
+
+        // Générer un son
+        function playBeep(frequency = 440, duration = 200, type = 'sine') {
+            if (!soundsEnabled || !audioContext || globalVolume === 0) return;
+            
+            try {
+                const oscillator = audioContext.createOscillator();
+                const gainNode = audioContext.createGain();
+                
+                oscillator.connect(gainNode);
+                gainNode.connect(audioContext.destination);
+                
+                oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
+                oscillator.type = type;
+                
+                gainNode.gain.setValueAtTime(0, audioContext.currentTime);
+                gainNode.gain.linearRampToValueAtTime(globalVolume * 0.3, audioContext.currentTime + 0.01);
+                gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + duration / 1000);
+                
+                oscillator.start(audioContext.currentTime);
+                oscillator.stop(audioContext.currentTime + duration / 1000);
+            } catch (e) {
+                console.warn('⚠️ Erreur son:', e);
+            }
+        }
+
+        // Sons spécifiques
+        function playWorkSound() {
+            playBeep(880, 300);
+        }
+
+        function playRestSound() {
+            playBeep(440, 300);
+        }
+
+        function playPrepareSound() {
+            playBeep(660, 500);
+        }
+
+        function playEndSound() {
+            setTimeout(() => playBeep(523, 200), 0);   // Do
+            setTimeout(() => playBeep(659, 200), 200); // Mi
+            setTimeout(() => playBeep(784, 400), 400); // Sol
+        }
+
+        function playCountdownSound() {
+            playBeep(800, 100);
+        }
+
+        // Synthèse vocale
+        function speak(text) {
+            if (!soundsEnabled) return;
+            
+            try {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'fr-FR';
+                utterance.volume = globalVolume;
+                utterance.rate = 1.2;
+                speechSynthesis.speak(utterance);
+            } catch (e) {
+                console.warn('⚠️ Synthèse vocale non supportée');
+            }
+        }
+
+        // Gestion du volume
+        document.getElementById('volumeSlider').addEventListener('input', function() {
+            globalVolume = this.value / 100;
+            updateVolumeIcon();
+            console.log('🔊 Volume:', globalVolume);
+        });
+
+        function updateVolumeIcon() {
+            const icon = document.getElementById('volumeIcon');
+            if (globalVolume === 0) {
+                icon.textContent = '🔇';
+            } else if (globalVolume < 0.5) {
+                icon.textContent = '🔉';
+            } else {
+                icon.textContent = '🔊';
+            }
+        }
+
+        function toggleMute() {
+            const slider = document.getElementById('volumeSlider');
+            if (globalVolume > 0) {
+                slider.dataset.lastVolume = globalVolume;
+                globalVolume = 0;
+                slider.value = 0;
+            } else {
+                const lastVolume = slider.dataset.lastVolume || 0.7;
+                globalVolume = parseFloat(lastVolume);
+                slider.value = globalVolume * 100;
+            }
+            updateVolumeIcon();
+        }
+
+        // Gestion des thèmes
         function toggleTheme() {
             if (currentTheme === 'auto') {
                 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
@@ -693,6 +793,7 @@
             applyTheme();
             updateThemeIcon();
             localStorage.setItem('timer-theme-quick', currentTheme);
+            console.log('🎨 Thème:', currentTheme);
         }
 
         function applyTheme() {
@@ -719,15 +820,362 @@
             if (btn) btn.title = titleText;
         }
 
-        // Toutes les autres fonctions audio, timer, raccourcis...
-        // [Code JavaScript complet]
+        // QR Code
+        function showQRCode() {
+            console.log('📱 Génération QR Code...');
+            const url = window.location.origin;
+            document.getElementById('timerUrl').textContent = url;
+            
+            const qrCodeElement = document.getElementById('qrCode');
+            qrCodeElement.innerHTML = '<div style="padding: 20px;">Génération du QR code...</div>';
+            
+            // Vérifier que QRCode est disponible
+            if (typeof QRCode === 'undefined') {
+                qrCodeElement.innerHTML = '<p style="color: #FF3B30;">Erreur: Bibliothèque QR Code non chargée</p>';
+                document.getElementById('qrModal').style.display = 'block';
+                return;
+            }
+            
+            try {
+                QRCode.toCanvas(qrCodeElement, url, {
+                    width: 200,
+                    margin: 2,
+                    color: {
+                        dark: '#007AFF',
+                        light: '#FFFFFF'
+                    }
+                }, function (error) {
+                    if (error) {
+                        console.error('❌ Erreur QR Code:', error);
+                        qrCodeElement.innerHTML = '<p style="color: #FF3B30;">Erreur lors de la génération du QR code</p>';
+                    } else {
+                        console.log('✅ QR Code généré');
+                    }
+                });
+            } catch (error) {
+                console.error('❌ Erreur QR Code:', error);
+                qrCodeElement.innerHTML = '<p style="color: #FF3B30;">Erreur lors de la génération du QR code</p>';
+            }
+            
+            document.getElementById('qrModal').style.display = 'block';
+        }
+
+        function hideQRCode() {
+            document.getElementById('qrModal').style.display = 'none';
+        }
+
+        function copyUrl() {
+            const url = document.getElementById('timerUrl').textContent;
+            navigator.clipboard.writeText(url).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = 'Copié !';
+                btn.style.background = '#34C759';
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '';
+                }, 2000);
+            }).catch(err => {
+                console.error('Erreur copie:', err);
+                alert('URL: ' + url);
+            });
+        }
+
+        // Timer functions
+        function updateStatusIndicator(status) {
+            if (status === 'disconnected') {
+                statusEl.style.background = '#8E8E93';
+                statusEl.style.boxShadow = '0 0 0 3px rgba(142, 142, 147, 0.3)';
+            } else if (status === 'error') {
+                statusEl.style.background = '#FF3B30';
+                statusEl.style.boxShadow = '0 0 0 3px rgba(255, 59, 48, 0.3)';
+            } else if (status === true) {
+                statusEl.style.background = '#FF3B30';
+                statusEl.style.boxShadow = '0 0 0 3px rgba(255, 59, 48, 0.3)';
+            } else {
+                statusEl.style.background = '#34C759';
+                statusEl.style.boxShadow = '0 0 0 3px rgba(52, 199, 89, 0.3)';
+            }
+            isRunning = status === true;
+        }
+
+        function startSequence(config) {
+            console.log('🏁 Démarrage séquence:', config);
+            currentConfig = config;
+            titleEl.textContent = config.title || 'TIMER ECOS';
+            currentSet = 1;
+            currentCycle = 1;
+            updateStatusIndicator(true);
+            
+            playPrepareSound();
+            speak('Début de la session. Préparez-vous.');
+            
+            runPhase('prepare', config.prepare, () => {
+                runSet(currentSet, config);
+            });
+        }
+
+        function runSet(setNumber, config) {
+            if (setNumber > config.sets) {
+                if (config.coolDown > 0) {
+                    runPhase('coolDown', config.coolDown, () => {
+                        finishTimer();
+                    });
+                } else {
+                    finishTimer();
+                }
+                return;
+            }
+            
+            currentCycle = 1;
+            runWorkCycle(currentCycle, setNumber, config);
+        }
+
+        function runWorkCycle(cycle, setNumber, config) {
+            if (cycle > config.cycles) {
+                if (setNumber < config.sets && config.restBetweenSets > 0) {
+                    runPhase('restBetweenSets', config.restBetweenSets, () => {
+                        currentSet++;
+                        runSet(currentSet, config);
+                    });
+                } else {
+                    currentSet++;
+                    runSet(currentSet, config);
+                }
+                return;
+            }
+            
+            runPhase('work', config.work, () => {
+                runPhase('rest', config.rest, () => {
+                    currentCycle++;
+                    runWorkCycle(currentCycle, setNumber, config);
+                });
+            });
+        }
+
+        function runPhase(type, duration, next) {
+            const phaseInfo = getPhaseInfo(type);
+            phaseEl.textContent = phaseInfo.label;
+            phaseEl.className = 'phase-transition';
+            descriptionEl.textContent = phaseInfo.description;
+            
+            switch(type) {
+                case 'work':
+                    playWorkSound();
+                    speak('Travail !');
+                    break;
+                case 'rest':
+                    playRestSound();
+                    speak('Repos');
+                    break;
+                case 'prepare':
+                    playPrepareSound();
+                    speak('Préparation');
+                    break;
+                case 'restBetweenSets':
+                    playRestSound();
+                    speak('Repos entre séries');
+                    break;
+                case 'coolDown':
+                    playRestSound();
+                    speak('Récupération finale');
+                    break;
+            }
+            
+            updateProgress();
+            
+            clearInterval(interval);
+            
+            interval = setInterval(() => {
+                let m = Math.floor(duration / 60).toString().padStart(2, '0');
+                let s = (duration % 60).toString().padStart(2, '0');
+                timerEl.textContent = `${m}:${s}`;
+                
+                if (duration <= 3 && duration > 0) {
+                    playCountdownSound();
+                    speak(duration.toString());
+                }
+                
+                if (--duration < 0) {
+                    clearInterval(interval);
+                    next();
+                }
+            }, 1000);
+        }
+
+        function getPhaseInfo(type) {
+            switch (type) {
+                case 'prepare':
+                    return { label: 'Préparation', description: 'Préparez-vous pour commencer...' };
+                case 'work':
+                    return { 
+                        label: 'Travail', 
+                        description: currentConfig.workDescription || 'Phase de travail active'
+                    };
+                case 'rest':
+                    return { 
+                        label: 'Repos', 
+                        description: currentConfig.restDescription || 'Phase de repos'
+                    };
+                case 'restBetweenSets':
+                    return { label: 'Repos entre séries', description: 'Pause entre les séries d\'exercices' };
+                case 'coolDown':
+                    return { label: 'Récupération', description: 'Phase de récupération finale' };
+                default:
+                    return { label: '', description: '' };
+            }
+        }
+
+        function updateProgress() {
+            if (currentConfig.sets && currentConfig.cycles) {
+                progressEl.textContent = `Série ${currentSet}/${currentConfig.sets} • Cycle ${currentCycle}/${currentConfig.cycles}`;
+            }
+        }
+
+        function finishTimer() {
+            phaseEl.textContent = 'Session terminée';
+            phaseEl.className = 'phase-transition';
+            timerEl.textContent = '00:00';
+            descriptionEl.textContent = 'Félicitations ! Vous avez terminé votre session.';
+            progressEl.textContent = 'Session complète';
+            updateStatusIndicator(false);
+            
+            playEndSound();
+            speak('Session terminée ! Félicitations !');
+        }
+
+        function resetTimer() {
+            console.log('🔄 Reset timer');
+            clearInterval(interval);
+            phaseEl.textContent = 'Réinitialisé';
+            phaseEl.className = 'phase-transition';
+            timerEl.textContent = '--:--';
+            descriptionEl.textContent = 'Timer réinitialisé';
+            progressEl.textContent = '';
+            updateStatusIndicator(false);
+            
+            if (socket && socket.connected) {
+                socket.emit('reset');
+            }
+            
+            playBeep(300, 200);
+            speak('Timer réinitialisé');
+        }
+
+        function showTerminateModal() {
+            terminateModal.style.display = 'block';
+        }
+
+        function hideTerminateModal() {
+            terminateModal.style.display = 'none';
+        }
+
+        function terminateExam() {
+            hideTerminateModal();
+            
+            phaseEl.textContent = 'Examen terminé';
+            phaseEl.className = 'phase-transition';
+            timerEl.textContent = '00:00';
+            descriptionEl.textContent = 'L\'examen a été terminé. Le serveur va s\'arrêter.';
+            progressEl.textContent = 'Session terminée';
+            
+            playBeep(200, 500);
+            speak('Examen terminé');
+            
+            fetch('/terminate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('✅ Terminaison:', data.message);
+            })
+            .catch(error => {
+                console.error('❌ Erreur terminaison:', error);
+                if (socket && socket.connected) {
+                    socket.emit('terminate');
+                }
+            });
+        }
+
+        // Fermer modals en cliquant à l'extérieur
+        window.onclick = function(event) {
+            if (event.target === terminateModal) {
+                hideTerminateModal();
+            } else if (event.target === qrModal) {
+                hideQRCode();
+            }
+        }
+
+        // Raccourcis clavier
+        document.addEventListener('keydown', function(event) {
+            if (event.target.tagName === 'INPUT' || event.target.tagName === 'SELECT') return;
+            
+            switch(event.key) {
+                case 'r':
+                case 'R':
+                    event.preventDefault();
+                    resetTimer();
+                    break;
+                case 'Escape':
+                    event.preventDefault();
+                    if (qrModal.style.display === 'block') {
+                        hideQRCode();
+                    } else if (terminateModal.style.display === 'block') {
+                        hideTerminateModal();
+                    } else {
+                        showTerminateModal();
+                    }
+                    break;
+                case 't':
+                case 'T':
+                    event.preventDefault();
+                    toggleTheme();
+                    break;
+                case 'q':
+                case 'Q':
+                    event.preventDefault();
+                    showQRCode();
+                    break;
+            }
+        });
+
+        // Écouter les changements de préférences système
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (currentTheme === 'auto') {
+                isDarkMode = e.matches;
+                updateThemeIcon();
+            }
+        });
 
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
+            console.log('📱 Initialisation Timer ECOS...');
+            
+            // Charger les préférences
             const savedTheme = localStorage.getItem('timer-theme-quick') || 'auto';
             currentTheme = savedTheme;
+            
             applyTheme();
             updateThemeIcon();
+            initAudio();
+            updateVolumeIcon();
+            updateStatusIndicator(false);
+            
+            // Initialiser Socket.IO
+            initSocket();
+            
+            // Activer l'audio au premier clic
+            document.addEventListener('click', function() {
+                if (audioContext && audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+            }, { once: true });
+            
+            console.log('✅ Timer ECOS initialisé');
         });
     </script>
 </body>

@@ -8,7 +8,6 @@
         @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
         :root {
-            /* Thème par défaut - iOS/macOS style */
             --primary-color: #007AFF;
             --secondary-color: #5856D6;
             --success-color: #34C759;
@@ -26,7 +25,6 @@
             --blur-amount: 20px;
         }
 
-        /* Thème sombre - macOS Dark Mode */
         .theme-dark {
             --primary-color: #0A84FF;
             --secondary-color: #5E5CE6;
@@ -44,7 +42,6 @@
             --shadow-color: rgba(0, 0, 0, 0.3);
         }
 
-        /* Thème clair - iOS Light */
         .theme-light {
             --primary-color: #007AFF;
             --secondary-color: #5856D6;
@@ -62,24 +59,6 @@
             --shadow-color: rgba(0, 0, 0, 0.05);
         }
 
-        /* Thème contraste élevé */
-        .theme-high-contrast {
-            --primary-color: #0066CC;
-            --secondary-color: #5856D6;
-            --success-color: #00AA00;
-            --warning-color: #FF8800;
-            --danger-color: #CC0000;
-            --background-primary: #FFFFFF;
-            --background-secondary: #000000;
-            --text-primary: #000000;
-            --text-secondary: #666666;
-            --text-tertiary: #999999;
-            --surface-color: rgba(255, 255, 255, 1);
-            --card-color: rgba(255, 255, 255, 1);
-            --border-color: rgba(0, 0, 0, 0.3);
-            --shadow-color: rgba(0, 0, 0, 0.2);
-        }
-
         * {
             margin: 0;
             padding: 0;
@@ -91,7 +70,7 @@
             background: var(--background-primary);
             min-height: 100vh;
             color: var(--text-primary);
-            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all 0.3s ease;
             padding: 20px;
             overflow-x: hidden;
         }
@@ -163,7 +142,7 @@
             align-items: center;
             justify-content: center;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all 0.2s ease;
             font-size: 18px;
             backdrop-filter: blur(10px);
             border: 1px solid rgba(255, 255, 255, 0.3);
@@ -195,7 +174,7 @@
             border-radius: 16px;
             padding: 24px;
             border: 1px solid var(--border-color);
-            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all 0.2s ease;
             backdrop-filter: blur(var(--blur-amount));
             box-shadow: 0 4px 20px var(--shadow-color);
         }
@@ -277,7 +256,7 @@
             display: flex;
             align-items: center;
             justify-content: center;
-            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all 0.2s ease;
             box-shadow: 0 2px 8px rgba(0, 122, 255, 0.3);
         }
         
@@ -303,7 +282,7 @@
             padding: 12px 16px;
             border-radius: 12px;
             outline: none;
-            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all 0.2s ease;
             margin-top: 12px;
             font-family: inherit;
         }
@@ -352,7 +331,7 @@
             background: var(--text-tertiary);
             border-radius: 12px;
             cursor: pointer;
-            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all 0.3s ease;
         }
 
         .audio-toggle.active {
@@ -368,7 +347,7 @@
             height: 20px;
             background: white;
             border-radius: 10px;
-            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all 0.3s ease;
             box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
         }
 
@@ -429,7 +408,7 @@
             font-size: 16px;
             font-weight: 600;
             cursor: pointer;
-            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all 0.2s ease;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
@@ -565,7 +544,6 @@
             display: none;
         }
 
-        /* Modals style iOS/macOS */
         .modal {
             display: none;
             position: fixed;
@@ -576,7 +554,7 @@
             height: 100%;
             background-color: rgba(0, 0, 0, 0.4);
             backdrop-filter: blur(20px);
-            animation: modalFadeIn 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            animation: modalFadeIn 0.3s ease;
         }
 
         @keyframes modalFadeIn {
@@ -596,7 +574,7 @@
             color: var(--text-primary);
             box-shadow: 0 20px 60px var(--shadow-color);
             border: 1px solid var(--border-color);
-            animation: modalSlideIn 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            animation: modalSlideIn 0.4s ease;
         }
 
         @keyframes modalSlideIn {
@@ -638,7 +616,7 @@
             cursor: pointer;
             font-size: 16px;
             font-weight: 600;
-            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all 0.2s ease;
             min-width: 100px;
             font-family: inherit;
         }
@@ -662,7 +640,6 @@
             transform: translateY(0);
         }
 
-        /* QR Code styling */
         .qr-container {
             text-align: center;
             padding: 20px;
@@ -689,7 +666,6 @@
             color: var(--text-secondary);
         }
 
-        /* Floating theme toggle */
         .theme-toggle-floating {
             position: fixed;
             top: 30px;
@@ -705,7 +681,7 @@
             align-items: center;
             justify-content: center;
             font-size: 20px;
-            transition: all 0.2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all 0.2s ease;
             box-shadow: 0 4px 20px var(--shadow-color);
             z-index: 100;
         }
@@ -720,7 +696,7 @@
         }
 
         #themeIcon {
-            transition: all 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+            transition: all 0.3s ease;
             display: inline-block;
         }
 
@@ -728,7 +704,6 @@
             transform: rotate(180deg);
         }
 
-        /* Responsive design */
         @media (max-width: 768px) {
             .container {
                 margin: 10px;
@@ -780,42 +755,6 @@
             }
         }
 
-        @media (max-width: 480px) {
-            .config-item {
-                padding: 20px;
-            }
-
-            .config-icon {
-                width: 40px;
-                height: 40px;
-                font-size: 18px;
-            }
-
-            .config-label {
-                font-size: 16px;
-            }
-
-            .value-display {
-                font-size: 28px;
-            }
-
-            .btn-control {
-                width: 36px;
-                height: 36px;
-                font-size: 18px;
-            }
-        }
-
-        /* Accessibilité */
-        @media (prefers-reduced-motion: reduce) {
-            * {
-                animation-duration: 0.01ms !important;
-                animation-iteration-count: 1 !important;
-                transition-duration: 0.01ms !important;
-            }
-        }
-
-        /* Mode sombre automatique */
         @media (prefers-color-scheme: dark) {
             :root {
                 --primary-color: #0A84FF;
@@ -839,7 +778,6 @@
 <body>
     <div class="background-blur"></div>
     
-    <!-- Bouton de basculement thème flottant -->
     <button class="theme-toggle-floating" onclick="toggleTheme()" title="Basculer thème" id="themeToggleBtn">
         <span id="themeIcon">🌙</span>
     </button>
@@ -991,11 +929,11 @@
                         <div class="audio-controls">
                             <div class="audio-control">
                                 <span class="audio-label">Sons activés</span>
-                                <div class="audio-toggle" id="soundToggle" onclick="toggleSounds()"></div>
+                                <div class="audio-toggle active" id="soundToggle" onclick="toggleSounds()"></div>
                             </div>
                             <div class="audio-control">
                                 <span class="audio-label">Annonces vocales</span>
-                                <div class="audio-toggle" id="speechToggle" onclick="toggleSpeech()"></div>
+                                <div class="audio-toggle active" id="speechToggle" onclick="toggleSpeech()"></div>
                             </div>
                             <div class="audio-control">
                                 <span class="audio-label">Volume</span>
@@ -1004,10 +942,6 @@
                                     <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="70" onchange="updateVolume()">
                                     <span class="volume-value" id="volumeValue">70%</span>
                                 </div>
-                            </div>
-                            <div class="audio-control">
-                                <span class="audio-label">Test audio</span>
-                                <button class="btn-control" onclick="testAudio()" title="Tester les sons">🎵</button>
                             </div>
                         </div>
                     </div>
@@ -1064,8 +998,10 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script>
     <script>
+        console.log('🚀 Démarrage Admin ECOS...');
+        
         // Variables globales
-        const socket = io();
+        let socket;
         let currentTheme = 'auto';
         let isDarkMode = false;
         let config = {
@@ -1086,10 +1022,40 @@
             }
         };
 
+        // Initialisation Socket.IO
+        function initSocket() {
+            console.log('🔌 Connexion Socket.IO Admin...');
+            
+            socket = io({
+                transports: ['websocket', 'polling'],
+                timeout: 5000,
+                forceNew: true
+            });
+
+            socket.on('connect', () => {
+                console.log('✅ Socket.IO Admin connecté');
+                const statusElement = document.getElementById('connectionStatus');
+                const dotElement = document.getElementById('statusDot');
+                if (statusElement) statusElement.textContent = 'Connecté au serveur';
+                if (dotElement) dotElement.style.background = 'var(--success-color)';
+            });
+
+            socket.on('disconnect', (reason) => {
+                console.log('❌ Socket.IO Admin déconnecté:', reason);
+                const statusElement = document.getElementById('connectionStatus');
+                const dotElement = document.getElementById('statusDot');
+                if (statusElement) statusElement.textContent = 'Déconnecté du serveur';
+                if (dotElement) dotElement.style.background = 'var(--danger-color)';
+            });
+
+            socket.on('connect_error', (error) => {
+                console.error('❌ Erreur Socket.IO Admin:', error);
+            });
+        }
+
         // Gestion des thèmes
         function toggleTheme() {
             if (currentTheme === 'auto') {
-                // Détecter le thème actuel et basculer
                 const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
                 currentTheme = prefersDark ? 'light' : 'dark';
             } else if (currentTheme === 'light') {
@@ -1101,11 +1067,11 @@
             applyTheme();
             updateThemeIcon();
             localStorage.setItem('timer-theme-quick', currentTheme);
+            console.log('🎨 Thème Admin:', currentTheme);
         }
 
         function applyTheme() {
             document.body.className = '';
-            
             if (currentTheme === 'dark') {
                 document.body.classList.add('theme-dark');
                 isDarkMode = true;
@@ -1113,7 +1079,6 @@
                 document.body.classList.add('theme-light');
                 isDarkMode = false;
             } else {
-                // Mode auto - utiliser les préférences système
                 isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
             }
         }
@@ -1122,85 +1087,55 @@
             const icon = document.getElementById('themeIcon');
             const btn = document.getElementById('themeToggleBtn');
             
-            let iconText, titleText;
-            
-            if (currentTheme === 'dark') {
-                iconText = '☀️';
-                titleText = 'Passer au mode clair';
-            } else if (currentTheme === 'light') {
-                iconText = '🌙';
-                titleText = 'Passer au mode sombre';
-            } else {
-                // Mode auto
-                if (isDarkMode) {
-                    iconText = '☀️';
-                    titleText = 'Mode automatique (sombre) - Clic pour clair';
-                } else {
-                    iconText = '🌙';
-                    titleText = 'Mode automatique (clair) - Clic pour sombre';
-                }
-            }
+            let iconText = currentTheme === 'dark' ? '☀️' : '🌙';
+            let titleText = currentTheme === 'dark' ? 'Passer au mode clair' : 'Passer au mode sombre';
             
             if (icon) icon.textContent = iconText;
             if (btn) btn.title = titleText;
         }
 
-        // Écouter les changements de préférences système
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-            if (currentTheme === 'auto') {
-                isDarkMode = e.matches;
-                updateThemeIcon();
-            }
-        });
-
         // Vérification d'authentification améliorée
         async function checkAuthentication() {
             try {
-                console.log('Vérification de l\'authentification...');
+                console.log('🔐 Vérification authentification Admin...');
                 
                 const controller = new AbortController();
-                const timeoutId = setTimeout(() => controller.abort(), 5000); // Timeout 5 secondes
+                const timeoutId = setTimeout(() => controller.abort(), 5000);
                 
                 const response = await fetch('/auth-status', {
                     method: 'GET',
-                    credentials: 'same-origin', // Important pour inclure les cookies de session
+                    credentials: 'same-origin',
                     signal: controller.signal
                 });
                 
                 clearTimeout(timeoutId);
                 
-                console.log('Réponse auth-status:', response.status);
-                
                 if (response.ok) {
                     const data = await response.json();
-                    console.log('Données auth:', data);
                     
                     if (data.authenticated) {
-                        console.log('Utilisateur authentifié, affichage de la page');
+                        console.log('✅ Admin authentifié');
                         document.getElementById('loadingOverlay').style.display = 'none';
                         document.getElementById('mainContent').classList.remove('hidden');
                         return true;
                     } else {
-                        console.log('Utilisateur non authentifié, redirection vers login');
+                        console.log('❌ Admin non authentifié');
                         window.location.href = '/login.html';
                         return false;
                     }
                 } else {
-                    console.error('Erreur HTTP:', response.status);
-                    // Si erreur 401, redirection vers login
                     if (response.status === 401) {
                         window.location.href = '/login.html';
                     } else {
-                        // Pour autres erreurs, on affiche quand même la page (fallback)
-                        showAuthError('Erreur de vérification d\'authentification (Code: ' + response.status + ')');
+                        showAuthError('Erreur de vérification (Code: ' + response.status + ')');
                     }
                     return false;
                 }
             } catch (error) {
-                console.error('Erreur lors de la vérification de l\'authentification:', error);
+                console.error('❌ Erreur auth Admin:', error);
                 
                 if (error.name === 'AbortError') {
-                    showAuthError('Timeout de connexion - Vérifiez votre connexion réseau');
+                    showAuthError('Timeout de connexion');
                 } else {
                     showAuthError('Erreur de connexion au serveur');
                 }
@@ -1208,7 +1143,6 @@
             }
         }
 
-        // Afficher une erreur d'authentification avec option de retry
         function showAuthError(message) {
             const overlay = document.getElementById('loadingOverlay');
             overlay.innerHTML = `
@@ -1238,13 +1172,12 @@
             `;
         }
 
-        // Fonction pour réessayer l'authentification
         function retryAuthentication() {
             const overlay = document.getElementById('loadingOverlay');
             overlay.innerHTML = `
                 <div class="loading-content">
                     <div class="loading-spinner"></div>
-                    <div>Nouvelle tentative de vérification...</div>
+                    <div>Nouvelle tentative...</div>
                 </div>
             `;
             
@@ -1252,6 +1185,7 @@
                 checkAuthentication().then(isAuthenticated => {
                     if (isAuthenticated) {
                         loadConfig();
+                        initSocket();
                     }
                 });
             }, 1000);
@@ -1264,10 +1198,10 @@
                 if (response.ok) {
                     window.location.href = '/login.html';
                 } else {
-                    console.error('Erreur lors de la déconnexion');
+                    console.error('Erreur déconnexion');
                 }
             } catch (error) {
-                console.error('Erreur lors de la déconnexion:', error);
+                console.error('Erreur déconnexion:', error);
                 window.location.href = '/login.html';
             }
         }
@@ -1278,6 +1212,7 @@
             config.audioSettings.soundEnabled = !config.audioSettings.soundEnabled;
             toggle.classList.toggle('active', config.audioSettings.soundEnabled);
             saveConfig();
+            console.log('🔊 Sons:', config.audioSettings.soundEnabled);
         }
 
         function toggleSpeech() {
@@ -1285,6 +1220,7 @@
             config.audioSettings.speechEnabled = !config.audioSettings.speechEnabled;
             toggle.classList.toggle('active', config.audioSettings.speechEnabled);
             saveConfig();
+            console.log('🗣️ Voix:', config.audioSettings.speechEnabled);
         }
 
         function updateVolume() {
@@ -1295,7 +1231,6 @@
             config.audioSettings.volume = parseInt(slider.value);
             valueDisplay.textContent = config.audioSettings.volume + '%';
             
-            // Mettre à jour l'icône selon le volume
             if (config.audioSettings.volume === 0) {
                 icon.textContent = '🔇';
             } else if (config.audioSettings.volume < 50) {
@@ -1305,47 +1240,45 @@
             }
             
             saveConfig();
-        }
-
-        function testAudio() {
-            // Envoyer les paramètres audio au client principal
-            socket.emit('audioTest', config.audioSettings);
-            
-            // Feedback visuel
-            const btn = event.target;
-            const originalText = btn.textContent;
-            btn.textContent = '✓';
-            btn.style.background = 'var(--success-color)';
-            
-            setTimeout(() => {
-                btn.textContent = originalText;
-                btn.style.background = '';
-            }, 1000);
+            console.log('🔊 Volume:', config.audioSettings.volume);
         }
 
         // Gestion du QR Code
         function showQRModal() {
+            console.log('📱 Génération QR Code Admin...');
             const url = window.location.origin;
             document.getElementById('timerUrl').textContent = url;
             
-            // Générer le QR code
             const qrCodeElement = document.getElementById('qrCode');
-            qrCodeElement.innerHTML = '';
+            qrCodeElement.innerHTML = '<div style="padding: 20px;">Génération du QR code...</div>';
             
-            QRCode.toCanvas(qrCodeElement, url, {
-                width: 250,
-                margin: 2,
-                color: {
-                    dark: '#007AFF',
-                    light: '#FFFFFF'
-                },
-                errorCorrectionLevel: 'M'
-            }, function (error) {
-                if (error) {
-                    qrCodeElement.innerHTML = '<p style="color: var(--danger-color);">Erreur lors de la génération du QR code</p>';
-                    console.error(error);
-                }
-            });
+            if (typeof QRCode === 'undefined') {
+                qrCodeElement.innerHTML = '<p style="color: var(--danger-color);">Erreur: Bibliothèque QR Code non chargée</p>';
+                document.getElementById('qrModal').style.display = 'block';
+                return;
+            }
+            
+            try {
+                QRCode.toCanvas(qrCodeElement, url, {
+                    width: 250,
+                    margin: 2,
+                    color: {
+                        dark: '#007AFF',
+                        light: '#FFFFFF'
+                    },
+                    errorCorrectionLevel: 'M'
+                }, function (error) {
+                    if (error) {
+                        console.error('❌ Erreur QR Code Admin:', error);
+                        qrCodeElement.innerHTML = '<p style="color: var(--danger-color);">Erreur lors de la génération du QR code</p>';
+                    } else {
+                        console.log('✅ QR Code Admin généré');
+                    }
+                });
+            } catch (error) {
+                console.error('❌ Erreur QR Code Admin:', error);
+                qrCodeElement.innerHTML = '<p style="color: var(--danger-color);">Erreur lors de la génération du QR code</p>';
+            }
             
             document.getElementById('qrModal').style.display = 'block';
         }
@@ -1366,26 +1299,15 @@
                     btn.textContent = originalText;
                     btn.style.background = '';
                 }, 2000);
-            }).catch(err => {
-                console.error('Erreur lors de la copie:', err);
-                // Fallback pour navigateurs plus anciens
-                const textArea = document.createElement('textarea');
-                textArea.value = url;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
                 
-                const btn = event.target;
-                const originalText = btn.textContent;
-                btn.textContent = 'Copié !';
-                setTimeout(() => {
-                    btn.textContent = originalText;
-                }, 2000);
+                console.log('📋 URL copiée');
+            }).catch(err => {
+                console.error('❌ Erreur copie:', err);
+                alert('URL: ' + url);
             });
         }
 
-        // Fermer les modals en cliquant à l'extérieur
+        // Fermer modals
         window.onclick = function(event) {
             const qrModal = document.getElementById('qrModal');
             if (event.target === qrModal) {
@@ -1393,30 +1315,34 @@
             }
         }
 
-        // Charger la configuration depuis le serveur
+        // Charger la configuration
         async function loadConfig() {
             try {
-                const response = await fetch('/config');
+                console.log('📄 Chargement config...');
+                const response = await fetch('/config', {
+                    credentials: 'same-origin'
+                });
+                
                 if (response.ok) {
                     const data = await response.json();
                     config = {...config, ...data};
                     updateDisplay();
                     updateAudioDisplay();
+                    console.log('✅ Config chargée:', config);
                 } else if (response.status === 401) {
                     window.location.href = '/login.html';
                 } else {
-                    console.log('Erreur lors du chargement de la configuration:', response.status);
+                    console.warn('⚠️ Erreur chargement config:', response.status);
                     updateDisplay();
                     updateAudioDisplay();
                 }
             } catch (err) {
-                console.log('Erreur lors du chargement de la configuration:', err);
+                console.error('❌ Erreur chargement config:', err);
                 updateDisplay();
                 updateAudioDisplay();
             }
         }
 
-        // Mettre à jour l'affichage des paramètres audio
         function updateAudioDisplay() {
             const soundToggle = document.getElementById('soundToggle');
             const speechToggle = document.getElementById('speechToggle');
@@ -1430,7 +1356,6 @@
             }
         }
         
-        // Mettre à jour l'affichage
         function updateDisplay() {
             document.getElementById('prepareValue').textContent = config.prepare;
             document.getElementById('workValue').textContent = config.work;
@@ -1444,7 +1369,6 @@
             updateTimeDisplay();
         }
         
-        // Calculer et afficher le temps total
         function updateTimeDisplay() {
             const totalTime = calculateTotalTime();
             const minutes = Math.floor(totalTime / 60);
@@ -1457,7 +1381,6 @@
             document.getElementById('intervalsDisplay').textContent = `${totalIntervals} intervalles`;
         }
         
-        // Calculer le temps total
         function calculateTotalTime() {
             const workRestTime = (config.work + config.rest) * config.cycles;
             const setTime = workRestTime + config.restBetweenSets;
@@ -1465,7 +1388,6 @@
             return totalTime;
         }
         
-        // Augmenter une valeur
         function increaseValue(type) {
             if (type === 'prepare' || type === 'work' || type === 'rest' || type === 'restBetweenSets' || type === 'coolDown') {
                 config[type] += 5;
@@ -1474,9 +1396,9 @@
             }
             updateDisplay();
             saveConfig();
+            console.log('⬆️ Augmentation', type, ':', config[type]);
         }
         
-        // Diminuer une valeur
         function decreaseValue(type) {
             if (config[type] > 0) {
                 if (type === 'prepare' || type === 'work' || type === 'rest' || type === 'restBetweenSets' || type === 'coolDown') {
@@ -1486,10 +1408,10 @@
                 }
                 updateDisplay();
                 saveConfig();
+                console.log('⬇️ Diminution', type, ':', config[type]);
             }
         }
         
-        // Sauvegarder la configuration
         async function saveConfig() {
             config.workDescription = document.getElementById('workDescription').value;
             config.restDescription = document.getElementById('restDescription').value;
@@ -1498,35 +1420,46 @@
                 const response = await fetch('/config', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(config)
+                    body: JSON.stringify(config),
+                    credentials: 'same-origin'
                 });
                 
                 if (response.status === 401) {
                     window.location.href = '/login.html';
+                } else if (response.ok) {
+                    console.log('💾 Config sauvegardée');
+                } else {
+                    console.warn('⚠️ Erreur sauvegarde:', response.status);
                 }
             } catch (err) {
-                console.log('Erreur lors de la sauvegarde:', err);
+                console.error('❌ Erreur sauvegarde:', err);
             }
         }
         
-        // Démarrer le timer
         function startTimer() {
+            console.log('🏁 Démarrage timer depuis Admin');
             saveConfig();
-            socket.emit('start', config);
             
-            // Notification visuelle
-            const btn = event.target;
-            const originalText = btn.textContent;
-            btn.textContent = 'Timer démarré !';
-            btn.style.background = 'var(--success-color)';
-            
-            setTimeout(() => {
-                btn.textContent = originalText;
-                btn.style.background = '';
-            }, 2000);
+            if (socket && socket.connected) {
+                socket.emit('start', config);
+                console.log('📡 Signal start envoyé:', config);
+                
+                // Feedback visuel
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = 'Timer démarré !';
+                btn.style.background = 'var(--success-color)';
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '';
+                }, 2000);
+            } else {
+                console.error('❌ Socket non connecté pour start');
+                alert('Erreur: Connexion au serveur perdue. Veuillez recharger la page.');
+            }
         }
         
-        // Ouvrir l'affichage
         function openDisplay() {
             window.open('/', '_blank');
         }
@@ -1540,23 +1473,6 @@
             if (restDescInput) restDescInput.addEventListener('input', saveConfig);
         });
         
-        // Gestion de la connexion Socket.IO
-        socket.on('connect', () => {
-            console.log('Connecté au serveur');
-            const statusElement = document.getElementById('connectionStatus');
-            const dotElement = document.getElementById('statusDot');
-            if (statusElement) statusElement.textContent = 'Connecté au serveur';
-            if (dotElement) dotElement.style.background = 'var(--success-color)';
-        });
-        
-        socket.on('disconnect', () => {
-            console.log('Déconnecté du serveur');
-            const statusElement = document.getElementById('connectionStatus');
-            const dotElement = document.getElementById('statusDot');
-            if (statusElement) statusElement.textContent = 'Déconnecté du serveur';
-            if (dotElement) dotElement.style.background = 'var(--danger-color)';
-        });
-
         // Raccourcis clavier
         document.addEventListener('keydown', function(event) {
             if (event.target.tagName === 'INPUT' || event.target.tagName === 'SELECT') return;
@@ -1578,27 +1494,41 @@
                         hideQRModal();
                     }
                     break;
+                case ' ':
+                    event.preventDefault();
+                    startTimer();
+                    break;
+            }
+        });
+
+        // Écouter les changements de préférences système
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (currentTheme === 'auto') {
+                isDarkMode = e.matches;
+                updateThemeIcon();
             }
         });
         
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
-            // Charger les préférences de thème
-            const savedThemeQuick = localStorage.getItem('timer-theme-quick');
-            const savedTheme = localStorage.getItem('timer-theme') || 'auto';
+            console.log('📱 Initialisation Admin ECOS...');
             
-            // Priorité au thème de basculement rapide s'il existe
-            currentTheme = savedThemeQuick || savedTheme;
+            // Charger préférences thème
+            const savedTheme = localStorage.getItem('timer-theme-quick') || 'auto';
+            currentTheme = savedTheme;
             
             applyTheme();
             updateThemeIcon();
             
-            // Vérifier l'authentification
+            // Vérifier auth et charger
             checkAuthentication().then(isAuthenticated => {
                 if (isAuthenticated) {
                     loadConfig();
+                    initSocket();
                 }
             });
+            
+            console.log('✅ Admin ECOS initialisé');
         });
     </script>
 </body>
