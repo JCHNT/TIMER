@@ -644,9 +644,10 @@
                 startSequence(data);
             });
 
+            // CORRECTION BOUCLE INFINIE : utiliser doResetTimer au lieu de resetTimer
             socket.on('reset', () => {
-                console.log('🔄 Timer réinitialisé');
-                resetTimer();
+                console.log('🔄 Timer réinitialisé depuis le serveur');
+                doResetTimer(); // Utiliser SEULEMENT la fonction locale
             });
 
             socket.on('examTerminated', () => {
@@ -1045,8 +1046,11 @@
             speak('Session terminée ! Félicitations !');
         }
 
-        function resetTimer() {
-            console.log('🔄 Reset timer');
+        // CORRECTION BOUCLE INFINIE : Séparation des fonctions de reset
+        
+        // Fonction de reset local (sans émettre d'événement)
+        function doResetTimer() {
+            console.log('🔄 Reset timer local');
             clearInterval(interval);
             phaseEl.textContent = 'Réinitialisé';
             phaseEl.className = 'phase-transition';
@@ -1055,12 +1059,19 @@
             progressEl.textContent = '';
             updateStatusIndicator(false);
             
+            playBeep(300, 200);
+            speak('Timer réinitialisé');
+        }
+
+        // Fonction de reset qui émet l'événement (appelée par le bouton)
+        function resetTimer() {
+            console.log('🔄 Reset timer avec diffusion');
+            doResetTimer(); // Reset local d'abord
+            
+            // Puis diffuser aux autres clients
             if (socket && socket.connected) {
                 socket.emit('reset');
             }
-            
-            playBeep(300, 200);
-            speak('Timer réinitialisé');
         }
 
         function showTerminateModal() {
