@@ -239,6 +239,11 @@
             border: 2px solid #e2e8f0;
         }
         
+        .btn-logout {
+            background: #dc2626;
+            color: white;
+        }
+        
         .btn-action:hover {
             transform: translateY(-2px);
             box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
@@ -250,6 +255,10 @@
         
         .btn-secondary:hover {
             background: #e2e8f0;
+        }
+        
+        .btn-logout:hover {
+            background: #b91c1c;
         }
         
         .status-bar {
@@ -276,154 +285,224 @@
             background: #10b981;
             animation: pulse 2s infinite;
         }
+
+        .loading-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(79, 70, 229, 0.9);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+            color: white;
+            font-size: 1.5em;
+        }
+
+        .hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <div class="container">
-        <div class="header">
-            <div class="nav-icons">
-                <div class="nav-icon" onclick="openDisplay()" title="Voir le timer">👁️</div>
-                <div class="nav-icon" onclick="openSettings()" title="Paramètres">⚙️</div>
+    <div id="loadingOverlay" class="loading-overlay">
+        <div>
+            <div style="text-align: center;">
+                <div style="font-size: 3em; margin-bottom: 20px;">⏳</div>
+                <div>Vérification de l'authentification...</div>
             </div>
-            <h1>Configuration Timer</h1>
-            <div class="time-display" id="timeDisplay">04:00</div>
-            <div class="intervals" id="intervalsDisplay">16 intervalles</div>
         </div>
-        
-        <div class="content">
-            <div class="config-grid">
-                <div class="config-item">
-                    <div class="config-header">
-                        <div class="config-icon">🏃</div>
-                        <div class="config-info">
-                            <div class="config-label">Préparation</div>
-                            <div class="config-subtitle">Temps de préparation</div>
+    </div>
+
+    <div id="mainContent" class="hidden">
+        <div class="container">
+            <div class="header">
+                <div class="nav-icons">
+                    <div class="nav-icon" onclick="openDisplay()" title="Voir le timer">👁️</div>
+                    <div class="nav-icon" onclick="logout()" title="Se déconnecter">🚪</div>
+                </div>
+                <h1>Configuration Timer</h1>
+                <div class="time-display" id="timeDisplay">04:00</div>
+                <div class="intervals" id="intervalsDisplay">16 intervalles</div>
+            </div>
+            
+            <div class="content">
+                <div class="config-grid">
+                    <div class="config-item">
+                        <div class="config-header">
+                            <div class="config-icon">🏃</div>
+                            <div class="config-info">
+                                <div class="config-label">Préparation</div>
+                                <div class="config-subtitle">Temps de préparation</div>
+                            </div>
+                        </div>
+                        <div class="config-controls">
+                            <div class="value-display" id="prepareValue">10</div>
+                            <div class="control-buttons">
+                                <button class="btn-control" onclick="decreaseValue('prepare')">−</button>
+                                <button class="btn-control" onclick="increaseValue('prepare')">+</button>
+                            </div>
                         </div>
                     </div>
-                    <div class="config-controls">
-                        <div class="value-display" id="prepareValue">10</div>
-                        <div class="control-buttons">
-                            <button class="btn-control" onclick="decreaseValue('prepare')">−</button>
-                            <button class="btn-control" onclick="increaseValue('prepare')">+</button>
+                    
+                    <div class="config-item">
+                        <div class="config-header">
+                            <div class="config-icon">🏋️</div>
+                            <div class="config-info">
+                                <div class="config-label">Travail</div>
+                                <div class="config-subtitle">Durée d'exercice</div>
+                            </div>
                         </div>
+                        <div class="config-controls">
+                            <div class="value-display" id="workValue">20</div>
+                            <div class="control-buttons">
+                                <button class="btn-control" onclick="decreaseValue('work')">−</button>
+                                <button class="btn-control" onclick="increaseValue('work')">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="config-item">
+                        <div class="config-header">
+                            <div class="config-icon">🤸</div>
+                            <div class="config-info">
+                                <div class="config-label">Repos</div>
+                                <div class="config-subtitle">Durée de repos</div>
+                            </div>
+                        </div>
+                        <div class="config-controls">
+                            <div class="value-display" id="restValue">10</div>
+                            <div class="control-buttons">
+                                <button class="btn-control" onclick="decreaseValue('rest')">−</button>
+                                <button class="btn-control" onclick="increaseValue('rest')">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="config-item">
+                        <div class="config-header">
+                            <div class="config-icon">🔄</div>
+                            <div class="config-info">
+                                <div class="config-label">Cycles</div>
+                                <div class="config-subtitle">Répétitions travail/repos</div>
+                            </div>
+                        </div>
+                        <div class="config-controls">
+                            <div class="value-display" id="cyclesValue">8</div>
+                            <div class="control-buttons">
+                                <button class="btn-control" onclick="decreaseValue('cycles')">−</button>
+                                <button class="btn-control" onclick="increaseValue('cycles')">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="config-item">
+                        <div class="config-header">
+                            <div class="config-icon">🔁</div>
+                            <div class="config-info">
+                                <div class="config-label">Séries</div>
+                                <div class="config-subtitle">Nombre de séries complètes</div>
+                            </div>
+                        </div>
+                        <div class="config-controls">
+                            <div class="value-display" id="setsValue">1</div>
+                            <div class="control-buttons">
+                                <button class="btn-control" onclick="decreaseValue('sets')">−</button>
+                                <button class="btn-control" onclick="increaseValue('sets')">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="config-item">
+                        <div class="config-header">
+                            <div class="config-icon">💺</div>
+                            <div class="config-info">
+                                <div class="config-label">Repos entre séries</div>
+                                <div class="config-subtitle">Pause entre les séries</div>
+                            </div>
+                        </div>
+                        <div class="config-controls">
+                            <div class="value-display" id="restBetweenSetsValue">0</div>
+                            <div class="control-buttons">
+                                <button class="btn-control" onclick="decreaseValue('restBetweenSets')">−</button>
+                                <button class="btn-control" onclick="increaseValue('restBetweenSets')">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="config-item description-section">
+                        <div class="config-header">
+                            <div class="config-icon">📝</div>
+                            <div class="config-info">
+                                <div class="config-label">Descriptions personnalisées</div>
+                                <div class="config-subtitle">Instructions pour les phases de travail et repos</div>
+                            </div>
+                        </div>
+                        <input type="text" class="description-input" id="workDescription" placeholder="Description pour la phase de travail (ex: Pompes, Squats...)">
+                        <input type="text" class="description-input" id="restDescription" placeholder="Description pour la phase de repos (ex: Repos actif, Étirements...)">
                     </div>
                 </div>
                 
-                <div class="config-item">
-                    <div class="config-header">
-                        <div class="config-icon">🏋️</div>
-                        <div class="config-info">
-                            <div class="config-label">Travail</div>
-                            <div class="config-subtitle">Durée d'exercice</div>
-                        </div>
-                    </div>
-                    <div class="config-controls">
-                        <div class="value-display" id="workValue">20</div>
-                        <div class="control-buttons">
-                            <button class="btn-control" onclick="decreaseValue('work')">−</button>
-                            <button class="btn-control" onclick="increaseValue('work')">+</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="config-item">
-                    <div class="config-header">
-                        <div class="config-icon">🤸</div>
-                        <div class="config-info">
-                            <div class="config-label">Repos</div>
-                            <div class="config-subtitle">Durée de repos</div>
-                        </div>
-                    </div>
-                    <div class="config-controls">
-                        <div class="value-display" id="restValue">10</div>
-                        <div class="control-buttons">
-                            <button class="btn-control" onclick="decreaseValue('rest')">−</button>
-                            <button class="btn-control" onclick="increaseValue('rest')">+</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="config-item">
-                    <div class="config-header">
-                        <div class="config-icon">🔄</div>
-                        <div class="config-info">
-                            <div class="config-label">Cycles</div>
-                            <div class="config-subtitle">Répétitions travail/repos</div>
-                        </div>
-                    </div>
-                    <div class="config-controls">
-                        <div class="value-display" id="cyclesValue">8</div>
-                        <div class="control-buttons">
-                            <button class="btn-control" onclick="decreaseValue('cycles')">−</button>
-                            <button class="btn-control" onclick="increaseValue('cycles')">+</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="config-item">
-                    <div class="config-header">
-                        <div class="config-icon">🔁</div>
-                        <div class="config-info">
-                            <div class="config-label">Séries</div>
-                            <div class="config-subtitle">Nombre de séries complètes</div>
-                        </div>
-                    </div>
-                    <div class="config-controls">
-                        <div class="value-display" id="setsValue">1</div>
-                        <div class="control-buttons">
-                            <button class="btn-control" onclick="decreaseValue('sets')">−</button>
-                            <button class="btn-control" onclick="increaseValue('sets')">+</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="config-item">
-                    <div class="config-header">
-                        <div class="config-icon">💺</div>
-                        <div class="config-info">
-                            <div class="config-label">Repos entre séries</div>
-                            <div class="config-subtitle">Pause entre les séries</div>
-                        </div>
-                    </div>
-                    <div class="config-controls">
-                        <div class="value-display" id="restBetweenSetsValue">0</div>
-                        <div class="control-buttons">
-                            <button class="btn-control" onclick="decreaseValue('restBetweenSets')">−</button>
-                            <button class="btn-control" onclick="increaseValue('restBetweenSets')">+</button>
-                        </div>
-                    </div>
-                </div>
-                
-                <div class="config-item description-section">
-                    <div class="config-header">
-                        <div class="config-icon">📝</div>
-                        <div class="config-info">
-                            <div class="config-label">Descriptions personnalisées</div>
-                            <div class="config-subtitle">Instructions pour les phases de travail et repos</div>
-                        </div>
-                    </div>
-                    <input type="text" class="description-input" id="workDescription" placeholder="Description pour la phase de travail (ex: Pompes, Squats...)">
-                    <input type="text" class="description-input" id="restDescription" placeholder="Description pour la phase de repos (ex: Repos actif, Étirements...)">
+                <div class="action-buttons">
+                    <button class="btn-action btn-primary" onclick="startTimer()">Démarrer le Timer</button>
+                    <a href="/" class="btn-action btn-secondary">Voir l'affichage</a>
+                    <button class="btn-action btn-logout" onclick="logout()">Se déconnecter</button>
                 </div>
             </div>
             
-            <div class="action-buttons">
-                <button class="btn-action btn-primary" onclick="startTimer()">Démarrer le Timer</button>
-                <a href="/" class="btn-action btn-secondary">Voir l'affichage</a>
+            <div class="status-bar">
+                <div class="connection-status">
+                    <div class="status-dot" id="statusDot"></div>
+                    <span id="connectionStatus">Connecté au serveur</span>
+                </div>
+                <div>Configuration automatiquement sauvegardée</div>
             </div>
-        </div>
-        
-        <div class="status-bar">
-            <div class="connection-status">
-                <div class="status-dot" id="statusDot"></div>
-                <span id="connectionStatus">Connecté au serveur</span>
-            </div>
-            <div>Configuration automatiquement sauvegardée</div>
         </div>
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
     <script>
+        // Vérifier l'authentification au chargement de la page
+        async function checkAuthentication() {
+            try {
+                const response = await fetch('/auth-status');
+                const data = await response.json();
+                
+                if (!data.authenticated) {
+                    // Rediriger vers la page de login si non authentifié
+                    window.location.href = '/login.html';
+                    return false;
+                }
+                
+                // Afficher le contenu principal si authentifié
+                document.getElementById('loadingOverlay').style.display = 'none';
+                document.getElementById('mainContent').classList.remove('hidden');
+                return true;
+            } catch (error) {
+                console.error('Erreur lors de la vérification de l\'authentification:', error);
+                window.location.href = '/login.html';
+                return false;
+            }
+        }
+
+        // Fonction de déconnexion
+        async function logout() {
+            try {
+                const response = await fetch('/logout', { method: 'POST' });
+                if (response.ok) {
+                    window.location.href = '/login.html';
+                } else {
+                    console.error('Erreur lors de la déconnexion');
+                }
+            } catch (error) {
+                console.error('Erreur lors de la déconnexion:', error);
+                // Rediriger quand même vers login en cas d'erreur
+                window.location.href = '/login.html';
+            }
+        }
+
         const socket = io();
         
         // Configuration par défaut
@@ -441,17 +520,24 @@
         };
         
         // Charger la configuration depuis le serveur
-        function loadConfig() {
-            fetch('/config')
-                .then(res => res.json())
-                .then(data => {
+        async function loadConfig() {
+            try {
+                const response = await fetch('/config');
+                if (response.ok) {
+                    const data = await response.json();
                     config = {...config, ...data};
                     updateDisplay();
-                })
-                .catch(err => {
-                    console.log('Erreur lors du chargement de la configuration:', err);
+                } else if (response.status === 401) {
+                    // Session expirée, rediriger vers login
+                    window.location.href = '/login.html';
+                } else {
+                    console.log('Erreur lors du chargement de la configuration:', response.status);
                     updateDisplay();
-                });
+                }
+            } catch (err) {
+                console.log('Erreur lors du chargement de la configuration:', err);
+                updateDisplay();
+            }
         }
         
         // Mettre à jour l'affichage
@@ -514,17 +600,25 @@
         }
         
         // Sauvegarder la configuration
-        function saveConfig() {
+        async function saveConfig() {
             // Récupérer les descriptions
             config.workDescription = document.getElementById('workDescription').value;
             config.restDescription = document.getElementById('restDescription').value;
             
-            fetch('/config', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(config)
-            })
-            .catch(err => console.log('Erreur lors de la sauvegarde:', err));
+            try {
+                const response = await fetch('/config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(config)
+                });
+                
+                if (response.status === 401) {
+                    // Session expirée, rediriger vers login
+                    window.location.href = '/login.html';
+                }
+            } catch (err) {
+                console.log('Erreur lors de la sauvegarde:', err);
+            }
         }
         
         // Démarrer le timer
@@ -545,35 +639,44 @@
             }, 2000);
         }
         
-        // Ouvrir les paramètres
-        function openSettings() {
-            alert('Fonctionnalité à venir : Paramètres avancés');
-        }
-        
         // Ouvrir l'affichage
         function openDisplay() {
             window.open('/', '_blank');
         }
         
         // Gérer les changements de description
-        document.getElementById('workDescription').addEventListener('input', saveConfig);
-        document.getElementById('restDescription').addEventListener('input', saveConfig);
+        document.addEventListener('DOMContentLoaded', function() {
+            const workDescInput = document.getElementById('workDescription');
+            const restDescInput = document.getElementById('restDescription');
+            
+            if (workDescInput) workDescInput.addEventListener('input', saveConfig);
+            if (restDescInput) restDescInput.addEventListener('input', saveConfig);
+        });
         
         // Gestion de la connexion Socket.IO
         socket.on('connect', () => {
             console.log('Connecté au serveur');
-            document.getElementById('connectionStatus').textContent = 'Connecté au serveur';
-            document.getElementById('statusDot').style.background = '#10b981';
+            const statusElement = document.getElementById('connectionStatus');
+            const dotElement = document.getElementById('statusDot');
+            if (statusElement) statusElement.textContent = 'Connecté au serveur';
+            if (dotElement) dotElement.style.background = '#10b981';
         });
         
         socket.on('disconnect', () => {
             console.log('Déconnecté du serveur');
-            document.getElementById('connectionStatus').textContent = 'Déconnecté du serveur';
-            document.getElementById('statusDot').style.background = '#ef4444';
+            const statusElement = document.getElementById('connectionStatus');
+            const dotElement = document.getElementById('statusDot');
+            if (statusElement) statusElement.textContent = 'Déconnecté du serveur';
+            if (dotElement) dotElement.style.background = '#ef4444';
         });
         
-        // Charger la configuration au démarrage
-        loadConfig();
+        // Vérifier l'authentification au chargement de la page
+        checkAuthentication().then(isAuthenticated => {
+            if (isAuthenticated) {
+                // Charger la configuration seulement si authentifié
+                loadConfig();
+            }
+        });
     </script>
 </body>
 </html>

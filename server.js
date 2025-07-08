@@ -83,7 +83,7 @@ async function migratePasswordsIfNeeded() {
   }
 }
 
-app.get("/config", (req, res) => {
+app.get("/config", isAuthenticated, (req, res) => {
   fs.readFile(CONFIG_PATH, (err, data) => {
     if (err) {
       console.error("Erreur de lecture config.json:", err);
@@ -99,7 +99,7 @@ app.get("/config", (req, res) => {
   });
 });
 
-app.post("/config", (req, res) => {
+app.post("/config", isAuthenticated, (req, res) => {
   fs.writeFile(CONFIG_PATH, JSON.stringify(req.body, null, 2), err => {
     if (err) {
       console.error("Erreur d'écriture config.json:", err);
@@ -162,7 +162,7 @@ app.post("/logout", (req, res) => {
   });
 });
 
-// Protéger la page d'administration
+// Protéger toutes les routes d'administration
 app.get("/admin.html", isAuthenticated, (req, res) => {
   const adminPath = path.join(PUBLIC_DIR, "admin.html");
   console.log("Chemin vers admin.html:", adminPath);
@@ -174,6 +174,38 @@ app.get("/admin.html", isAuthenticated, (req, res) => {
     }
     res.sendFile(adminPath);
   });
+});
+
+// Protéger l'accès à la configuration (route GET et POST)
+app.get("/config", isAuthenticated, (req, res) => {
+  fs.readFile(CONFIG_PATH, (err, data) => {
+    if (err) {
+      console.error("Erreur de lecture config.json:", err);
+      return res.status(500).send("Erreur de lecture config.json");
+    }
+    try {
+      const jsonData = JSON.parse(data);
+      res.json(jsonData);
+    } catch (e) {
+      console.error("Erreur de parsing JSON:", e);
+      res.status(500).send("Erreur de parsing JSON");
+    }
+  });
+});
+
+app.post("/config", isAuthenticated, (req, res) => {
+  fs.writeFile(CONFIG_PATH, JSON.stringify(req.body, null, 2), err => {
+    if (err) {
+      console.error("Erreur d'écriture config.json:", err);
+      return res.status(500).send("Erreur d'écriture config.json");
+    }
+    res.send("Configuration enregistrée");
+  });
+});
+
+// Route pour vérifier l'état de l'authentification
+app.get("/auth-status", (req, res) => {
+  res.json({ authenticated: !!req.session.isAuthenticated });
 });
 
 io.on("connection", socket => {
