@@ -902,4 +902,704 @@
                     
                     <div class="config-item">
                         <div class="config-header">
-                            <div class="config-icon">🤸
+                            <div class="config-icon">🤸</div>
+                            <div class="config-info">
+                                <div class="config-label">Repos</div>
+                                <div class="config-subtitle">Durée de repos</div>
+                            </div>
+                        </div>
+                        <div class="config-controls">
+                            <div class="value-display" id="restValue">10</div>
+                            <div class="control-buttons">
+                                <button class="btn-control" onclick="decreaseValue('rest')">−</button>
+                                <button class="btn-control" onclick="increaseValue('rest')">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="config-item">
+                        <div class="config-header">
+                            <div class="config-icon">🔄</div>
+                            <div class="config-info">
+                                <div class="config-label">Cycles</div>
+                                <div class="config-subtitle">Répétitions travail/repos</div>
+                            </div>
+                        </div>
+                        <div class="config-controls">
+                            <div class="value-display" id="cyclesValue">8</div>
+                            <div class="control-buttons">
+                                <button class="btn-control" onclick="decreaseValue('cycles')">−</button>
+                                <button class="btn-control" onclick="increaseValue('cycles')">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="config-item">
+                        <div class="config-header">
+                            <div class="config-icon">🔁</div>
+                            <div class="config-info">
+                                <div class="config-label">Séries</div>
+                                <div class="config-subtitle">Nombre de séries complètes</div>
+                            </div>
+                        </div>
+                        <div class="config-controls">
+                            <div class="value-display" id="setsValue">1</div>
+                            <div class="control-buttons">
+                                <button class="btn-control" onclick="decreaseValue('sets')">−</button>
+                                <button class="btn-control" onclick="increaseValue('sets')">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="config-item">
+                        <div class="config-header">
+                            <div class="config-icon">💺</div>
+                            <div class="config-info">
+                                <div class="config-label">Repos entre séries</div>
+                                <div class="config-subtitle">Pause entre les séries</div>
+                            </div>
+                        </div>
+                        <div class="config-controls">
+                            <div class="value-display" id="restBetweenSetsValue">0</div>
+                            <div class="control-buttons">
+                                <button class="btn-control" onclick="decreaseValue('restBetweenSets')">−</button>
+                                <button class="btn-control" onclick="increaseValue('restBetweenSets')">+</button>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="config-item description-section">
+                        <div class="config-header">
+                            <div class="config-icon">📝</div>
+                            <div class="config-info">
+                                <div class="config-label">Descriptions personnalisées</div>
+                                <div class="config-subtitle">Instructions pour les phases de travail et repos</div>
+                            </div>
+                        </div>
+                        <input type="text" class="description-input" id="workDescription" placeholder="Description pour la phase de travail (ex: Pompes, Squats...)">
+                        <input type="text" class="description-input" id="restDescription" placeholder="Description pour la phase de repos (ex: Repos actif, Étirements...)">
+                    </div>
+
+                    <div class="config-item audio-section">
+                        <div class="config-header">
+                            <div class="config-icon">🔊</div>
+                            <div class="config-info">
+                                <div class="config-label">Paramètres Audio</div>
+                                <div class="config-subtitle">Configuration des sons et annonces vocales</div>
+                            </div>
+                        </div>
+                        <div class="audio-controls">
+                            <div class="audio-control">
+                                <span class="audio-label">Sons activés</span>
+                                <div class="audio-toggle" id="soundToggle" onclick="toggleSounds()"></div>
+                            </div>
+                            <div class="audio-control">
+                                <span class="audio-label">Annonces vocales</span>
+                                <div class="audio-toggle" id="speechToggle" onclick="toggleSpeech()"></div>
+                            </div>
+                            <div class="audio-control">
+                                <span class="audio-label">Volume</span>
+                                <div class="volume-control">
+                                    <span class="volume-icon" id="volumeIcon">🔊</span>
+                                    <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="70" onchange="updateVolume()">
+                                    <span class="volume-value" id="volumeValue">70%</span>
+                                </div>
+                            </div>
+                            <div class="audio-control">
+                                <span class="audio-label">Test audio</span>
+                                <button class="btn-control" onclick="testAudio()" title="Tester les sons">🎵</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="action-buttons">
+                    <button class="btn-action btn-primary" onclick="startTimer()">Démarrer le Timer</button>
+                    <a href="/" class="btn-action btn-secondary">Voir l'affichage</a>
+                    <button class="btn-action btn-success" onclick="showQRModal()">QR Code d'accès</button>
+                    <button class="btn-action btn-danger" onclick="logout()">Se déconnecter</button>
+                </div>
+            </div>
+            
+            <div class="status-bar">
+                <div class="connection-status">
+                    <div class="status-dot" id="statusDot"></div>
+                    <span id="connectionStatus">Connecté au serveur</span>
+                </div>
+                <div>Configuration automatiquement sauvegardée</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal QR Code -->
+    <div id="qrModal" class="modal">
+        <div class="modal-content">
+            <h2>📱 QR Code d'accès au Timer</h2>
+            <div class="qr-container">
+                <p>Partagez ce QR code avec vos étudiants pour qu'ils puissent accéder au timer depuis leurs appareils :</p>
+                
+                <div class="qr-code" id="qrCode">
+                    <!-- Le QR code sera généré ici -->
+                </div>
+                
+                <div class="url-display" id="timerUrl">
+                    <!-- L'URL sera affichée ici -->
+                </div>
+                
+                <p style="font-size: 14px; color: var(--text-secondary); margin-top: 20px;">
+                    <strong>Instructions :</strong><br>
+                    • Les étudiants peuvent scanner ce code avec l'appareil photo de leur smartphone<br>
+                    • Ou saisir l'URL directement dans leur navigateur<br>
+                    • Le timer se synchronisera automatiquement sur tous les appareils connectés
+                </p>
+            </div>
+            
+            <div class="modal-buttons">
+                <button class="modal-btn modal-btn-primary" onclick="copyUrl()">Copier l'URL</button>
+                <button class="modal-btn modal-btn-secondary" onclick="hideQRModal()">Fermer</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script>
+    <script>
+        // Variables globales
+        const socket = io();
+        let currentTheme = 'auto';
+        let isDarkMode = false;
+        let config = {
+            title: 'TIMER ECOS',
+            prepare: 10,
+            work: 20,
+            rest: 10,
+            cycles: 8,
+            sets: 1,
+            restBetweenSets: 0,
+            coolDown: 0,
+            workDescription: '',
+            restDescription: '',
+            audioSettings: {
+                soundEnabled: true,
+                speechEnabled: true,
+                volume: 70
+            }
+        };
+
+        // Gestion des thèmes
+        function toggleTheme() {
+            if (currentTheme === 'auto') {
+                // Détecter le thème actuel et basculer
+                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                currentTheme = prefersDark ? 'light' : 'dark';
+            } else if (currentTheme === 'light') {
+                currentTheme = 'dark';
+            } else {
+                currentTheme = 'light';
+            }
+            
+            applyTheme();
+            updateThemeIcon();
+            localStorage.setItem('timer-theme-quick', currentTheme);
+        }
+
+        function applyTheme() {
+            document.body.className = '';
+            
+            if (currentTheme === 'dark') {
+                document.body.classList.add('theme-dark');
+                isDarkMode = true;
+            } else if (currentTheme === 'light') {
+                document.body.classList.add('theme-light');
+                isDarkMode = false;
+            } else {
+                // Mode auto - utiliser les préférences système
+                isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            }
+        }
+
+        function updateThemeIcon() {
+            const icon = document.getElementById('themeIcon');
+            const btn = document.getElementById('themeToggleBtn');
+            
+            let iconText, titleText;
+            
+            if (currentTheme === 'dark') {
+                iconText = '☀️';
+                titleText = 'Passer au mode clair';
+            } else if (currentTheme === 'light') {
+                iconText = '🌙';
+                titleText = 'Passer au mode sombre';
+            } else {
+                // Mode auto
+                if (isDarkMode) {
+                    iconText = '☀️';
+                    titleText = 'Mode automatique (sombre) - Clic pour clair';
+                } else {
+                    iconText = '🌙';
+                    titleText = 'Mode automatique (clair) - Clic pour sombre';
+                }
+            }
+            
+            if (icon) icon.textContent = iconText;
+            if (btn) btn.title = titleText;
+        }
+
+        // Écouter les changements de préférences système
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+            if (currentTheme === 'auto') {
+                isDarkMode = e.matches;
+                updateThemeIcon();
+            }
+        });
+
+        // Vérification d'authentification améliorée
+        async function checkAuthentication() {
+            try {
+                console.log('Vérification de l\'authentification...');
+                
+                const controller = new AbortController();
+                const timeoutId = setTimeout(() => controller.abort(), 5000); // Timeout 5 secondes
+                
+                const response = await fetch('/auth-status', {
+                    method: 'GET',
+                    credentials: 'same-origin', // Important pour inclure les cookies de session
+                    signal: controller.signal
+                });
+                
+                clearTimeout(timeoutId);
+                
+                console.log('Réponse auth-status:', response.status);
+                
+                if (response.ok) {
+                    const data = await response.json();
+                    console.log('Données auth:', data);
+                    
+                    if (data.authenticated) {
+                        console.log('Utilisateur authentifié, affichage de la page');
+                        document.getElementById('loadingOverlay').style.display = 'none';
+                        document.getElementById('mainContent').classList.remove('hidden');
+                        return true;
+                    } else {
+                        console.log('Utilisateur non authentifié, redirection vers login');
+                        window.location.href = '/login.html';
+                        return false;
+                    }
+                } else {
+                    console.error('Erreur HTTP:', response.status);
+                    // Si erreur 401, redirection vers login
+                    if (response.status === 401) {
+                        window.location.href = '/login.html';
+                    } else {
+                        // Pour autres erreurs, on affiche quand même la page (fallback)
+                        showAuthError('Erreur de vérification d\'authentification (Code: ' + response.status + ')');
+                    }
+                    return false;
+                }
+            } catch (error) {
+                console.error('Erreur lors de la vérification de l\'authentification:', error);
+                
+                if (error.name === 'AbortError') {
+                    showAuthError('Timeout de connexion - Vérifiez votre connexion réseau');
+                } else {
+                    showAuthError('Erreur de connexion au serveur');
+                }
+                return false;
+            }
+        }
+
+        // Afficher une erreur d'authentification avec option de retry
+        function showAuthError(message) {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.innerHTML = `
+                <div class="loading-content">
+                    <div style="font-size: 48px; margin-bottom: 20px; color: var(--danger-color);">⚠️</div>
+                    <div style="margin-bottom: 20px;">${message}</div>
+                    <button onclick="retryAuthentication()" style="
+                        background: var(--primary-color);
+                        color: white;
+                        border: none;
+                        padding: 12px 24px;
+                        border-radius: 12px;
+                        cursor: pointer;
+                        font-size: 16px;
+                        margin-right: 10px;
+                    ">Réessayer</button>
+                    <button onclick="window.location.href='/login.html'" style="
+                        background: var(--text-tertiary);
+                        color: var(--text-primary);
+                        border: none;
+                        padding: 12px 24px;
+                        border-radius: 12px;
+                        cursor: pointer;
+                        font-size: 16px;
+                    ">Retour à la connexion</button>
+                </div>
+            `;
+        }
+
+        // Fonction pour réessayer l'authentification
+        function retryAuthentication() {
+            const overlay = document.getElementById('loadingOverlay');
+            overlay.innerHTML = `
+                <div class="loading-content">
+                    <div class="loading-spinner"></div>
+                    <div>Nouvelle tentative de vérification...</div>
+                </div>
+            `;
+            
+            setTimeout(() => {
+                checkAuthentication().then(isAuthenticated => {
+                    if (isAuthenticated) {
+                        loadConfig();
+                    }
+                });
+            }, 1000);
+        }
+
+        // Fonction de déconnexion
+        async function logout() {
+            try {
+                const response = await fetch('/logout', { method: 'POST' });
+                if (response.ok) {
+                    window.location.href = '/login.html';
+                } else {
+                    console.error('Erreur lors de la déconnexion');
+                }
+            } catch (error) {
+                console.error('Erreur lors de la déconnexion:', error);
+                window.location.href = '/login.html';
+            }
+        }
+
+        // Gestion des paramètres audio
+        function toggleSounds() {
+            const toggle = document.getElementById('soundToggle');
+            config.audioSettings.soundEnabled = !config.audioSettings.soundEnabled;
+            toggle.classList.toggle('active', config.audioSettings.soundEnabled);
+            saveConfig();
+        }
+
+        function toggleSpeech() {
+            const toggle = document.getElementById('speechToggle');
+            config.audioSettings.speechEnabled = !config.audioSettings.speechEnabled;
+            toggle.classList.toggle('active', config.audioSettings.speechEnabled);
+            saveConfig();
+        }
+
+        function updateVolume() {
+            const slider = document.getElementById('volumeSlider');
+            const valueDisplay = document.getElementById('volumeValue');
+            const icon = document.getElementById('volumeIcon');
+            
+            config.audioSettings.volume = parseInt(slider.value);
+            valueDisplay.textContent = config.audioSettings.volume + '%';
+            
+            // Mettre à jour l'icône selon le volume
+            if (config.audioSettings.volume === 0) {
+                icon.textContent = '🔇';
+            } else if (config.audioSettings.volume < 50) {
+                icon.textContent = '🔉';
+            } else {
+                icon.textContent = '🔊';
+            }
+            
+            saveConfig();
+        }
+
+        function testAudio() {
+            // Envoyer les paramètres audio au client principal
+            socket.emit('audioTest', config.audioSettings);
+            
+            // Feedback visuel
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = '✓';
+            btn.style.background = 'var(--success-color)';
+            
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '';
+            }, 1000);
+        }
+
+        // Gestion du QR Code
+        function showQRModal() {
+            const url = window.location.origin;
+            document.getElementById('timerUrl').textContent = url;
+            
+            // Générer le QR code
+            const qrCodeElement = document.getElementById('qrCode');
+            qrCodeElement.innerHTML = '';
+            
+            QRCode.toCanvas(qrCodeElement, url, {
+                width: 250,
+                margin: 2,
+                color: {
+                    dark: '#007AFF',
+                    light: '#FFFFFF'
+                },
+                errorCorrectionLevel: 'M'
+            }, function (error) {
+                if (error) {
+                    qrCodeElement.innerHTML = '<p style="color: var(--danger-color);">Erreur lors de la génération du QR code</p>';
+                    console.error(error);
+                }
+            });
+            
+            document.getElementById('qrModal').style.display = 'block';
+        }
+
+        function hideQRModal() {
+            document.getElementById('qrModal').style.display = 'none';
+        }
+
+        function copyUrl() {
+            const url = document.getElementById('timerUrl').textContent;
+            navigator.clipboard.writeText(url).then(() => {
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = 'Copié !';
+                btn.style.background = 'var(--success-color)';
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '';
+                }, 2000);
+            }).catch(err => {
+                console.error('Erreur lors de la copie:', err);
+                // Fallback pour navigateurs plus anciens
+                const textArea = document.createElement('textarea');
+                textArea.value = url;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = 'Copié !';
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                }, 2000);
+            });
+        }
+
+        // Fermer les modals en cliquant à l'extérieur
+        window.onclick = function(event) {
+            const qrModal = document.getElementById('qrModal');
+            if (event.target === qrModal) {
+                hideQRModal();
+            }
+        }
+
+        // Charger la configuration depuis le serveur
+        async function loadConfig() {
+            try {
+                const response = await fetch('/config');
+                if (response.ok) {
+                    const data = await response.json();
+                    config = {...config, ...data};
+                    updateDisplay();
+                    updateAudioDisplay();
+                } else if (response.status === 401) {
+                    window.location.href = '/login.html';
+                } else {
+                    console.log('Erreur lors du chargement de la configuration:', response.status);
+                    updateDisplay();
+                    updateAudioDisplay();
+                }
+            } catch (err) {
+                console.log('Erreur lors du chargement de la configuration:', err);
+                updateDisplay();
+                updateAudioDisplay();
+            }
+        }
+
+        // Mettre à jour l'affichage des paramètres audio
+        function updateAudioDisplay() {
+            const soundToggle = document.getElementById('soundToggle');
+            const speechToggle = document.getElementById('speechToggle');
+            const volumeSlider = document.getElementById('volumeSlider');
+            
+            if (config.audioSettings) {
+                soundToggle.classList.toggle('active', config.audioSettings.soundEnabled);
+                speechToggle.classList.toggle('active', config.audioSettings.speechEnabled);
+                volumeSlider.value = config.audioSettings.volume || 70;
+                updateVolume();
+            }
+        }
+        
+        // Mettre à jour l'affichage
+        function updateDisplay() {
+            document.getElementById('prepareValue').textContent = config.prepare;
+            document.getElementById('workValue').textContent = config.work;
+            document.getElementById('restValue').textContent = config.rest;
+            document.getElementById('cyclesValue').textContent = config.cycles;
+            document.getElementById('setsValue').textContent = config.sets;
+            document.getElementById('restBetweenSetsValue').textContent = config.restBetweenSets;
+            document.getElementById('workDescription').value = config.workDescription || '';
+            document.getElementById('restDescription').value = config.restDescription || '';
+            
+            updateTimeDisplay();
+        }
+        
+        // Calculer et afficher le temps total
+        function updateTimeDisplay() {
+            const totalTime = calculateTotalTime();
+            const minutes = Math.floor(totalTime / 60);
+            const seconds = totalTime % 60;
+            const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            const totalIntervals = config.cycles * config.sets;
+            
+            document.getElementById('timeDisplay').textContent = timeString;
+            document.getElementById('intervalsDisplay').textContent = `${totalIntervals} intervalles`;
+        }
+        
+        // Calculer le temps total
+        function calculateTotalTime() {
+            const workRestTime = (config.work + config.rest) * config.cycles;
+            const setTime = workRestTime + config.restBetweenSets;
+            const totalTime = config.prepare + (setTime * config.sets) - config.restBetweenSets + config.coolDown;
+            return totalTime;
+        }
+        
+        // Augmenter une valeur
+        function increaseValue(type) {
+            if (type === 'prepare' || type === 'work' || type === 'rest' || type === 'restBetweenSets' || type === 'coolDown') {
+                config[type] += 5;
+            } else {
+                config[type] += 1;
+            }
+            updateDisplay();
+            saveConfig();
+        }
+        
+        // Diminuer une valeur
+        function decreaseValue(type) {
+            if (config[type] > 0) {
+                if (type === 'prepare' || type === 'work' || type === 'rest' || type === 'restBetweenSets' || type === 'coolDown') {
+                    config[type] = Math.max(0, config[type] - 5);
+                } else {
+                    config[type] = Math.max(1, config[type] - 1);
+                }
+                updateDisplay();
+                saveConfig();
+            }
+        }
+        
+        // Sauvegarder la configuration
+        async function saveConfig() {
+            config.workDescription = document.getElementById('workDescription').value;
+            config.restDescription = document.getElementById('restDescription').value;
+            
+            try {
+                const response = await fetch('/config', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(config)
+                });
+                
+                if (response.status === 401) {
+                    window.location.href = '/login.html';
+                }
+            } catch (err) {
+                console.log('Erreur lors de la sauvegarde:', err);
+            }
+        }
+        
+        // Démarrer le timer
+        function startTimer() {
+            saveConfig();
+            socket.emit('start', config);
+            
+            // Notification visuelle
+            const btn = event.target;
+            const originalText = btn.textContent;
+            btn.textContent = 'Timer démarré !';
+            btn.style.background = 'var(--success-color)';
+            
+            setTimeout(() => {
+                btn.textContent = originalText;
+                btn.style.background = '';
+            }, 2000);
+        }
+        
+        // Ouvrir l'affichage
+        function openDisplay() {
+            window.open('/', '_blank');
+        }
+        
+        // Gérer les changements de description
+        document.addEventListener('DOMContentLoaded', function() {
+            const workDescInput = document.getElementById('workDescription');
+            const restDescInput = document.getElementById('restDescription');
+            
+            if (workDescInput) workDescInput.addEventListener('input', saveConfig);
+            if (restDescInput) restDescInput.addEventListener('input', saveConfig);
+        });
+        
+        // Gestion de la connexion Socket.IO
+        socket.on('connect', () => {
+            console.log('Connecté au serveur');
+            const statusElement = document.getElementById('connectionStatus');
+            const dotElement = document.getElementById('statusDot');
+            if (statusElement) statusElement.textContent = 'Connecté au serveur';
+            if (dotElement) dotElement.style.background = 'var(--success-color)';
+        });
+        
+        socket.on('disconnect', () => {
+            console.log('Déconnecté du serveur');
+            const statusElement = document.getElementById('connectionStatus');
+            const dotElement = document.getElementById('statusDot');
+            if (statusElement) statusElement.textContent = 'Déconnecté du serveur';
+            if (dotElement) dotElement.style.background = 'var(--danger-color)';
+        });
+
+        // Raccourcis clavier
+        document.addEventListener('keydown', function(event) {
+            if (event.target.tagName === 'INPUT' || event.target.tagName === 'SELECT') return;
+            
+            switch(event.key) {
+                case 't':
+                case 'T':
+                    event.preventDefault();
+                    toggleTheme();
+                    break;
+                case 'q':
+                case 'Q':
+                    event.preventDefault();
+                    showQRModal();
+                    break;
+                case 'Escape':
+                    event.preventDefault();
+                    if (document.getElementById('qrModal').style.display === 'block') {
+                        hideQRModal();
+                    }
+                    break;
+            }
+        });
+        
+        // Initialisation
+        document.addEventListener('DOMContentLoaded', function() {
+            // Charger les préférences de thème
+            const savedThemeQuick = localStorage.getItem('timer-theme-quick');
+            const savedTheme = localStorage.getItem('timer-theme') || 'auto';
+            
+            // Priorité au thème de basculement rapide s'il existe
+            currentTheme = savedThemeQuick || savedTheme;
+            
+            applyTheme();
+            updateThemeIcon();
+            
+            // Vérifier l'authentification
+            checkAuthentication().then(isAuthenticated => {
+                if (isAuthenticated) {
+                    loadConfig();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
