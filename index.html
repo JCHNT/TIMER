@@ -10,6 +10,9 @@
         :root {
             --primary-color: #007AFF;
             --secondary-color: #5856D6;
+            --success-color: #34C759;
+            --warning-color: #FF9500;
+            --danger-color: #FF3B30;
             --background-primary: #F2F2F7;
             --background-secondary: #FFFFFF;
             --text-primary: #000000;
@@ -19,12 +22,14 @@
             --border-color: rgba(0, 0, 0, 0.1);
             --shadow-color: rgba(0, 0, 0, 0.1);
             --blur-amount: 20px;
-            --font-size-multiplier: 1;
         }
 
         .theme-dark {
             --primary-color: #0A84FF;
             --secondary-color: #5E5CE6;
+            --success-color: #30D158;
+            --warning-color: #FF9F0A;
+            --danger-color: #FF453A;
             --background-primary: #000000;
             --background-secondary: #1C1C1E;
             --text-primary: #FFFFFF;
@@ -38,6 +43,9 @@
         .theme-light {
             --primary-color: #007AFF;
             --secondary-color: #5856D6;
+            --success-color: #34C759;
+            --warning-color: #FF9500;
+            --danger-color: #FF3B30;
             --background-primary: #FFFFFF;
             --background-secondary: #F2F2F7;
             --text-primary: #000000;
@@ -60,10 +68,6 @@
             margin: 0; 
             padding: 0;
             min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
             color: var(--text-primary);
             transition: all 0.3s ease;
             overflow-x: hidden;
@@ -79,26 +83,13 @@
             backdrop-filter: blur(var(--blur-amount));
             z-index: -1;
         }
-        
-        .container {
-            background: var(--surface-color);
-            backdrop-filter: blur(var(--blur-amount));
-            border-radius: 28px;
-            padding: 60px 50px;
-            box-shadow: 0 10px 40px var(--shadow-color);
-            border: 1px solid var(--border-color);
-            min-width: 480px;
-            max-width: 580px;
-            position: relative;
-            margin: 20px;
-        }
 
-        /* Contrôles simplifiés en haut */
+        /* Contrôles en haut */
         .top-controls {
             position: fixed;
-            top: 30px;
-            left: 30px;
-            right: 30px;
+            top: 20px;
+            left: 20px;
+            right: 20px;
             display: flex;
             justify-content: space-between;
             align-items: center;
@@ -220,125 +211,228 @@
                 box-shadow: 0 0 0 0 rgba(52, 199, 89, 0);
             }
         }
-        
-        .title { 
-            font-size: calc(28px * var(--font-size-multiplier)); 
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 40px; 
-            text-align: center;
-            letter-spacing: -0.5px;
-        }
-        
-        #phase { 
-            font-size: calc(48px * var(--font-size-multiplier)); 
-            font-weight: 300;
-            color: var(--primary-color);
-            margin-bottom: 20px; 
-            text-align: center;
-            min-height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            letter-spacing: -1px;
-        }
-        
-        .timer { 
-            font-size: calc(96px * var(--font-size-multiplier)); 
-            font-weight: 200; 
-            margin-bottom: 30px; 
-            color: var(--text-primary);
-            text-align: center;
-            font-variant-numeric: tabular-nums;
-            letter-spacing: -2px;
-        }
-        
-        .progress-info {
-            font-size: calc(16px * var(--font-size-multiplier));
-            color: var(--text-secondary);
-            margin-bottom: 20px;
-            font-weight: 500;
-            text-align: center;
-        }
-        
-        .description {
-            font-size: calc(18px * var(--font-size-multiplier));
-            color: var(--text-secondary);
-            margin-bottom: 40px;
-            font-weight: 400;
-            text-align: center;
-            min-height: 30px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            line-height: 1.4;
-        }
-        
-        .controls {
-            display: flex;
-            gap: 16px;
-            justify-content: center;
-            margin-top: 40px;
-            flex-wrap: wrap;
-        }
-        
-        .control-btn {
-            background: var(--surface-color);
-            color: var(--primary-color);
-            border: 1px solid var(--border-color);
-            padding: 16px 24px;
-            border-radius: 16px;
-            font-size: calc(16px * var(--font-size-multiplier));
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.2s ease;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(var(--blur-amount));
-            box-shadow: 0 2px 10px var(--shadow-color);
-            min-width: 140px;
-        }
-        
-        .control-btn:hover {
-            background: var(--primary-color);
-            color: white;
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px var(--shadow-color);
+
+        /* Container principal */
+        .main-container {
+            padding: 100px 20px 20px;
+            max-width: 1200px;
+            margin: 0 auto;
         }
 
-        .control-btn:active {
-            transform: translateY(0);
+        .header {
+            text-align: center;
+            margin-bottom: 40px;
         }
-        
-        .terminate-btn {
-            background: #FF3B30;
+
+        .title {
+            font-size: 42px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 10px;
+            letter-spacing: -1px;
+        }
+
+        .subtitle {
+            font-size: 18px;
+            color: var(--text-secondary);
+            font-weight: 400;
+        }
+
+        /* Section de statut global */
+        .global-status {
+            background: var(--surface-color);
+            backdrop-filter: blur(var(--blur-amount));
+            border-radius: 24px;
+            padding: 30px;
+            margin-bottom: 30px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 8px 25px var(--shadow-color);
+            text-align: center;
+        }
+
+        .global-timer {
+            font-size: 48px;
+            font-weight: 200;
+            color: var(--primary-color);
+            margin-bottom: 10px;
+            font-variant-numeric: tabular-nums;
+        }
+
+        .global-phase {
+            font-size: 24px;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 8px;
+        }
+
+        .global-progress {
+            font-size: 16px;
+            color: var(--text-secondary);
+        }
+
+        /* Liste des tâches */
+        .tasks-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .task-item {
+            background: var(--surface-color);
+            backdrop-filter: blur(var(--blur-amount));
+            border-radius: 20px;
+            padding: 24px;
+            border: 1px solid var(--border-color);
+            box-shadow: 0 4px 20px var(--shadow-color);
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            opacity: 0.6;
+            transform: scale(0.98);
+        }
+
+        .task-item.active {
+            opacity: 1;
+            transform: scale(1);
+            border-color: var(--primary-color);
+            box-shadow: 0 8px 30px var(--shadow-color), 0 0 0 2px rgba(0, 122, 255, 0.2);
+        }
+
+        .task-item.completed {
+            opacity: 0.4;
+            transform: scale(0.96);
+            border-color: var(--success-color);
+        }
+
+        .task-item.upcoming {
+            opacity: 0.3;
+        }
+
+        .task-left {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .task-icon {
+            width: 56px;
+            height: 56px;
+            border-radius: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
             color: white;
-            border: 1px solid rgba(255, 59, 48, 0.3);
+            font-weight: 600;
+            min-width: 56px;
         }
-        
-        .terminate-btn:hover {
-            background: #D70015;
-            box-shadow: 0 8px 25px rgba(255, 59, 48, 0.3);
+
+        .task-icon.prepare {
+            background: linear-gradient(135deg, var(--warning-color), #FFB340);
         }
-        
-        .phase-transition {
-            animation: fadeInScale 0.6s ease;
+
+        .task-icon.work {
+            background: linear-gradient(135deg, var(--danger-color), #FF6B6B);
         }
-        
-        @keyframes fadeInScale {
-            from { 
-                opacity: 0; 
-                transform: scale(0.9);
+
+        .task-icon.rest {
+            background: linear-gradient(135deg, var(--success-color), #51CF66);
+        }
+
+        .task-icon.restBetweenSets {
+            background: linear-gradient(135deg, var(--secondary-color), #845EC2);
+        }
+
+        .task-icon.coolDown {
+            background: linear-gradient(135deg, var(--primary-color), #4DABF7);
+        }
+
+        .task-info {
+            flex: 1;
+        }
+
+        .task-name {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 4px;
+        }
+
+        .task-description {
+            font-size: 14px;
+            color: var(--text-secondary);
+            line-height: 1.4;
+        }
+
+        .task-right {
+            display: flex;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .task-timer {
+            font-size: 32px;
+            font-weight: 300;
+            color: var(--text-primary);
+            font-variant-numeric: tabular-nums;
+            min-width: 80px;
+            text-align: right;
+        }
+
+        .task-status {
+            width: 12px;
+            height: 12px;
+            border-radius: 6px;
+            min-width: 12px;
+        }
+
+        .task-status.pending {
+            background: var(--text-tertiary);
+        }
+
+        .task-status.active {
+            background: var(--primary-color);
+            animation: pulse-ios 2s infinite;
+        }
+
+        .task-status.completed {
+            background: var(--success-color);
+        }
+
+        /* Animations */
+        .task-slide-in {
+            animation: slideInFromRight 0.6s ease;
+        }
+
+        .task-slide-out {
+            animation: slideOutToLeft 0.6s ease;
+        }
+
+        @keyframes slideInFromRight {
+            from {
+                opacity: 0;
+                transform: translateX(100px) scale(0.9);
             }
-            to { 
-                opacity: 1; 
-                transform: scale(1);
+            to {
+                opacity: 1;
+                transform: translateX(0) scale(1);
             }
         }
-        
-        /* Modals */
+
+        @keyframes slideOutToLeft {
+            from {
+                opacity: 1;
+                transform: translateX(0) scale(1);
+            }
+            to {
+                opacity: 0;
+                transform: translateX(-100px) scale(0.9);
+            }
+        }
+
+        /* Modal styles */
         .modal {
             display: none;
             position: fixed;
@@ -414,16 +508,6 @@
             transition: all 0.2s ease;
             min-width: 100px;
         }
-        
-        .modal-btn-confirm {
-            background: #FF3B30;
-            color: white;
-        }
-        
-        .modal-btn-cancel {
-            background: var(--text-tertiary);
-            color: var(--text-primary);
-        }
 
         .modal-btn-primary {
             background: var(--primary-color);
@@ -473,16 +557,14 @@
 
         /* Responsive */
         @media (max-width: 768px) {
-            .container {
-                min-width: calc(100vw - 40px);
-                padding: 40px 30px;
-                margin: 20px;
+            .main-container {
+                padding: 80px 15px 15px;
             }
 
             .top-controls {
-                top: 20px;
-                left: 20px;
-                right: 20px;
+                top: 15px;
+                left: 15px;
+                right: 15px;
                 flex-direction: column;
                 gap: 12px;
             }
@@ -491,14 +573,33 @@
                 justify-content: center;
             }
 
-            .controls {
-                flex-direction: column;
-                align-items: center;
+            .title {
+                font-size: 32px;
             }
 
-            .control-btn {
-                width: 100%;
-                max-width: 200px;
+            .global-timer {
+                font-size: 36px;
+            }
+
+            .task-item {
+                flex-direction: column;
+                gap: 16px;
+                text-align: center;
+            }
+
+            .task-left {
+                flex-direction: column;
+                gap: 12px;
+                text-align: center;
+            }
+
+            .task-right {
+                gap: 12px;
+            }
+
+            .task-timer {
+                font-size: 28px;
+                text-align: center;
             }
         }
 
@@ -506,6 +607,9 @@
             :root {
                 --primary-color: #0A84FF;
                 --secondary-color: #5E5CE6;
+                --success-color: #30D158;
+                --warning-color: #FF9F0A;
+                --danger-color: #FF453A;
                 --background-primary: #000000;
                 --background-secondary: #1C1C1E;
                 --text-primary: #FFFFFF;
@@ -547,29 +651,20 @@
         </div>
     </div>
     
-    <div class="container">
-        <div id="title" class="title">TIMER ECOS</div>
-        <div id="phase" class="phase-transition">En attente...</div>
-        <div id="description" class="description"></div>
-        <div id="timer" class="timer">--:--</div>
-        <div id="progress" class="progress-info"></div>
-        
-        <div class="controls">
-            <button class="control-btn" onclick="resetTimer()">Réinitialiser</button>
-            <button class="control-btn terminate-btn" onclick="showTerminateModal()">Terminer l'examen</button>
+    <div class="main-container">
+        <div class="header">
+            <div id="title" class="title">TIMER ECOS</div>
+            <div class="subtitle">Session d'entraînement en cours</div>
         </div>
-    </div>
 
-    <!-- Modal de confirmation terminaison -->
-    <div id="terminateModal" class="modal">
-        <div class="modal-content">
-            <h2>⚠️ Confirmer la terminaison</h2>
-            <p>Êtes-vous sûr de vouloir terminer l'examen ?<br>
-            Cette action arrêtera définitivement le serveur et mettra fin à la session pour tous les utilisateurs connectés.</p>
-            <div class="modal-buttons">
-                <button class="modal-btn modal-btn-confirm" onclick="terminateExam()">Oui, terminer</button>
-                <button class="modal-btn modal-btn-cancel" onclick="hideTerminateModal()">Annuler</button>
-            </div>
+        <div class="global-status">
+            <div id="globalTimer" class="global-timer">--:--</div>
+            <div id="globalPhase" class="global-phase">En attente...</div>
+            <div id="globalProgress" class="global-progress"></div>
+        </div>
+
+        <div class="tasks-container" id="tasksContainer">
+            <!-- Les tâches seront générées dynamiquement -->
         </div>
     </div>
 
@@ -597,7 +692,7 @@
     <script src="/socket.io/socket.io.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script>
     <script>
-        console.log('🚀 Démarrage Timer ECOS v2.0 Anti-Boucle...');
+        console.log('🚀 Démarrage Timer ECOS v2.0 - Interface Tâches...');
         
         // Variables globales
         let socket;
@@ -611,16 +706,27 @@
         let audioContext;
         let globalVolume = 0.7;
         let soundsEnabled = true;
+        let tasks = [];
+        let currentTaskIndex = 0;
+        let globalTimeRemaining = 0;
         
-        // Variables pour éviter les appels multiples - CORRECTION BOUCLE INFINIE
+        // Variables pour éviter les appels multiples
         let isResetting = false;
         let resetTimeout = null;
 
-        // Initialisation Socket.IO avec retry et nettoyage
+        // Elements DOM
+        const titleEl = document.getElementById('title');
+        const globalTimerEl = document.getElementById('globalTimer');
+        const globalPhaseEl = document.getElementById('globalPhase');
+        const globalProgressEl = document.getElementById('globalProgress');
+        const tasksContainerEl = document.getElementById('tasksContainer');
+        const statusEl = document.getElementById('statusIndicator');
+        const qrModal = document.getElementById('qrModal');
+
+        // Initialisation Socket.IO
         function initSocket() {
             console.log('🔌 Connexion Socket.IO...');
             
-            // Déconnecter et nettoyer les anciens listeners si ils existent
             if (socket) {
                 socket.disconnect();
                 socket.removeAllListeners();
@@ -647,43 +753,30 @@
                 updateStatusIndicator('error');
             });
 
-            // Événements timer avec protection contre les doublons
             socket.on('start', (data) => {
                 console.log('🏁 Timer démarré avec config depuis serveur:', data);
                 clearInterval(interval);
                 startSequence(data);
             });
 
-            // ✅ CORRECTION MAJEURE : reset avec protection contre les boucles
             socket.on('reset', () => {
-                console.log('🔄 Reset reçu du serveur, socket ID:', socket.id);
-                doResetTimer(); // Seulement reset local, JAMAIS d'émission depuis ici
+                console.log('🔄 Reset reçu du serveur');
+                doResetTimer();
             });
 
             socket.on('examTerminated', () => {
                 console.log('🛑 Examen terminé depuis serveur');
-                phaseEl.textContent = 'Examen terminé';
-                phaseEl.className = 'phase-transition';
-                timerEl.textContent = '00:00';
-                descriptionEl.textContent = 'L\'examen a été terminé par l\'administrateur.';
-                progressEl.textContent = 'Session terminée';
+                globalPhaseEl.textContent = 'Examen terminé';
+                globalTimerEl.textContent = '00:00';
+                globalProgressEl.textContent = 'Session terminée par l\'administrateur';
                 clearInterval(interval);
                 updateStatusIndicator(false);
+                clearTasks();
                 
                 playBeep(200, 500);
                 speak('Examen terminé par l\'administrateur');
             });
         }
-
-        // Elements DOM
-        const titleEl = document.getElementById('title');
-        const timerEl = document.getElementById('timer');
-        const phaseEl = document.getElementById('phase');
-        const descriptionEl = document.getElementById('description');
-        const progressEl = document.getElementById('progress');
-        const statusEl = document.getElementById('statusIndicator');
-        const terminateModal = document.getElementById('terminateModal');
-        const qrModal = document.getElementById('qrModal');
 
         // Initialisation audio
         function initAudio() {
@@ -695,7 +788,7 @@
             }
         }
 
-        // Générer un son
+        // Génération de sons
         function playBeep(frequency = 440, duration = 200, type = 'sine') {
             if (!soundsEnabled || !audioContext || globalVolume === 0) return;
             
@@ -720,28 +813,15 @@
             }
         }
 
-        // Sons spécifiques
-        function playWorkSound() {
-            playBeep(880, 300);
-        }
-
-        function playRestSound() {
-            playBeep(440, 300);
-        }
-
-        function playPrepareSound() {
-            playBeep(660, 500);
-        }
-
+        function playWorkSound() { playBeep(880, 300); }
+        function playRestSound() { playBeep(440, 300); }
+        function playPrepareSound() { playBeep(660, 500); }
         function playEndSound() {
-            setTimeout(() => playBeep(523, 200), 0);   // Do
-            setTimeout(() => playBeep(659, 200), 200); // Mi
-            setTimeout(() => playBeep(784, 400), 400); // Sol
+            setTimeout(() => playBeep(523, 200), 0);
+            setTimeout(() => playBeep(659, 200), 200);
+            setTimeout(() => playBeep(784, 400), 400);
         }
-
-        function playCountdownSound() {
-            playBeep(800, 100);
-        }
+        function playCountdownSound() { playBeep(800, 100); }
 
         // Synthèse vocale
         function speak(text) {
@@ -762,7 +842,6 @@
         document.getElementById('volumeSlider').addEventListener('input', function() {
             globalVolume = this.value / 100;
             updateVolumeIcon();
-            console.log('🔊 Volume:', globalVolume);
         });
 
         function updateVolumeIcon() {
@@ -804,7 +883,6 @@
             applyTheme();
             updateThemeIcon();
             localStorage.setItem('timer-theme-quick', currentTheme);
-            console.log('🎨 Thème:', currentTheme);
         }
 
         function applyTheme() {
@@ -831,6 +909,194 @@
             if (btn) btn.title = titleText;
         }
 
+        // Fonctions de gestion des tâches
+        function generateTasks(config) {
+            tasks = [];
+            let taskId = 0;
+            
+            // Phase de préparation
+            if (config.prepare > 0) {
+                tasks.push({
+                    id: taskId++,
+                    type: 'prepare',
+                    name: 'Préparation',
+                    description: 'Préparez-vous pour commencer la session',
+                    duration: config.prepare,
+                    remaining: config.prepare,
+                    status: 'pending'
+                });
+            }
+            
+            // Générer les séries
+            for (let set = 1; set <= config.sets; set++) {
+                // Générer les cycles pour cette série
+                for (let cycle = 1; cycle <= config.cycles; cycle++) {
+                    // Phase de travail
+                    tasks.push({
+                        id: taskId++,
+                        type: 'work',
+                        name: `Travail ${set}.${cycle}`,
+                        description: config.workDescription || 'Phase de travail active',
+                        duration: config.work,
+                        remaining: config.work,
+                        status: 'pending',
+                        set: set,
+                        cycle: cycle
+                    });
+                    
+                    // Phase de repos (sauf après le dernier cycle de la dernière série)
+                    if (!(set === config.sets && cycle === config.cycles)) {
+                        tasks.push({
+                            id: taskId++,
+                            type: 'rest',
+                            name: `Repos ${set}.${cycle}`,
+                            description: config.restDescription || 'Phase de repos',
+                            duration: config.rest,
+                            remaining: config.rest,
+                            status: 'pending',
+                            set: set,
+                            cycle: cycle
+                        });
+                    }
+                }
+                
+                // Repos entre séries (sauf après la dernière série)
+                if (set < config.sets && config.restBetweenSets > 0) {
+                    tasks.push({
+                        id: taskId++,
+                        type: 'restBetweenSets',
+                        name: `Repos entre séries ${set}`,
+                        description: 'Pause entre les séries d\'exercices',
+                        duration: config.restBetweenSets,
+                        remaining: config.restBetweenSets,
+                        status: 'pending',
+                        set: set
+                    });
+                }
+            }
+            
+            // Phase de récupération finale
+            if (config.coolDown > 0) {
+                tasks.push({
+                    id: taskId++,
+                    type: 'coolDown',
+                    name: 'Récupération',
+                    description: 'Phase de récupération finale',
+                    duration: config.coolDown,
+                    remaining: config.coolDown,
+                    status: 'pending'
+                });
+            }
+            
+            console.log('📋 Tâches générées:', tasks.length);
+            return tasks;
+        }
+
+        function renderTasks() {
+            tasksContainerEl.innerHTML = '';
+            
+            tasks.forEach((task, index) => {
+                const taskEl = document.createElement('div');
+                taskEl.className = `task-item ${getTaskClass(task, index)}`;
+                taskEl.id = `task-${task.id}`;
+                
+                const minutes = Math.floor(task.remaining / 60);
+                const seconds = task.remaining % 60;
+                const timeStr = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+                
+                taskEl.innerHTML = `
+                    <div class="task-left">
+                        <div class="task-icon ${task.type}">
+                            ${getTaskIcon(task.type)}
+                        </div>
+                        <div class="task-info">
+                            <div class="task-name">${task.name}</div>
+                            <div class="task-description">${task.description}</div>
+                        </div>
+                    </div>
+                    <div class="task-right">
+                        <div class="task-timer">${timeStr}</div>
+                        <div class="task-status ${task.status}"></div>
+                    </div>
+                `;
+                
+                tasksContainerEl.appendChild(taskEl);
+            });
+        }
+
+        function getTaskClass(task, index) {
+            if (index === currentTaskIndex) return 'active';
+            if (task.status === 'completed') return 'completed';
+            if (index > currentTaskIndex) return 'upcoming';
+            return '';
+        }
+
+        function getTaskIcon(type) {
+            switch (type) {
+                case 'prepare': return '🏃';
+                case 'work': return '🏋️';
+                case 'rest': return '🤸';
+                case 'restBetweenSets': return '💺';
+                case 'coolDown': return '🧘';
+                default: return '⏱️';
+            }
+        }
+
+        function updateTaskTimer(taskIndex, remaining) {
+            const task = tasks[taskIndex];
+            if (!task) return;
+            
+            task.remaining = remaining;
+            
+            const taskEl = document.getElementById(`task-${task.id}`);
+            if (taskEl) {
+                const timerEl = taskEl.querySelector('.task-timer');
+                const minutes = Math.floor(remaining / 60);
+                const seconds = remaining % 60;
+                timerEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+        }
+
+        function markTaskCompleted(taskIndex) {
+            if (taskIndex >= 0 && taskIndex < tasks.length) {
+                tasks[taskIndex].status = 'completed';
+                const taskEl = document.getElementById(`task-${tasks[taskIndex].id}`);
+                if (taskEl) {
+                    taskEl.className = 'task-item completed task-slide-out';
+                    setTimeout(() => {
+                        taskEl.className = 'task-item completed';
+                    }, 600);
+                }
+            }
+        }
+
+        function setActiveTask(taskIndex) {
+            // Supprimer la classe active de toutes les tâches
+            document.querySelectorAll('.task-item').forEach(el => {
+                el.classList.remove('active');
+            });
+            
+            if (taskIndex >= 0 && taskIndex < tasks.length) {
+                tasks[taskIndex].status = 'active';
+                const taskEl = document.getElementById(`task-${tasks[taskIndex].id}`);
+                if (taskEl) {
+                    taskEl.className = 'task-item active task-slide-in';
+                    
+                    // Faire défiler vers la tâche active
+                    taskEl.scrollIntoView({ 
+                        behavior: 'smooth', 
+                        block: 'center'
+                    });
+                }
+            }
+        }
+
+        function clearTasks() {
+            tasks = [];
+            currentTaskIndex = 0;
+            tasksContainerEl.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);">Aucune tâche en cours</div>';
+        }
+
         // QR Code
         function showQRCode() {
             console.log('📱 Génération QR Code...');
@@ -840,7 +1106,6 @@
             const qrCodeElement = document.getElementById('qrCode');
             qrCodeElement.innerHTML = '<div style="padding: 20px;">Génération du QR code...</div>';
             
-            // Vérifier que QRCode est disponible
             if (typeof QRCode === 'undefined') {
                 qrCodeElement.innerHTML = '<p style="color: #FF3B30;">Erreur: Bibliothèque QR Code non chargée</p>';
                 document.getElementById('qrModal').style.display = 'block';
@@ -893,7 +1158,7 @@
             });
         }
 
-        // Timer functions avec protection contre le reset
+        // Fonctions du timer
         function updateStatusIndicator(status) {
             if (status === 'disconnected') {
                 statusEl.style.background = '#8E8E93';
@@ -915,9 +1180,15 @@
             console.log('🏁 Démarrage séquence:', config);
             currentConfig = config;
             titleEl.textContent = config.title || 'TIMER ECOS';
-            currentSet = 1;
-            currentCycle = 1;
+            currentTaskIndex = 0;
             updateStatusIndicator(true);
+            
+            // Générer et afficher les tâches
+            generateTasks(config);
+            renderTasks();
+            
+            // Calculer le temps total
+            globalTimeRemaining = tasks.reduce((total, task) => total + task.duration, 0);
             
             // Réinitialiser les flags de reset
             isResetting = false;
@@ -929,62 +1200,23 @@
             playPrepareSound();
             speak('Début de la session. Préparez-vous.');
             
-            runPhase('prepare', config.prepare, () => {
-                runSet(currentSet, config);
-            });
+            runCurrentTask();
         }
 
-        function runSet(setNumber, config) {
-            if (setNumber > config.sets) {
-                if (config.coolDown > 0) {
-                    runPhase('coolDown', config.coolDown, () => {
-                        finishTimer();
-                    });
-                } else {
-                    finishTimer();
-                }
+        function runCurrentTask() {
+            if (currentTaskIndex >= tasks.length) {
+                finishTimer();
                 return;
             }
             
-            currentCycle = 1;
-            runWorkCycle(currentCycle, setNumber, config);
-        }
-
-        function runWorkCycle(cycle, setNumber, config) {
-            if (cycle > config.cycles) {
-                if (setNumber < config.sets && config.restBetweenSets > 0) {
-                    runPhase('restBetweenSets', config.restBetweenSets, () => {
-                        currentSet++;
-                        runSet(currentSet, config);
-                    });
-                } else {
-                    currentSet++;
-                    runSet(currentSet, config);
-                }
-                return;
-            }
+            const task = tasks[currentTaskIndex];
+            setActiveTask(currentTaskIndex);
             
-            runPhase('work', config.work, () => {
-                runPhase('rest', config.rest, () => {
-                    currentCycle++;
-                    runWorkCycle(currentCycle, setNumber, config);
-                });
-            });
-        }
-
-        function runPhase(type, duration, next) {
-            // Vérifier si un reset a été fait pendant ce temps
-            if (isResetting) {
-                console.log('⚠️ Phase annulée car reset en cours');
-                return;
-            }
+            globalPhaseEl.textContent = task.name;
+            globalProgressEl.textContent = `Tâche ${currentTaskIndex + 1} sur ${tasks.length}`;
             
-            const phaseInfo = getPhaseInfo(type);
-            phaseEl.textContent = phaseInfo.label;
-            phaseEl.className = 'phase-transition';
-            descriptionEl.textContent = phaseInfo.description;
-            
-            switch(type) {
+            // Sons et annonces selon le type de tâche
+            switch(task.type) {
                 case 'work':
                     playWorkSound();
                     speak('Travail !');
@@ -1007,185 +1239,87 @@
                     break;
             }
             
-            updateProgress();
+            let timeRemaining = task.duration;
             
             clearInterval(interval);
-            
             interval = setInterval(() => {
-                // Vérifier si un reset a été fait
                 if (isResetting) {
                     clearInterval(interval);
                     return;
                 }
                 
-                let m = Math.floor(duration / 60).toString().padStart(2, '0');
-                let s = (duration % 60).toString().padStart(2, '0');
-                timerEl.textContent = `${m}:${s}`;
+                // Mettre à jour les timers
+                const globalMinutes = Math.floor(globalTimeRemaining / 60);
+                const globalSeconds = globalTimeRemaining % 60;
+                globalTimerEl.textContent = `${globalMinutes.toString().padStart(2, '0')}:${globalSeconds.toString().padStart(2, '0')}`;
                 
-                if (duration <= 3 && duration > 0) {
+                updateTaskTimer(currentTaskIndex, timeRemaining);
+                
+                // Countdown et sons
+                if (timeRemaining <= 3 && timeRemaining > 0) {
                     playCountdownSound();
-                    speak(duration.toString());
+                    speak(timeRemaining.toString());
                 }
                 
-                if (--duration < 0) {
+                timeRemaining--;
+                globalTimeRemaining--;
+                
+                if (timeRemaining < 0) {
                     clearInterval(interval);
-                    // Vérifier encore une fois avant de continuer
-                    if (!isResetting) {
-                        next();
-                    }
+                    markTaskCompleted(currentTaskIndex);
+                    currentTaskIndex++;
+                    
+                    setTimeout(() => {
+                        if (!isResetting) {
+                            runCurrentTask();
+                        }
+                    }, 600); // Délai pour l'animation
                 }
             }, 1000);
         }
 
-        function getPhaseInfo(type) {
-            switch (type) {
-                case 'prepare':
-                    return { label: 'Préparation', description: 'Préparez-vous pour commencer...' };
-                case 'work':
-                    return { 
-                        label: 'Travail', 
-                        description: currentConfig.workDescription || 'Phase de travail active'
-                    };
-                case 'rest':
-                    return { 
-                        label: 'Repos', 
-                        description: currentConfig.restDescription || 'Phase de repos'
-                    };
-                case 'restBetweenSets':
-                    return { label: 'Repos entre séries', description: 'Pause entre les séries d\'exercices' };
-                case 'coolDown':
-                    return { label: 'Récupération', description: 'Phase de récupération finale' };
-                default:
-                    return { label: '', description: '' };
-            }
-        }
-
-        function updateProgress() {
-            if (currentConfig.sets && currentConfig.cycles) {
-                progressEl.textContent = `Série ${currentSet}/${currentConfig.sets} • Cycle ${currentCycle}/${currentConfig.cycles}`;
-            }
-        }
-
         function finishTimer() {
-            phaseEl.textContent = 'Session terminée';
-            phaseEl.className = 'phase-transition';
-            timerEl.textContent = '00:00';
-            descriptionEl.textContent = 'Félicitations ! Vous avez terminé votre session.';
-            progressEl.textContent = 'Session complète';
+            globalPhaseEl.textContent = 'Session terminée';
+            globalTimerEl.textContent = '00:00';
+            globalProgressEl.textContent = 'Félicitations ! Session complète';
             updateStatusIndicator(false);
             
             playEndSound();
             speak('Session terminée ! Félicitations !');
         }
 
-        // ✅ CORRECTION MAJEURE BOUCLE INFINIE : Séparation des fonctions de reset avec protection complète
-        
-        // Fonction de reset local avec protection contre les appels multiples
         function doResetTimer() {
-            if (isResetting) {
-                console.log('⚠️ Reset déjà en cours, ignoré');
-                return;
-            }
+            if (isResetting) return;
             
             isResetting = true;
-            console.log('🔄 Reset timer local uniquement (pas d\'émission)');
+            console.log('🔄 Reset timer local');
             
-            // Nettoyer tous les intervals et timeouts
             clearInterval(interval);
             if (resetTimeout) {
                 clearTimeout(resetTimeout);
                 resetTimeout = null;
             }
             
-            // Réinitialiser l'état du timer
-            phaseEl.textContent = 'Réinitialisé';
-            phaseEl.className = 'phase-transition';
-            timerEl.textContent = '--:--';
-            descriptionEl.textContent = 'Timer réinitialisé';
-            progressEl.textContent = '';
+            globalPhaseEl.textContent = 'Réinitialisé';
+            globalTimerEl.textContent = '--:--';
+            globalProgressEl.textContent = 'Timer réinitialisé';
             updateStatusIndicator(false);
             
-            // Réinitialiser les variables de state
-            currentSet = 1;
-            currentCycle = 1;
-            currentConfig = {};
+            clearTasks();
+            currentTaskIndex = 0;
+            globalTimeRemaining = 0;
             
             playBeep(300, 200);
             speak('Timer réinitialisé');
             
-            // Débloquer après un délai pour éviter les appels multiples
             setTimeout(() => {
                 isResetting = false;
-                console.log('🔓 Reset débloqué, prêt pour nouveau cycle');
             }, 1000);
         }
 
-        // Fonction de reset qui émet l'événement (appelée par le bouton uniquement)
-        function resetTimer() {
-            console.log('🔄 Reset timer avec diffusion vers autres clients');
-            
-            // Reset local d'abord
-            doResetTimer();
-            
-            // Éviter les émissions multiples rapides
-            if (resetTimeout) {
-                clearTimeout(resetTimeout);
-            }
-            
-            resetTimeout = setTimeout(() => {
-                if (socket && socket.connected) {
-                    console.log('📡 Émission événement reset vers serveur (broadcast aux autres)');
-                    socket.emit('reset');
-                } else {
-                    console.warn('⚠️ Socket non connecté pour reset');
-                }
-                resetTimeout = null;
-            }, 100);
-        }
-
-        function showTerminateModal() {
-            terminateModal.style.display = 'block';
-        }
-
-        function hideTerminateModal() {
-            terminateModal.style.display = 'none';
-        }
-
-        function terminateExam() {
-            hideTerminateModal();
-            
-            phaseEl.textContent = 'Examen terminé';
-            phaseEl.className = 'phase-transition';
-            timerEl.textContent = '00:00';
-            descriptionEl.textContent = 'L\'examen a été terminé. Le serveur va s\'arrêter.';
-            progressEl.textContent = 'Session terminée';
-            
-            playBeep(200, 500);
-            speak('Examen terminé');
-            
-            fetch('/terminate', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            })
-            .then(response => response.json())
-            .then(data => {
-                console.log('✅ Terminaison:', data.message);
-            })
-            .catch(error => {
-                console.error('❌ Erreur terminaison:', error);
-                if (socket && socket.connected) {
-                    socket.emit('terminate');
-                }
-            });
-        }
-
-        // Fermer modals en cliquant à l'extérieur
+        // Fermer modal en cliquant à l'extérieur
         window.onclick = function(event) {
-            if (event.target === terminateModal) {
-                hideTerminateModal();
-            } else if (event.target === qrModal) {
+            if (event.target === qrModal) {
                 hideQRCode();
             }
         }
@@ -1195,19 +1329,10 @@
             if (event.target.tagName === 'INPUT' || event.target.tagName === 'SELECT') return;
             
             switch(event.key) {
-                case 'r':
-                case 'R':
-                    event.preventDefault();
-                    resetTimer();
-                    break;
                 case 'Escape':
                     event.preventDefault();
                     if (qrModal.style.display === 'block') {
                         hideQRCode();
-                    } else if (terminateModal.style.display === 'block') {
-                        hideTerminateModal();
-                    } else {
-                        showTerminateModal();
                     }
                     break;
                 case 't':
@@ -1233,7 +1358,7 @@
 
         // Initialisation
         document.addEventListener('DOMContentLoaded', function() {
-            console.log('📱 Initialisation Timer ECOS v2.0 (Correction Boucle Reset Appliquée)...');
+            console.log('📱 Initialisation Timer ECOS v2.0 - Interface Tâches...');
             
             // Charger les préférences
             const savedTheme = localStorage.getItem('timer-theme-quick') || 'auto';
@@ -1245,6 +1370,9 @@
             updateVolumeIcon();
             updateStatusIndicator(false);
             
+            // Afficher l'état initial
+            clearTasks();
+            
             // Initialiser Socket.IO
             initSocket();
             
@@ -1255,7 +1383,7 @@
                 }
             }, { once: true });
             
-            console.log('✅ Timer ECOS v2.0 initialisé avec corrections anti-boucle reset');
+            console.log('✅ Timer ECOS v2.0 initialisé avec interface de tâches');
         });
     </script>
 </body>
