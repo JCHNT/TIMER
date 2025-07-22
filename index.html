@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TIMER ECOS</title>
+    <title>TIMER ECOS - Défilement Vertical</title>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=SF+Pro+Display:wght@100;200;300;400;500;600;700;800;900&display=swap');
 
@@ -21,39 +21,6 @@
             --surface-color: rgba(255, 255, 255, 0.85);
             --border-color: rgba(0, 0, 0, 0.1);
             --shadow-color: rgba(0, 0, 0, 0.1);
-            --blur-amount: 20px;
-        }
-
-        .theme-dark {
-            --primary-color: #0A84FF;
-            --secondary-color: #5E5CE6;
-            --success-color: #30D158;
-            --warning-color: #FF9F0A;
-            --danger-color: #FF453A;
-            --background-primary: #000000;
-            --background-secondary: #1C1C1E;
-            --text-primary: #FFFFFF;
-            --text-secondary: #8E8E93;
-            --text-tertiary: #48484A;
-            --surface-color: rgba(28, 28, 30, 0.85);
-            --border-color: rgba(255, 255, 255, 0.1);
-            --shadow-color: rgba(0, 0, 0, 0.3);
-        }
-
-        .theme-light {
-            --primary-color: #007AFF;
-            --secondary-color: #5856D6;
-            --success-color: #34C759;
-            --warning-color: #FF9500;
-            --danger-color: #FF3B30;
-            --background-primary: #FFFFFF;
-            --background-secondary: #F2F2F7;
-            --text-primary: #000000;
-            --text-secondary: #8E8E93;
-            --text-tertiary: #C7C7CC;
-            --surface-color: rgba(255, 255, 255, 0.95);
-            --border-color: rgba(0, 0, 0, 0.05);
-            --shadow-color: rgba(0, 0, 0, 0.05);
         }
 
         * {
@@ -64,733 +31,582 @@
         
         body { 
             font-family: 'SF Pro Display', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--background-primary);
             margin: 0; 
             padding: 0;
-            min-height: 100vh;
-            color: var(--text-primary);
-            transition: all 0.3s ease;
-            overflow-x: hidden;
+            height: 100vh;
+            overflow: hidden;
+            background: #000;
         }
 
-        .background-blur {
-            position: fixed;
-            top: 0;
-            left: 0;
+        /* Container principal qui défile */
+        .slider-container {
+            position: relative;
             width: 100%;
-            height: 100%;
-            background: linear-gradient(135deg, var(--primary-color)20, var(--secondary-color)20);
-            backdrop-filter: blur(var(--blur-amount));
-            z-index: -1;
+            height: 100vh;
+            transition: transform 0.8s cubic-bezier(0.645, 0.045, 0.355, 1);
         }
 
-        /* Contrôles en haut */
-        .top-controls {
+        /* Chaque slide représente une phase */
+        .phase-slide {
+            position: relative;
+            width: 100%;
+            height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            overflow: hidden;
+        }
+
+        /* Styles pour chaque phase */
+        .phase-slide.prepare {
+            background: linear-gradient(135deg, #FFB340 0%, #FF9500 100%);
+        }
+
+        .phase-slide.work {
+            background: linear-gradient(135deg, #FF6B6B 0%, #FF3B30 100%);
+        }
+
+        .phase-slide.rest {
+            background: linear-gradient(135deg, #51CF66 0%, #34C759 100%);
+        }
+
+        .phase-slide.restBetweenSets {
+            background: linear-gradient(135deg, #845EC2 0%, #5856D6 100%);
+        }
+
+        .phase-slide.coolDown {
+            background: linear-gradient(135deg, #4DABF7 0%, #007AFF 100%);
+        }
+
+        .phase-slide.finished {
+            background: linear-gradient(135deg, #1c1c1e 0%, #000000 100%);
+        }
+
+        /* Contenu de chaque slide */
+        .phase-content {
+            text-align: center;
+            color: white;
+            z-index: 2;
+            position: relative;
+            animation: fadeInScale 0.8s ease-out;
+        }
+
+        @keyframes fadeInScale {
+            from {
+                opacity: 0;
+                transform: scale(0.8);
+            }
+            to {
+                opacity: 1;
+                transform: scale(1);
+            }
+        }
+
+        /* Logo/Icône principale */
+        .phase-icon {
+            font-size: 120px;
+            margin-bottom: 40px;
+            animation: bounce 2s ease-in-out infinite;
+        }
+
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-20px); }
+        }
+
+        /* Timer */
+        .timer-display {
+            font-size: 140px;
+            font-weight: 200;
+            margin-bottom: 30px;
+            font-variant-numeric: tabular-nums;
+            letter-spacing: -5px;
+            text-shadow: 0 10px 30px rgba(0,0,0,0.3);
+        }
+
+        .timer-display.countdown {
+            animation: pulse 0.5s ease-in-out;
+            color: #FFE5B4;
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+            100% { transform: scale(1); }
+        }
+
+        /* Nom de la phase */
+        .phase-name {
+            font-size: 48px;
+            font-weight: 600;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 3px;
+        }
+
+        /* Description */
+        .phase-description {
+            font-size: 24px;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+
+        /* Informations supplémentaires */
+        .phase-info {
+            position: absolute;
+            bottom: 60px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 40px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding: 20px 40px;
+            border-radius: 30px;
+        }
+
+        .info-item {
+            text-align: center;
+        }
+
+        .info-label {
+            font-size: 14px;
+            opacity: 0.8;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+        }
+
+        .info-value {
+            font-size: 28px;
+            font-weight: 600;
+        }
+
+        /* Contrôles fixes */
+        .controls {
             position: fixed;
             top: 20px;
-            left: 20px;
             right: 20px;
+            z-index: 1000;
             display: flex;
-            justify-content: space-between;
-            align-items: center;
-            z-index: 100;
+            gap: 15px;
         }
 
-        .control-group {
-            display: flex;
-            gap: 12px;
-        }
-
-        .control-pill {
-            background: var(--surface-color);
-            backdrop-filter: blur(var(--blur-amount));
-            border: 1px solid var(--border-color);
-            border-radius: 20px;
-            padding: 12px 16px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            box-shadow: 0 4px 20px var(--shadow-color);
-            transition: all 0.2s ease;
-        }
-
-        .control-pill:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 25px var(--shadow-color);
-        }
-
-        .control-btn-icon {
-            width: 36px;
-            height: 36px;
-            border-radius: 18px;
-            background: var(--primary-color);
+        .control-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 25px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(255,255,255,0.3);
             color: white;
-            border: none;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 16px;
-            transition: all 0.2s ease;
-        }
-
-        .control-btn-icon:hover {
-            transform: scale(1.1);
-            background: var(--secondary-color);
-        }
-
-        .control-btn-icon:active {
-            transform: scale(0.95);
-        }
-
-        #themeIcon {
+            font-size: 20px;
             transition: all 0.3s ease;
-            display: inline-block;
         }
 
-        .theme-dark #themeIcon {
-            transform: rotate(180deg);
+        .control-btn:hover {
+            background: rgba(255,255,255,0.3);
+            transform: scale(1.1);
+        }
+
+        /* Indicateur de progression sur le côté */
+        .progress-indicator {
+            position: fixed;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            z-index: 100;
+        }
+
+        .progress-dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.3);
+            margin: 15px 0;
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .progress-dot.active {
+            background: white;
+            transform: scale(1.5);
+            box-shadow: 0 0 20px rgba(255,255,255,0.8);
+        }
+
+        .progress-dot.completed {
+            background: rgba(255,255,255,0.6);
+        }
+
+        /* Effet de particules */
+        .particles {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            overflow: hidden;
+            z-index: 1;
+        }
+
+        .particle {
+            position: absolute;
+            width: 6px;
+            height: 6px;
+            background: rgba(255,255,255,0.6);
+            border-radius: 50%;
+            animation: float 8s linear infinite;
+        }
+
+        @keyframes float {
+            from {
+                transform: translateY(100vh) rotate(0deg);
+                opacity: 1;
+            }
+            to {
+                transform: translateY(-100px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+        /* Message de fin */
+        .finish-message {
+            font-size: 60px;
+            font-weight: 700;
+            margin-bottom: 30px;
+            background: linear-gradient(45deg, #FFD700, #FFA500);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: shimmer 2s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.8; }
         }
 
         .volume-control {
+            position: fixed;
+            bottom: 20px;
+            left: 20px;
+            z-index: 1000;
             display: flex;
             align-items: center;
             gap: 10px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding: 10px 20px;
+            border-radius: 25px;
+        }
+
+        .volume-icon {
+            color: white;
+            font-size: 20px;
+            cursor: pointer;
         }
 
         .volume-slider {
-            width: 80px;
+            width: 100px;
             height: 4px;
-            background: var(--text-tertiary);
-            border-radius: 2px;
+            background: rgba(255,255,255,0.3);
             outline: none;
             appearance: none;
             cursor: pointer;
+            border-radius: 2px;
         }
 
         .volume-slider::-webkit-slider-thumb {
             appearance: none;
             width: 20px;
             height: 20px;
-            border-radius: 10px;
-            background: var(--primary-color);
+            border-radius: 50%;
+            background: white;
             cursor: pointer;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
         }
 
-        .volume-icon {
-            cursor: pointer;
-            font-size: 16px;
-            color: var(--text-secondary);
-            transition: all 0.2s ease;
+        /* Animation de transition entre phases */
+        .phase-transition-out {
+            animation: slideOut 0.8s ease-in-out forwards;
         }
 
-        .volume-icon:hover {
-            color: var(--primary-color);
-            transform: scale(1.1);
-        }
-
-        /* Status indicator */
-        .status-indicator {
-            width: 12px;
-            height: 12px;
-            border-radius: 6px;
-            background: #34C759;
-            box-shadow: 0 0 0 3px rgba(52, 199, 89, 0.3);
-            animation: pulse-ios 2s infinite;
-        }
-
-        @keyframes pulse-ios {
-            0% { 
-                box-shadow: 0 0 0 0 rgba(52, 199, 89, 0.7);
-            }
-            70% {
-                box-shadow: 0 0 0 10px rgba(52, 199, 89, 0);
-            }
-            100% {
-                box-shadow: 0 0 0 0 rgba(52, 199, 89, 0);
+        @keyframes slideOut {
+            to {
+                transform: translateY(-100vh);
+                opacity: 0.5;
             }
         }
 
-        /* Container principal */
-        .main-container {
-            padding: 100px 20px 20px;
-            max-width: 1200px;
-            margin: 0 auto;
+        /* Barre de progression globale */
+        .global-progress-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 4px;
+            background: rgba(0,0,0,0.3);
+            z-index: 1001;
         }
 
-        .header {
-            text-align: center;
-            margin-bottom: 40px;
+        .global-progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #00ff88, #00aaff);
+            width: 0%;
+            transition: width 1s linear;
+            box-shadow: 0 0 10px rgba(0,255,136,0.5);
         }
 
-        .title {
-            font-size: 42px;
-            font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 10px;
-            letter-spacing: -1px;
-        }
-
-        .subtitle {
-            font-size: 18px;
-            color: var(--text-secondary);
-            font-weight: 400;
-        }
-
-        /* Section de statut global */
-        .global-status {
-            background: var(--surface-color);
-            backdrop-filter: blur(var(--blur-amount));
-            border-radius: 24px;
-            padding: 30px;
-            margin-bottom: 30px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 8px 25px var(--shadow-color);
-            text-align: center;
-        }
-
-        .global-timer {
-            font-size: 48px;
-            font-weight: 200;
-            color: var(--primary-color);
-            margin-bottom: 10px;
-            font-variant-numeric: tabular-nums;
-        }
-
-        .global-phase {
-            font-size: 24px;
-            font-weight: 500;
-            color: var(--text-primary);
-            margin-bottom: 8px;
-        }
-
-        .global-progress {
-            font-size: 16px;
-            color: var(--text-secondary);
-        }
-
-        /* Liste des tâches */
-        .tasks-container {
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-
-        .task-item {
-            background: var(--surface-color);
-            backdrop-filter: blur(var(--blur-amount));
-            border-radius: 20px;
-            padding: 24px;
-            border: 1px solid var(--border-color);
-            box-shadow: 0 4px 20px var(--shadow-color);
-            transition: all 0.3s ease;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            opacity: 0.6;
-            transform: scale(0.98);
-        }
-
-        .task-item.active {
-            opacity: 1;
-            transform: scale(1);
-            border-color: var(--primary-color);
-            box-shadow: 0 8px 30px var(--shadow-color), 0 0 0 2px rgba(0, 122, 255, 0.2);
-        }
-
-        .task-item.completed {
-            opacity: 0.4;
-            transform: scale(0.96);
-            border-color: var(--success-color);
-        }
-
-        .task-item.upcoming {
+        /* Effet de vague pour les transitions */
+        .wave-transition {
+            position: absolute;
+            bottom: -50px;
+            left: 0;
+            width: 100%;
+            height: 100px;
+            background: inherit;
+            clip-path: polygon(0 50%, 100% 0, 100% 100%, 0 100%);
             opacity: 0.3;
         }
 
-        .task-left {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-            flex: 1;
+        /* Animation du compte à rebours final */
+        .final-countdown {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            font-size: 300px;
+            font-weight: 900;
+            color: rgba(255,255,255,0.9);
+            z-index: 2000;
+            pointer-events: none;
+            animation: countdownPop 1s ease-out forwards;
         }
 
-        .task-icon {
-            width: 56px;
-            height: 56px;
-            border-radius: 16px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 24px;
-            color: white;
-            font-weight: 600;
-            min-width: 56px;
+        @keyframes countdownPop {
+            0% {
+                transform: translate(-50%, -50%) scale(0);
+                opacity: 0;
+            }
+            50% {
+                transform: translate(-50%, -50%) scale(1.2);
+                opacity: 1;
+            }
+            100% {
+                transform: translate(-50%, -50%) scale(1);
+                opacity: 0;
+            }
         }
 
-        .task-icon.prepare {
-            background: linear-gradient(135deg, var(--warning-color), #FFB340);
+        /* Effet de respiration pour le timer pendant le travail */
+        .timer-display.breathing {
+            animation: breathe 2s ease-in-out infinite;
         }
 
-        .task-icon.work {
-            background: linear-gradient(135deg, var(--danger-color), #FF6B6B);
+        @keyframes breathe {
+            0%, 100% { transform: scale(1); opacity: 1; }
+            50% { transform: scale(1.05); opacity: 0.9; }
         }
 
-        .task-icon.rest {
-            background: linear-gradient(135deg, var(--success-color), #51CF66);
-        }
-
-        .task-icon.restBetweenSets {
-            background: linear-gradient(135deg, var(--secondary-color), #845EC2);
-        }
-
-        .task-icon.coolDown {
-            background: linear-gradient(135deg, var(--primary-color), #4DABF7);
-        }
-
-        .task-info {
-            flex: 1;
-        }
-
-        .task-name {
+        /* Badge de motivation */
+        .motivation-badge {
+            position: absolute;
+            top: 20%;
+            left: 50%;
+            transform: translateX(-50%);
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            padding: 15px 30px;
+            border-radius: 50px;
             font-size: 20px;
             font-weight: 600;
-            color: var(--text-primary);
-            margin-bottom: 4px;
+            opacity: 0;
+            animation: motivationPop 3s ease-out;
         }
 
-        .task-description {
-            font-size: 14px;
-            color: var(--text-secondary);
-            line-height: 1.4;
-        }
-
-        .task-right {
-            display: flex;
-            align-items: center;
-            gap: 20px;
-        }
-
-        .task-timer {
-            font-size: 32px;
-            font-weight: 300;
-            color: var(--text-primary);
-            font-variant-numeric: tabular-nums;
-            min-width: 80px;
-            text-align: right;
-        }
-
-        .task-status {
-            width: 12px;
-            height: 12px;
-            border-radius: 6px;
-            min-width: 12px;
-        }
-
-        .task-status.pending {
-            background: var(--text-tertiary);
-        }
-
-        .task-status.active {
-            background: var(--primary-color);
-            animation: pulse-ios 2s infinite;
-        }
-
-        .task-status.completed {
-            background: var(--success-color);
-        }
-
-        /* Animations */
-        .task-slide-in {
-            animation: slideInFromRight 0.6s ease;
-        }
-
-        .task-slide-out {
-            animation: slideOutToLeft 0.6s ease;
-        }
-
-        @keyframes slideInFromRight {
-            from {
+        @keyframes motivationPop {
+            0% {
                 opacity: 0;
-                transform: translateX(100px) scale(0.9);
+                transform: translateX(-50%) translateY(20px) scale(0.8);
             }
-            to {
+            20% {
                 opacity: 1;
-                transform: translateX(0) scale(1);
+                transform: translateX(-50%) translateY(0) scale(1);
             }
-        }
-
-        @keyframes slideOutToLeft {
-            from {
+            80% {
                 opacity: 1;
-                transform: translateX(0) scale(1);
+                transform: translateX(-50%) translateY(0) scale(1);
             }
-            to {
+            100% {
                 opacity: 0;
-                transform: translateX(-100px) scale(0.9);
+                transform: translateX(-50%) translateY(-20px) scale(0.8);
             }
         }
 
-        /* Modal styles */
-        .modal {
-            display: none;
+        /* Mini timer en coin pendant les transitions */
+        .mini-timer {
             position: fixed;
-            z-index: 1000;
-            left: 0;
-            top: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgba(0, 0, 0, 0.4);
-            backdrop-filter: blur(20px);
-            animation: modalFadeIn 0.3s ease;
-        }
-
-        @keyframes modalFadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-        }
-        
-        .modal-content {
-            background: var(--surface-color);
-            backdrop-filter: blur(var(--blur-amount));
-            margin: 10% auto;
-            padding: 40px;
-            border-radius: 24px;
-            width: 90%;
-            max-width: 500px;
-            text-align: center;
-            color: var(--text-primary);
-            box-shadow: 0 20px 60px var(--shadow-color);
-            border: 1px solid var(--border-color);
-            animation: modalSlideIn 0.4s ease;
-        }
-
-        @keyframes modalSlideIn {
-            from { 
-                opacity: 0;
-                transform: translateY(50px) scale(0.9);
-            }
-            to { 
-                opacity: 1;
-                transform: translateY(0) scale(1);
-            }
-        }
-        
-        .modal h2 {
-            color: var(--text-primary);
-            margin-bottom: 20px;
+            top: 80px;
+            right: 20px;
+            background: rgba(0,0,0,0.5);
+            backdrop-filter: blur(10px);
+            padding: 10px 20px;
+            border-radius: 20px;
+            color: white;
             font-size: 24px;
             font-weight: 600;
-        }
-        
-        .modal p {
-            margin-bottom: 30px;
-            font-size: 16px;
-            line-height: 1.5;
-            color: var(--text-secondary);
-        }
-        
-        .modal-buttons {
-            display: flex;
-            gap: 12px;
-            justify-content: center;
-            flex-wrap: wrap;
-        }
-        
-        .modal-btn {
-            padding: 12px 24px;
-            border: none;
-            border-radius: 12px;
-            cursor: pointer;
-            font-size: 16px;
-            font-weight: 600;
-            transition: all 0.2s ease;
-            min-width: 100px;
+            z-index: 1000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
         }
 
-        .modal-btn-primary {
-            background: var(--primary-color);
-            color: white;
-        }
-
-        .modal-btn-secondary {
-            background: var(--text-tertiary);
-            color: var(--text-primary);
-        }
-        
-        .modal-btn:hover {
-            transform: translateY(-1px);
-            opacity: 0.9;
-        }
-
-        .modal-btn:active {
-            transform: translateY(0);
-        }
-
-        /* QR Code styling */
-        .qr-container {
-            text-align: center;
-            padding: 20px;
-        }
-
-        .qr-code {
-            background: white;
-            padding: 20px;
-            border-radius: 16px;
-            display: inline-block;
-            margin: 20px 0;
-            box-shadow: 0 8px 25px var(--shadow-color);
-        }
-
-        .url-display {
-            background: var(--background-secondary);
-            padding: 16px;
-            border-radius: 12px;
-            font-family: 'SF Mono', 'Monaco', 'Cascadia Code', monospace;
-            font-size: 14px;
-            word-break: break-all;
-            margin: 20px 0;
-            border: 1px solid var(--border-color);
-            color: var(--text-secondary);
+        .mini-timer.visible {
+            opacity: 1;
         }
 
         /* Responsive */
         @media (max-width: 768px) {
-            .main-container {
-                padding: 80px 15px 15px;
+            .timer-display {
+                font-size: 100px;
             }
-
-            .top-controls {
-                top: 15px;
-                left: 15px;
-                right: 15px;
-                flex-direction: column;
-                gap: 12px;
-            }
-
-            .control-group {
-                justify-content: center;
-            }
-
-            .title {
-                font-size: 32px;
-            }
-
-            .global-timer {
+            
+            .phase-name {
                 font-size: 36px;
             }
-
-            .task-item {
-                flex-direction: column;
-                gap: 16px;
-                text-align: center;
+            
+            .phase-icon {
+                font-size: 80px;
             }
-
-            .task-left {
-                flex-direction: column;
-                gap: 12px;
-                text-align: center;
+            
+            .phase-info {
+                gap: 20px;
+                padding: 15px 25px;
             }
-
-            .task-right {
-                gap: 12px;
-            }
-
-            .task-timer {
-                font-size: 28px;
-                text-align: center;
-            }
-        }
-
-        @media (prefers-color-scheme: dark) {
-            :root {
-                --primary-color: #0A84FF;
-                --secondary-color: #5E5CE6;
-                --success-color: #30D158;
-                --warning-color: #FF9F0A;
-                --danger-color: #FF453A;
-                --background-primary: #000000;
-                --background-secondary: #1C1C1E;
-                --text-primary: #FFFFFF;
-                --text-secondary: #8E8E93;
-                --text-tertiary: #48484A;
-                --surface-color: rgba(28, 28, 30, 0.85);
-                --border-color: rgba(255, 255, 255, 0.1);
-                --shadow-color: rgba(0, 0, 0, 0.3);
+            
+            .progress-indicator {
+                display: none;
             }
         }
     </style>
 </head>
 <body>
-    <div class="background-blur"></div>
-    
-    <div class="top-controls">
-        <div class="control-group">
-            <div class="status-indicator" id="statusIndicator"></div>
-            <div class="control-pill">
-                <span class="volume-icon" id="volumeIcon" onclick="toggleMute()">🔊</span>
-                <div class="volume-control">
-                    <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="70">
-                </div>
-            </div>
-        </div>
-        
-        <div class="control-group">
-            <div class="control-pill">
-                <button class="control-btn-icon" onclick="toggleTheme()" title="Mode sombre/clair" id="themeToggleBtn">
-                    <span id="themeIcon">🌙</span>
-                </button>
-            </div>
-            
-            <div class="control-pill">
-                <button class="control-btn-icon" onclick="showQRCode()" title="QR Code d'accès">
-                    <span>📱</span>
-                </button>
-            </div>
-        </div>
-    </div>
-    
-    <div class="main-container">
-        <div class="header">
-            <div id="title" class="title">TIMER ECOS</div>
-            <div class="subtitle">Session d'entraînement en cours</div>
-        </div>
-
-        <div class="global-status">
-            <div id="globalTimer" class="global-timer">--:--</div>
-            <div id="globalPhase" class="global-phase">En attente...</div>
-            <div id="globalProgress" class="global-progress"></div>
-        </div>
-
-        <div class="tasks-container" id="tasksContainer">
-            <!-- Les tâches seront générées dynamiquement -->
-        </div>
+    <!-- Barre de progression globale -->
+    <div class="global-progress-bar">
+        <div class="global-progress-fill" id="globalProgress"></div>
     </div>
 
-    <!-- Modal QR Code -->
-    <div id="qrModal" class="modal">
-        <div class="modal-content">
-            <h2>📱 QR Code d'accès</h2>
-            <div class="qr-container">
-                <p>Scannez ce code pour accéder au timer :</p>
-                <div class="qr-code" id="qrCode">
-                    <!-- Le QR code sera généré ici -->
-                </div>
-                <div class="url-display" id="timerUrl"></div>
-                <p style="font-size: 14px; color: var(--text-secondary); margin-top: 10px;">
-                    Partagez cette URL ou ce QR code avec vos étudiants pour qu'ils puissent suivre le timer sur leurs appareils.
-                </p>
-            </div>
-            <div class="modal-buttons">
-                <button class="modal-btn modal-btn-primary" onclick="copyUrl()">Copier l'URL</button>
-                <button class="modal-btn modal-btn-secondary" onclick="hideQRCode()">Fermer</button>
-            </div>
-        </div>
+    <!-- Mini timer -->
+    <div class="mini-timer" id="miniTimer"></div>
+
+    <!-- Compte à rebours géant -->
+    <div class="final-countdown" id="finalCountdown" style="display: none;"></div>
+
+    <!-- Contrôles -->
+    <div class="controls">
+        <button class="control-btn" onclick="toggleTheme()" title="Thème">
+            <span id="themeIcon">🌙</span>
+        </button>
+    </div>
+
+    <!-- Contrôle du volume -->
+    <div class="volume-control">
+        <span class="volume-icon" id="volumeIcon" onclick="toggleMute()">🔊</span>
+        <input type="range" id="volumeSlider" class="volume-slider" min="0" max="100" value="70">
+    </div>
+
+    <!-- Indicateur de progression -->
+    <div class="progress-indicator" id="progressIndicator"></div>
+
+    <!-- Container principal avec toutes les phases -->
+    <div class="slider-container" id="sliderContainer">
+        <!-- Les slides seront générés dynamiquement -->
     </div>
 
     <script src="/socket.io/socket.io.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script>
     <script>
-        console.log('🚀 Démarrage Timer ECOS v2.0 - Interface Tâches...');
-        
         // Variables globales
         let socket;
-        let currentTheme = 'auto';
-        let isDarkMode = false;
-        let interval;
-        let currentConfig = {};
-        let currentSet = 1;
-        let currentCycle = 1;
-        let isRunning = false;
+        let currentSlideIndex = 0;
+        let slides = [];
+        let intervals = {};
         let audioContext;
         let globalVolume = 0.7;
-        let soundsEnabled = true;
-        let tasks = [];
-        let currentTaskIndex = 0;
-        let globalTimeRemaining = 0;
+        let currentConfig = {};
+        let totalPhases = 0;
         
-        // Variables pour éviter les appels multiples
-        let isResetting = false;
-        let resetTimeout = null;
-
-        // Elements DOM
-        const titleEl = document.getElementById('title');
-        const globalTimerEl = document.getElementById('globalTimer');
-        const globalPhaseEl = document.getElementById('globalPhase');
-        const globalProgressEl = document.getElementById('globalProgress');
-        const tasksContainerEl = document.getElementById('tasksContainer');
-        const statusEl = document.getElementById('statusIndicator');
-        const qrModal = document.getElementById('qrModal');
-
-        // Initialisation Socket.IO
-        function initSocket() {
-            console.log('🔌 Connexion Socket.IO...');
-            
-            if (socket) {
-                socket.disconnect();
-                socket.removeAllListeners();
+        // Configuration des phases
+        const phaseTemplates = {
+            prepare: {
+                icon: '🏃‍♂️',
+                name: 'Préparation',
+                description: 'Préparez-vous pour la session'
+            },
+            work: {
+                icon: '🏋️‍♂️',
+                name: 'Travail',
+                description: 'Phase active - Donnez tout !'
+            },
+            rest: {
+                icon: '🧘‍♂️',
+                name: 'Repos',
+                description: 'Récupération entre les cycles'
+            },
+            restBetweenSets: {
+                icon: '💆‍♂️',
+                name: 'Repos entre séries',
+                description: 'Pause longue - Hydratez-vous'
+            },
+            coolDown: {
+                icon: '🏊‍♂️',
+                name: 'Récupération',
+                description: 'Phase de récupération finale'
             }
+        };
+
+        // Initialisation
+        function init() {
+            initSocket();
+            initAudio();
+            setupVolumeControl();
             
-            socket = io({
-                transports: ['websocket', 'polling'],
-                timeout: 5000,
-                forceNew: true
-            });
+            // Activation audio au premier clic
+            document.addEventListener('click', function() {
+                if (audioContext && audioContext.state === 'suspended') {
+                    audioContext.resume();
+                }
+            }, { once: true });
+        }
 
-            socket.on('connect', () => {
-                console.log('✅ Socket.IO connecté avec ID:', socket.id);
-                updateStatusIndicator(false);
-            });
-
-            socket.on('disconnect', (reason) => {
-                console.log('❌ Socket.IO déconnecté:', reason);
-                updateStatusIndicator('disconnected');
-            });
-
-            socket.on('connect_error', (error) => {
-                console.error('❌ Erreur Socket.IO:', error);
-                updateStatusIndicator('error');
-            });
-
+        // Socket.IO
+        function initSocket() {
+            socket = io();
+            
             socket.on('start', (data) => {
-                console.log('🏁 Timer démarré avec config depuis serveur:', data);
-                clearInterval(interval);
-                startSequence(data);
+                console.log('Timer démarré:', data);
+                startTimer(data);
             });
-
+            
             socket.on('reset', () => {
-                console.log('🔄 Reset reçu du serveur');
-                doResetTimer();
+                resetTimer();
             });
-
+            
             socket.on('examTerminated', () => {
-                console.log('🛑 Examen terminé depuis serveur');
-                globalPhaseEl.textContent = 'Examen terminé';
-                globalTimerEl.textContent = '00:00';
-                globalProgressEl.textContent = 'Session terminée par l\'administrateur';
-                clearInterval(interval);
-                updateStatusIndicator(false);
-                clearTasks();
-                
-                playBeep(200, 500);
-                speak('Examen terminé par l\'administrateur');
+                showFinishScreen('Examen interrompu');
             });
         }
 
-        // Initialisation audio
+        // Audio
         function initAudio() {
             try {
                 audioContext = new (window.AudioContext || window.webkitAudioContext)();
-                console.log('🔊 Audio initialisé');
             } catch (e) {
-                console.warn('⚠️ Audio non supporté:', e);
+                console.warn('Audio non supporté');
             }
         }
 
-        // Génération de sons
-        function playBeep(frequency = 440, duration = 200, type = 'sine') {
-            if (!soundsEnabled || !audioContext || globalVolume === 0) return;
+        function playSound(frequency = 440, duration = 200) {
+            if (!audioContext || globalVolume === 0) return;
             
             try {
                 const oscillator = audioContext.createOscillator();
@@ -799,33 +615,16 @@
                 oscillator.connect(gainNode);
                 gainNode.connect(audioContext.destination);
                 
-                oscillator.frequency.setValueAtTime(frequency, audioContext.currentTime);
-                oscillator.type = type;
+                oscillator.frequency.value = frequency;
+                gainNode.gain.value = globalVolume * 0.3;
                 
-                gainNode.gain.setValueAtTime(0, audioContext.currentTime);
-                gainNode.gain.linearRampToValueAtTime(globalVolume * 0.3, audioContext.currentTime + 0.01);
-                gainNode.gain.linearRampToValueAtTime(0, audioContext.currentTime + duration / 1000);
-                
-                oscillator.start(audioContext.currentTime);
+                oscillator.start();
                 oscillator.stop(audioContext.currentTime + duration / 1000);
-            } catch (e) {
-                console.warn('⚠️ Erreur son:', e);
-            }
+            } catch (e) {}
         }
 
-        function playWorkSound() { playBeep(880, 300); }
-        function playRestSound() { playBeep(440, 300); }
-        function playPrepareSound() { playBeep(660, 500); }
-        function playEndSound() {
-            setTimeout(() => playBeep(523, 200), 0);
-            setTimeout(() => playBeep(659, 200), 200);
-            setTimeout(() => playBeep(784, 400), 400);
-        }
-        function playCountdownSound() { playBeep(800, 100); }
-
-        // Synthèse vocale
         function speak(text) {
-            if (!soundsEnabled) return;
+            if (globalVolume === 0) return;
             
             try {
                 const utterance = new SpeechSynthesisUtterance(text);
@@ -833,26 +632,374 @@
                 utterance.volume = globalVolume;
                 utterance.rate = 1.2;
                 speechSynthesis.speak(utterance);
-            } catch (e) {
-                console.warn('⚠️ Synthèse vocale non supportée');
+            } catch (e) {}
+        }
+
+        // Génération des slides
+        function generateSlides(config) {
+            const container = document.getElementById('sliderContainer');
+            container.innerHTML = '';
+            slides = [];
+            let slideIndex = 0;
+            
+            // Phase de préparation
+            if (config.prepare > 0) {
+                slides.push(createSlide('prepare', config.prepare, slideIndex++));
+            }
+            
+            // Générer les séries et cycles
+            for (let set = 1; set <= config.sets; set++) {
+                for (let cycle = 1; cycle <= config.cycles; cycle++) {
+                    // Phase de travail
+                    slides.push(createSlide('work', config.work, slideIndex++, {
+                        set: set,
+                        totalSets: config.sets,
+                        cycle: cycle,
+                        totalCycles: config.cycles
+                    }));
+                    
+                    // Phase de repos (sauf après le dernier cycle de la dernière série)
+                    if (!(set === config.sets && cycle === config.cycles)) {
+                        slides.push(createSlide('rest', config.rest, slideIndex++, {
+                            set: set,
+                            totalSets: config.sets,
+                            cycle: cycle,
+                            totalCycles: config.cycles
+                        }));
+                    }
+                }
+                
+                // Repos entre séries
+                if (set < config.sets && config.restBetweenSets > 0) {
+                    slides.push(createSlide('restBetweenSets', config.restBetweenSets, slideIndex++, {
+                        set: set,
+                        totalSets: config.sets
+                    }));
+                }
+            }
+            
+            // Phase de récupération
+            if (config.coolDown > 0) {
+                slides.push(createSlide('coolDown', config.coolDown, slideIndex++));
+            }
+            
+            // Slide de fin
+            slides.push(createFinishSlide(slideIndex++));
+            
+            // Ajouter tous les slides au container
+            slides.forEach(slide => container.appendChild(slide.element));
+            
+            // Créer l'indicateur de progression
+            createProgressIndicator();
+            
+            totalPhases = slides.length - 1; // -1 pour exclure le slide de fin
+        }
+
+        function createSlide(type, duration, index, info = {}) {
+            const slide = document.createElement('div');
+            slide.className = `phase-slide ${type}`;
+            slide.id = `slide-${index}`;
+            
+            const template = phaseTemplates[type];
+            
+            // Particules de fond
+            const particles = createParticles();
+            slide.appendChild(particles);
+            
+            // Contenu principal
+            const content = document.createElement('div');
+            content.className = 'phase-content';
+            
+            content.innerHTML = `
+                <div class="phase-icon">${template.icon}</div>
+                <div class="timer-display" id="timer-${index}">${formatTime(duration)}</div>
+                <div class="phase-name">${template.name}</div>
+                <div class="phase-description">${template.description}</div>
+            `;
+            
+            // Informations supplémentaires
+            if (info.set || info.cycle) {
+                const phaseInfo = document.createElement('div');
+                phaseInfo.className = 'phase-info';
+                
+                let infoHTML = '';
+                if (info.set) {
+                    infoHTML += `
+                        <div class="info-item">
+                            <div class="info-label">Série</div>
+                            <div class="info-value">${info.set}/${info.totalSets}</div>
+                        </div>
+                    `;
+                }
+                if (info.cycle) {
+                    infoHTML += `
+                        <div class="info-item">
+                            <div class="info-label">Cycle</div>
+                            <div class="info-value">${info.cycle}/${info.totalCycles}</div>
+                        </div>
+                    `;
+                }
+                infoHTML += `
+                    <div class="info-item">
+                        <div class="info-label">Phase</div>
+                        <div class="info-value">${index + 1}/${totalPhases || '?'}</div>
+                    </div>
+                `;
+                
+                phaseInfo.innerHTML = infoHTML;
+                slide.appendChild(phaseInfo);
+            }
+            
+            slide.appendChild(content);
+            
+            return {
+                element: slide,
+                type: type,
+                duration: duration,
+                index: index,
+                remaining: duration
+            };
+        }
+
+        function createFinishSlide(index) {
+            const slide = document.createElement('div');
+            slide.className = 'phase-slide finished';
+            slide.id = `slide-${index}`;
+            
+            const content = document.createElement('div');
+            content.className = 'phase-content';
+            
+            content.innerHTML = `
+                <div class="finish-message">FIN DE L'EXAMEN</div>
+                <div class="phase-icon">🎉</div>
+                <div class="phase-description">Félicitations ! Session terminée</div>
+            `;
+            
+            slide.appendChild(content);
+            
+            return {
+                element: slide,
+                type: 'finished',
+                index: index
+            };
+        }
+
+        function createParticles() {
+            const particlesContainer = document.createElement('div');
+            particlesContainer.className = 'particles';
+            
+            // Créer des particules aléatoires
+            for (let i = 0; i < 50; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 8 + 's';
+                particle.style.animationDuration = (Math.random() * 3 + 5) + 's';
+                particlesContainer.appendChild(particle);
+            }
+            
+            return particlesContainer;
+        }
+
+        function createProgressIndicator() {
+            const indicator = document.getElementById('progressIndicator');
+            indicator.innerHTML = '';
+            
+            slides.forEach((slide, index) => {
+                if (slide.type !== 'finished') {
+                    const dot = document.createElement('div');
+                    dot.className = 'progress-dot';
+                    dot.onclick = () => jumpToSlide(index);
+                    indicator.appendChild(dot);
+                }
+            });
+        }
+
+        // Gestion du timer
+        function startTimer(config) {
+            currentConfig = config;
+            currentSlideIndex = 0;
+            
+            // Générer tous les slides
+            generateSlides(config);
+            
+            // Réinitialiser la position
+            updateSliderPosition();
+            
+            // Démarrer le premier slide
+            startSlideTimer(0);
+        }
+
+        function startSlideTimer(index) {
+            if (index >= slides.length - 1) {
+                // Dernier slide (fin)
+                slideToNext();
+                return;
+            }
+            
+            const slide = slides[index];
+            currentSlideIndex = index;
+            
+            // Mettre à jour l'indicateur
+            updateProgressIndicator();
+            
+            // Son de début
+            playStartSound(slide.type);
+            speak(getAnnouncement(slide.type));
+            
+            // Timer
+            let remaining = slide.duration;
+            const timerEl = document.getElementById(`timer-${index}`);
+            
+            clearInterval(intervals[index]);
+            intervals[index] = setInterval(() => {
+                remaining--;
+                
+                if (timerEl) {
+                    timerEl.textContent = formatTime(remaining);
+                    
+                    // Countdown effet
+                    if (remaining <= 3 && remaining > 0) {
+                        timerEl.classList.add('countdown');
+                        playSound(800, 100);
+                        speak(remaining.toString());
+                    } else {
+                        timerEl.classList.remove('countdown');
+                    }
+                }
+                
+                if (remaining <= 0) {
+                    clearInterval(intervals[index]);
+                    slideToNext();
+                }
+            }, 1000);
+        }
+
+        function slideToNext() {
+            if (currentSlideIndex < slides.length - 1) {
+                currentSlideIndex++;
+                updateSliderPosition();
+                
+                // Animation de sortie pour le slide précédent
+                if (currentSlideIndex > 0) {
+                    const prevSlide = slides[currentSlideIndex - 1].element;
+                    prevSlide.classList.add('phase-transition-out');
+                }
+                
+                // Démarrer le timer du nouveau slide après l'animation
+                setTimeout(() => {
+                    if (currentSlideIndex < slides.length - 1) {
+                        startSlideTimer(currentSlideIndex);
+                    } else {
+                        // Slide de fin
+                        playFinishSound();
+                        speak('Examen terminé ! Félicitations !');
+                    }
+                }, 800);
             }
         }
 
-        // Gestion du volume
-        document.getElementById('volumeSlider').addEventListener('input', function() {
-            globalVolume = this.value / 100;
-            updateVolumeIcon();
-        });
+        function updateSliderPosition() {
+            const container = document.getElementById('sliderContainer');
+            const offset = currentSlideIndex * 100;
+            container.style.transform = `translateY(-${offset}vh)`;
+        }
 
-        function updateVolumeIcon() {
-            const icon = document.getElementById('volumeIcon');
-            if (globalVolume === 0) {
-                icon.textContent = '🔇';
-            } else if (globalVolume < 0.5) {
-                icon.textContent = '🔉';
-            } else {
-                icon.textContent = '🔊';
+        function updateProgressIndicator() {
+            const dots = document.querySelectorAll('.progress-dot');
+            dots.forEach((dot, index) => {
+                dot.classList.remove('active', 'completed');
+                if (index === currentSlideIndex) {
+                    dot.classList.add('active');
+                } else if (index < currentSlideIndex) {
+                    dot.classList.add('completed');
+                }
+            });
+        }
+
+        function jumpToSlide(index) {
+            // Fonction pour debug - peut être retirée en production
+            if (index >= 0 && index < slides.length) {
+                Object.values(intervals).forEach(interval => clearInterval(interval));
+                currentSlideIndex = index;
+                updateSliderPosition();
+                startSlideTimer(index);
             }
+        }
+
+        // Sons
+        function playStartSound(type) {
+            switch(type) {
+                case 'work':
+                    playSound(880, 300);
+                    break;
+                case 'rest':
+                case 'restBetweenSets':
+                    playSound(440, 300);
+                    break;
+                case 'prepare':
+                    playSound(660, 500);
+                    break;
+                case 'coolDown':
+                    playSound(523, 400);
+                    break;
+            }
+        }
+
+        function playFinishSound() {
+            setTimeout(() => playSound(523, 200), 0);
+            setTimeout(() => playSound(659, 200), 200);
+            setTimeout(() => playSound(784, 400), 400);
+        }
+
+        function getAnnouncement(type) {
+            switch(type) {
+                case 'work': return 'Travail !';
+                case 'rest': return 'Repos';
+                case 'restBetweenSets': return 'Repos entre séries';
+                case 'prepare': return 'Préparez-vous';
+                case 'coolDown': return 'Récupération finale';
+                default: return '';
+            }
+        }
+
+        // Utilitaires
+        function formatTime(seconds) {
+            const mins = Math.floor(seconds / 60);
+            const secs = seconds % 60;
+            return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+        }
+
+        function resetTimer() {
+            Object.values(intervals).forEach(interval => clearInterval(interval));
+            currentSlideIndex = 0;
+            const container = document.getElementById('sliderContainer');
+            container.innerHTML = '<div class="phase-slide" style="display: flex; align-items: center; justify-content: center; color: white;"><h1>Timer réinitialisé</h1></div>';
+            playSound(300, 200);
+            speak('Timer réinitialisé');
+        }
+
+        function showFinishScreen(message) {
+            Object.values(intervals).forEach(interval => clearInterval(interval));
+            currentSlideIndex = slides.length - 1;
+            updateSliderPosition();
+            playSound(200, 500);
+            speak(message);
+        }
+
+        // Contrôles
+        function toggleTheme() {
+            // Fonctionnalité de thème si nécessaire
+            const icon = document.getElementById('themeIcon');
+            icon.textContent = icon.textContent === '🌙' ? '☀️' : '🌙';
+        }
+
+        function setupVolumeControl() {
+            const slider = document.getElementById('volumeSlider');
+            slider.addEventListener('input', function() {
+                globalVolume = this.value / 100;
+                updateVolumeIcon();
+            });
         }
 
         function toggleMute() {
@@ -869,522 +1016,19 @@
             updateVolumeIcon();
         }
 
-        // Gestion des thèmes
-        function toggleTheme() {
-            if (currentTheme === 'auto') {
-                const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-                currentTheme = prefersDark ? 'light' : 'dark';
-            } else if (currentTheme === 'light') {
-                currentTheme = 'dark';
+        function updateVolumeIcon() {
+            const icon = document.getElementById('volumeIcon');
+            if (globalVolume === 0) {
+                icon.textContent = '🔇';
+            } else if (globalVolume < 0.5) {
+                icon.textContent = '🔉';
             } else {
-                currentTheme = 'light';
-            }
-            
-            applyTheme();
-            updateThemeIcon();
-            localStorage.setItem('timer-theme-quick', currentTheme);
-        }
-
-        function applyTheme() {
-            document.body.className = '';
-            if (currentTheme === 'dark') {
-                document.body.classList.add('theme-dark');
-                isDarkMode = true;
-            } else if (currentTheme === 'light') {
-                document.body.classList.add('theme-light');
-                isDarkMode = false;
-            } else {
-                isDarkMode = window.matchMedia('(prefers-color-scheme: dark)').matches;
+                icon.textContent = '🔊';
             }
         }
 
-        function updateThemeIcon() {
-            const icon = document.getElementById('themeIcon');
-            const btn = document.getElementById('themeToggleBtn');
-            
-            let iconText = currentTheme === 'dark' ? '☀️' : '🌙';
-            let titleText = currentTheme === 'dark' ? 'Passer au mode clair' : 'Passer au mode sombre';
-            
-            if (icon) icon.textContent = iconText;
-            if (btn) btn.title = titleText;
-        }
-
-        // Fonctions de gestion des tâches
-        function generateTasks(config) {
-            tasks = [];
-            let taskId = 0;
-            
-            // Phase de préparation
-            if (config.prepare > 0) {
-                tasks.push({
-                    id: taskId++,
-                    type: 'prepare',
-                    name: 'Préparation',
-                    description: 'Préparez-vous pour commencer la session',
-                    duration: config.prepare,
-                    remaining: config.prepare,
-                    status: 'pending'
-                });
-            }
-            
-            // Générer les séries
-            for (let set = 1; set <= config.sets; set++) {
-                // Générer les cycles pour cette série
-                for (let cycle = 1; cycle <= config.cycles; cycle++) {
-                    // Phase de travail
-                    tasks.push({
-                        id: taskId++,
-                        type: 'work',
-                        name: `Travail ${set}.${cycle}`,
-                        description: config.workDescription || 'Phase de travail active',
-                        duration: config.work,
-                        remaining: config.work,
-                        status: 'pending',
-                        set: set,
-                        cycle: cycle
-                    });
-                    
-                    // Phase de repos (sauf après le dernier cycle de la dernière série)
-                    if (!(set === config.sets && cycle === config.cycles)) {
-                        tasks.push({
-                            id: taskId++,
-                            type: 'rest',
-                            name: `Repos ${set}.${cycle}`,
-                            description: config.restDescription || 'Phase de repos',
-                            duration: config.rest,
-                            remaining: config.rest,
-                            status: 'pending',
-                            set: set,
-                            cycle: cycle
-                        });
-                    }
-                }
-                
-                // Repos entre séries (sauf après la dernière série)
-                if (set < config.sets && config.restBetweenSets > 0) {
-                    tasks.push({
-                        id: taskId++,
-                        type: 'restBetweenSets',
-                        name: `Repos entre séries ${set}`,
-                        description: 'Pause entre les séries d\'exercices',
-                        duration: config.restBetweenSets,
-                        remaining: config.restBetweenSets,
-                        status: 'pending',
-                        set: set
-                    });
-                }
-            }
-            
-            // Phase de récupération finale
-            if (config.coolDown > 0) {
-                tasks.push({
-                    id: taskId++,
-                    type: 'coolDown',
-                    name: 'Récupération',
-                    description: 'Phase de récupération finale',
-                    duration: config.coolDown,
-                    remaining: config.coolDown,
-                    status: 'pending'
-                });
-            }
-            
-            console.log('📋 Tâches générées:', tasks.length);
-            return tasks;
-        }
-
-        function renderTasks() {
-            tasksContainerEl.innerHTML = '';
-            
-            tasks.forEach((task, index) => {
-                const taskEl = document.createElement('div');
-                taskEl.className = `task-item ${getTaskClass(task, index)}`;
-                taskEl.id = `task-${task.id}`;
-                
-                const minutes = Math.floor(task.remaining / 60);
-                const seconds = task.remaining % 60;
-                const timeStr = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-                
-                taskEl.innerHTML = `
-                    <div class="task-left">
-                        <div class="task-icon ${task.type}">
-                            ${getTaskIcon(task.type)}
-                        </div>
-                        <div class="task-info">
-                            <div class="task-name">${task.name}</div>
-                            <div class="task-description">${task.description}</div>
-                        </div>
-                    </div>
-                    <div class="task-right">
-                        <div class="task-timer">${timeStr}</div>
-                        <div class="task-status ${task.status}"></div>
-                    </div>
-                `;
-                
-                tasksContainerEl.appendChild(taskEl);
-            });
-        }
-
-        function getTaskClass(task, index) {
-            if (index === currentTaskIndex) return 'active';
-            if (task.status === 'completed') return 'completed';
-            if (index > currentTaskIndex) return 'upcoming';
-            return '';
-        }
-
-        function getTaskIcon(type) {
-            switch (type) {
-                case 'prepare': return '🏃';
-                case 'work': return '🏋️';
-                case 'rest': return '🤸';
-                case 'restBetweenSets': return '💺';
-                case 'coolDown': return '🧘';
-                default: return '⏱️';
-            }
-        }
-
-        function updateTaskTimer(taskIndex, remaining) {
-            const task = tasks[taskIndex];
-            if (!task) return;
-            
-            task.remaining = remaining;
-            
-            const taskEl = document.getElementById(`task-${task.id}`);
-            if (taskEl) {
-                const timerEl = taskEl.querySelector('.task-timer');
-                const minutes = Math.floor(remaining / 60);
-                const seconds = remaining % 60;
-                timerEl.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
-            }
-        }
-
-        function markTaskCompleted(taskIndex) {
-            if (taskIndex >= 0 && taskIndex < tasks.length) {
-                tasks[taskIndex].status = 'completed';
-                const taskEl = document.getElementById(`task-${tasks[taskIndex].id}`);
-                if (taskEl) {
-                    taskEl.className = 'task-item completed task-slide-out';
-                    setTimeout(() => {
-                        taskEl.className = 'task-item completed';
-                    }, 600);
-                }
-            }
-        }
-
-        function setActiveTask(taskIndex) {
-            // Supprimer la classe active de toutes les tâches
-            document.querySelectorAll('.task-item').forEach(el => {
-                el.classList.remove('active');
-            });
-            
-            if (taskIndex >= 0 && taskIndex < tasks.length) {
-                tasks[taskIndex].status = 'active';
-                const taskEl = document.getElementById(`task-${tasks[taskIndex].id}`);
-                if (taskEl) {
-                    taskEl.className = 'task-item active task-slide-in';
-                    
-                    // Faire défiler vers la tâche active
-                    taskEl.scrollIntoView({ 
-                        behavior: 'smooth', 
-                        block: 'center'
-                    });
-                }
-            }
-        }
-
-        function clearTasks() {
-            tasks = [];
-            currentTaskIndex = 0;
-            tasksContainerEl.innerHTML = '<div style="text-align: center; padding: 40px; color: var(--text-secondary);">Aucune tâche en cours</div>';
-        }
-
-        // QR Code
-        function showQRCode() {
-            console.log('📱 Génération QR Code...');
-            const url = window.location.origin;
-            document.getElementById('timerUrl').textContent = url;
-            
-            const qrCodeElement = document.getElementById('qrCode');
-            qrCodeElement.innerHTML = '<div style="padding: 20px;">Génération du QR code...</div>';
-            
-            if (typeof QRCode === 'undefined') {
-                qrCodeElement.innerHTML = '<p style="color: #FF3B30;">Erreur: Bibliothèque QR Code non chargée</p>';
-                document.getElementById('qrModal').style.display = 'block';
-                return;
-            }
-            
-            try {
-                QRCode.toCanvas(qrCodeElement, url, {
-                    width: 200,
-                    margin: 2,
-                    color: {
-                        dark: '#007AFF',
-                        light: '#FFFFFF'
-                    }
-                }, function (error) {
-                    if (error) {
-                        console.error('❌ Erreur QR Code:', error);
-                        qrCodeElement.innerHTML = '<p style="color: #FF3B30;">Erreur lors de la génération du QR code</p>';
-                    } else {
-                        console.log('✅ QR Code généré');
-                    }
-                });
-            } catch (error) {
-                console.error('❌ Erreur QR Code:', error);
-                qrCodeElement.innerHTML = '<p style="color: #FF3B30;">Erreur lors de la génération du QR code</p>';
-            }
-            
-            document.getElementById('qrModal').style.display = 'block';
-        }
-
-        function hideQRCode() {
-            document.getElementById('qrModal').style.display = 'none';
-        }
-
-        function copyUrl() {
-            const url = document.getElementById('timerUrl').textContent;
-            navigator.clipboard.writeText(url).then(() => {
-                const btn = event.target;
-                const originalText = btn.textContent;
-                btn.textContent = 'Copié !';
-                btn.style.background = '#34C759';
-                
-                setTimeout(() => {
-                    btn.textContent = originalText;
-                    btn.style.background = '';
-                }, 2000);
-            }).catch(err => {
-                console.error('Erreur copie:', err);
-                alert('URL: ' + url);
-            });
-        }
-
-        // Fonctions du timer
-        function updateStatusIndicator(status) {
-            if (status === 'disconnected') {
-                statusEl.style.background = '#8E8E93';
-                statusEl.style.boxShadow = '0 0 0 3px rgba(142, 142, 147, 0.3)';
-            } else if (status === 'error') {
-                statusEl.style.background = '#FF3B30';
-                statusEl.style.boxShadow = '0 0 0 3px rgba(255, 59, 48, 0.3)';
-            } else if (status === true) {
-                statusEl.style.background = '#FF3B30';
-                statusEl.style.boxShadow = '0 0 0 3px rgba(255, 59, 48, 0.3)';
-            } else {
-                statusEl.style.background = '#34C759';
-                statusEl.style.boxShadow = '0 0 0 3px rgba(52, 199, 89, 0.3)';
-            }
-            isRunning = status === true;
-        }
-
-        function startSequence(config) {
-            console.log('🏁 Démarrage séquence:', config);
-            currentConfig = config;
-            titleEl.textContent = config.title || 'TIMER ECOS';
-            currentTaskIndex = 0;
-            updateStatusIndicator(true);
-            
-            // Générer et afficher les tâches
-            generateTasks(config);
-            renderTasks();
-            
-            // Calculer le temps total
-            globalTimeRemaining = tasks.reduce((total, task) => total + task.duration, 0);
-            
-            // Réinitialiser les flags de reset
-            isResetting = false;
-            if (resetTimeout) {
-                clearTimeout(resetTimeout);
-                resetTimeout = null;
-            }
-            
-            playPrepareSound();
-            speak('Début de la session. Préparez-vous.');
-            
-            runCurrentTask();
-        }
-
-        function runCurrentTask() {
-            if (currentTaskIndex >= tasks.length) {
-                finishTimer();
-                return;
-            }
-            
-            const task = tasks[currentTaskIndex];
-            setActiveTask(currentTaskIndex);
-            
-            globalPhaseEl.textContent = task.name;
-            globalProgressEl.textContent = `Tâche ${currentTaskIndex + 1} sur ${tasks.length}`;
-            
-            // Sons et annonces selon le type de tâche
-            switch(task.type) {
-                case 'work':
-                    playWorkSound();
-                    speak('Travail !');
-                    break;
-                case 'rest':
-                    playRestSound();
-                    speak('Repos');
-                    break;
-                case 'prepare':
-                    playPrepareSound();
-                    speak('Préparation');
-                    break;
-                case 'restBetweenSets':
-                    playRestSound();
-                    speak('Repos entre séries');
-                    break;
-                case 'coolDown':
-                    playRestSound();
-                    speak('Récupération finale');
-                    break;
-            }
-            
-            let timeRemaining = task.duration;
-            
-            clearInterval(interval);
-            interval = setInterval(() => {
-                if (isResetting) {
-                    clearInterval(interval);
-                    return;
-                }
-                
-                // Mettre à jour les timers
-                const globalMinutes = Math.floor(globalTimeRemaining / 60);
-                const globalSeconds = globalTimeRemaining % 60;
-                globalTimerEl.textContent = `${globalMinutes.toString().padStart(2, '0')}:${globalSeconds.toString().padStart(2, '0')}`;
-                
-                updateTaskTimer(currentTaskIndex, timeRemaining);
-                
-                // Countdown et sons
-                if (timeRemaining <= 3 && timeRemaining > 0) {
-                    playCountdownSound();
-                    speak(timeRemaining.toString());
-                }
-                
-                timeRemaining--;
-                globalTimeRemaining--;
-                
-                if (timeRemaining < 0) {
-                    clearInterval(interval);
-                    markTaskCompleted(currentTaskIndex);
-                    currentTaskIndex++;
-                    
-                    setTimeout(() => {
-                        if (!isResetting) {
-                            runCurrentTask();
-                        }
-                    }, 600); // Délai pour l'animation
-                }
-            }, 1000);
-        }
-
-        function finishTimer() {
-            globalPhaseEl.textContent = 'Session terminée';
-            globalTimerEl.textContent = '00:00';
-            globalProgressEl.textContent = 'Félicitations ! Session complète';
-            updateStatusIndicator(false);
-            
-            playEndSound();
-            speak('Session terminée ! Félicitations !');
-        }
-
-        function doResetTimer() {
-            if (isResetting) return;
-            
-            isResetting = true;
-            console.log('🔄 Reset timer local');
-            
-            clearInterval(interval);
-            if (resetTimeout) {
-                clearTimeout(resetTimeout);
-                resetTimeout = null;
-            }
-            
-            globalPhaseEl.textContent = 'Réinitialisé';
-            globalTimerEl.textContent = '--:--';
-            globalProgressEl.textContent = 'Timer réinitialisé';
-            updateStatusIndicator(false);
-            
-            clearTasks();
-            currentTaskIndex = 0;
-            globalTimeRemaining = 0;
-            
-            playBeep(300, 200);
-            speak('Timer réinitialisé');
-            
-            setTimeout(() => {
-                isResetting = false;
-            }, 1000);
-        }
-
-        // Fermer modal en cliquant à l'extérieur
-        window.onclick = function(event) {
-            if (event.target === qrModal) {
-                hideQRCode();
-            }
-        }
-
-        // Raccourcis clavier
-        document.addEventListener('keydown', function(event) {
-            if (event.target.tagName === 'INPUT' || event.target.tagName === 'SELECT') return;
-            
-            switch(event.key) {
-                case 'Escape':
-                    event.preventDefault();
-                    if (qrModal.style.display === 'block') {
-                        hideQRCode();
-                    }
-                    break;
-                case 't':
-                case 'T':
-                    event.preventDefault();
-                    toggleTheme();
-                    break;
-                case 'q':
-                case 'Q':
-                    event.preventDefault();
-                    showQRCode();
-                    break;
-            }
-        });
-
-        // Écouter les changements de préférences système
-        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-            if (currentTheme === 'auto') {
-                isDarkMode = e.matches;
-                updateThemeIcon();
-            }
-        });
-
-        // Initialisation
-        document.addEventListener('DOMContentLoaded', function() {
-            console.log('📱 Initialisation Timer ECOS v2.0 - Interface Tâches...');
-            
-            // Charger les préférences
-            const savedTheme = localStorage.getItem('timer-theme-quick') || 'auto';
-            currentTheme = savedTheme;
-            
-            applyTheme();
-            updateThemeIcon();
-            initAudio();
-            updateVolumeIcon();
-            updateStatusIndicator(false);
-            
-            // Afficher l'état initial
-            clearTasks();
-            
-            // Initialiser Socket.IO
-            initSocket();
-            
-            // Activer l'audio au premier clic
-            document.addEventListener('click', function() {
-                if (audioContext && audioContext.state === 'suspended') {
-                    audioContext.resume();
-                }
-            }, { once: true });
-            
-            console.log('✅ Timer ECOS v2.0 initialisé avec interface de tâches');
-        });
+        // Initialisation au chargement
+        document.addEventListener('DOMContentLoaded', init);
     </script>
 </body>
 </html>
