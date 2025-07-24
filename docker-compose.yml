@@ -1,0 +1,49 @@
+version: '3.8'
+
+services:
+  timer-ecos:
+    build: .
+    container_name: timer-ecos-app
+    restart: unless-stopped
+    ports:
+      - "${PORT:-3000}:3000"
+    environment:
+      - NODE_ENV=production
+      - PORT=${PORT:-3000}
+      - SESSION_SECRET=${SESSION_SECRET:-change_this_in_production}
+      - BASE_DIR=/app
+    volumes:
+      # Volumes pour la persistance des données
+      - ./config:/app/public/config
+      - ./data:/app/data
+    networks:
+      - timer-network
+    healthcheck:
+      test: ["CMD", "wget", "--no-verbose", "--tries=1", "--spider", "http://localhost:3000/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+  # Service nginx optionnel pour la production
+  nginx:
+    image: nginx:alpine
+    container_name: timer-ecos-nginx
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx.conf:/etc/nginx/nginx.conf:ro
+      - ./ssl:/etc/nginx/ssl:ro
+      - ./public:/usr/share/nginx/html:ro
+    depends_on:
+      - timer-ecos
+    networks:
+      - timer-network
+    profiles:
+      - production
+
+networks:
+  timer-network:
+    driver: bridge
